@@ -1,3 +1,4 @@
+![ReadMe](ReadMe.jpg)
 # PongFPGA
 Opracowanie i uruchomienie gry typu "Pong" w układzie FPGA (Development and commissioning of a "Pong" game in FPGA). My engineer's thesis.
 
