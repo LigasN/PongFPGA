@@ -17,4 +17,4 @@ Opracowanie sprzętowo-programowego systemu realizującego grę typu "Pong". Kon
 ## Dokumentacja
 * specyfikacja projektu, plik formatu markdown- [Specifications](Documents/Specifications.md "Specifications")
 * szybka instrukcja rozgrywki, plik formatu markdown- [HowToPlay](Documents/HowToPlay.md "HowToPlay")
-* wykonanej pracy, lista commit-ów z komentarzami- [LogWork](Documents/LogWork.md "LogWork")
+* wykonanej pracy, lista dat z komentarzami- [LogWork](Documents/LogWork.md "LogWork")
