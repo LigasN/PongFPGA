@@ -11,8 +11,16 @@ use ieee.std_logic_1164.all;
 entity HDMIDriver is
 	generic(
 			-- Display resolution
-			display_res_width	: integer := 640;
-			display_res_height	: integer := 480			
+			DISPLAY_RES_WIDTH	: integer := 640;
+			DISPLAY_RES_HEIGHT	: integer := 480;
+			
+			-- Durations
+			PX_FRONT_PORCH		: integer := 16;
+			PX_SYNC_PULSE		: integer := 96;
+			PX_BACK_PORCH		: integer := 48;
+			ROW_FRONT_PORCH		: integer := 10;
+			ROW_SYNC_PULSE		: integer := 2;
+			ROW_BACK_PORCH		: integer := 33
 		);
 	port(
 			-- Input Clocks
@@ -24,7 +32,8 @@ entity HDMIDriver is
 			output		: out 	std_logic_vector(2 downto 0);
 			
 			-- Output control data
-			px_xy		: out	std_logic_vector(1 downto 0); -- address of the next pixel (x,y)
+			px_x		: out	std_logic_vector(to_unsigned(0, DISPLAY_RES_WIDTH'length)); -- address of the next pixel x coord
+			px_y		: out	std_logic_vector(to_unsigned(0, DISPLAY_RES_HEIGHT'length)); -- address of the next pixel x coord
 			
 			-- Input color of pixel (1b in this version)
 			px_color	: in	std_logic -- 1- white, 0- black
@@ -33,7 +42,7 @@ end HDMIDriver;
 			
 architecture HDMIDriver of HDMIDriver is
 
-	-- 10 bit output coder for HDMI
+	-- 10 bit output coder for HD
 	component TMDS is 
 		port(
 			clk		: in std_logic; 					-- clock with frequency of pixels
@@ -52,25 +61,72 @@ architecture HDMIDriver of HDMIDriver is
 		);
 	end component;
 	
-	type coord is 
+	type coords is 
 		record 
-			x : integer range 0 to display_res_width;
-			y : integer range 0 to display_res_height;
+			x : integer range 0 to DISPLAY_RES_WIDTH;
+			y : integer range 0 to DISPLAY_RES_HEIGHT;
 		end record;
 		
-	signal px_address : coord;
+	type counters is 
+		record 
+			x : integer range 0 to PX_FRONT_PORCH + PX_SYNC_PULSE + PX_BACK_PORCH + DISPLAY_RES_WIDTH;
+			y : integer range 0 to ROW_FRONT_PORCH + ROW_SYNC_PULSE + ROW_BACK_PORCH + DISPLAY_RES_HEIGHT;
+		end record;
+	
+	-- to tell on output which pixel will be next
+	signal px_current_address 	: coords;
+	signal px_data_counter		: counters;
+	
+	-- other signals needed for hdmi
+	signal is_displaying	: STD_LOGIC;
+	signal h_synch			: STD_LOGIC;
+	signal s_synch			: STD_LOGIC;
 
 begin
 
 	HDMI_PX_ADDRESSES: process(clk)
 	begin
-	
-		if falling_edge(clk) then
-			-- pixels addresses
-			px_address.x <= px_address.x + 1;
-		end if;
 		
+		if falling_edge(clk) then
+			
+			-- Transfer preparation
+			-- Time graph starts from data, then front porch, synchronization, back porch
+			
+			-- pixels addresses
+			-- incrementation only within DISPLAY_RES_WIDTH period, with making overflow at the end
+			if px_data_counter.x = DISPLAY_RES_WIDTH - 1 then
+				--px_current_address.x will overflow now, so increment the y one
+				if px_data_counter.y < DISPLAY_RES_HEIGHT then
+					px_current_address.y <= px_current_address.y + 1;
+				end if;
+			end if;
+			
+			if px_data_counter.x < DISPLAY_RES_WIDTH then
+				px_current_address.x <= px_current_address.x + 1;
+			end if;
+			
+			-- Update counters for next clk
+			if px_data_counter.x = PX_FRONT_PORCH + PX_SYNC_PULSE + PX_BACK_PORCH + DISPLAY_RES_WIDTH - 1 then
+				-- counter.x will overflow in next clock, so increment the y one
+				px_data_counter.y <= px_data_counter.y + 1;
+			end if;
+				
+			-- always increment the counter.x value, when y is prepared
+			px_data_counter.x <= px_data_counter.x + 1;
+			
+		end if;
 	end process;
+			
+	-- Is displaying info 
+	is_displaying <= '1' when px_data_counter.x < DISPLAY_RES_WIDTH and 
+							px_data_counter.y < DISPLAY_RES_WIDTH else '0';
+		
+	-- Synchronization info
+	h_synch <= '1' when px_data_counter.x >= DISPLAY_RES_WIDTH + PX_FRONT_PORCH and
+						px_data_counter.x < DISPLAY_RES_WIDTH + PX_FRONT_PORCH + PX_SYNC_PULSE else '0';
+	
+	s_synch <= '1' when px_data_counter.y >= DISPLAY_RES_HEIGHT + ROW_FRONT_PORCH and
+						px_data_counter.y < DISPLAY_RES_HEIGHT + ROW_FRONT_PORCH + ROW_SYNC_PULSE else '0';
 		
 end HDMIDriver;	
 	
