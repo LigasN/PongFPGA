@@ -6,7 +6,8 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
--- use ieee.numeric_std.all;
+use ieee.numeric_std.all;
+
 
 entity HDMIDriver is
 	generic(
@@ -29,11 +30,11 @@ entity HDMIDriver is
 			
 			-- Output HDMI data
 			output_clk	: out 	std_logic;
-			output		: out 	std_logic_vector(2 downto 0);
+			output_data	: out 	std_logic_vector(2 downto 0);
 			
 			-- Output control data
-			px_x		: out	std_logic_vector(to_unsigned(0, DISPLAY_RES_WIDTH'length)); -- address of the next pixel x coord
-			px_y		: out	std_logic_vector(to_unsigned(0, DISPLAY_RES_HEIGHT'length)); -- address of the next pixel x coord
+			px_x		: out	std_logic_vector(12 downto 0); -- address of the next pixel x coord
+			px_y		: out	std_logic_vector(12 downto 0); -- address of the next pixel y coord
 			
 			-- Input color of pixel (1b in this version)
 			px_color	: in	std_logic -- 1- white, 0- black
@@ -45,18 +46,18 @@ architecture HDMIDriver of HDMIDriver is
 	-- 10 bit output coder for HD
 	component TMDS is 
 		port(
-			clk		: in std_logic; 					-- clock with frequency of pixels
-			display	: in std_logic; 					-- enable (1= display, 0= control data)
-			ctrl	: in std_logic_vector(1 downto 0); 	-- control data for synchronization
-			data_in	: in std_logic_vector(7 downto 0); 	-- as far as external TDMS is used 8 bit data in
-			data_out: in std_logic_vector(9 downto 0) 	-- output TDMS(10 bits) data
+			clk		: in 	std_logic := '0'; 					-- clock with frequency of pixels
+			display	: in 	std_logic := '0'; 					-- enable (1= display, 0= control data)
+			ctrl	: in 	std_logic_vector(1 downto 0) := (others=>'0'); 	-- control data for synchronization
+			data_in	: in 	std_logic_vector(7 downto 0) := (others=>'0'); 	-- as far as external TDMS is used 8 bit data in
+			data_out: out 	std_logic_vector(9 downto 0)	-- output TDMS(10 bits) data
 		);
 	end component;
 	
 	-- converter to differential transmission
 	component LVDS is
 		port(
-			lvds_in : in 	std_logic := '0';
+			lvds_in  : in 	std_logic := '0';
 			lvds_out : out 	std_logic
 		);
 	end component;
@@ -91,7 +92,10 @@ architecture HDMIDriver of HDMIDriver is
 	signal TMDS_BS_Reg : STD_LOGIC_VECTOR(9 downto 0);
 	
 	-- counter with information about which register will be passed now to HDMI. Needed in TDMS shift register 
-	signal reg_counter : integer range 0 to 9;
+	signal reg_counter 	: integer range 0 to 9;
+	
+	-- TDMS needs always 8 bits color data
+	signal TDMS_color	: std_logic_vector(7 downto 0);
 
 begin
 
@@ -127,6 +131,10 @@ begin
 			
 		end if;
 	end process;
+	
+	-- Passing pixel address to output
+	px_x <= std_logic_vector(to_unsigned(px_current_address.x, px_x'length));
+	px_y <= std_logic_vector(to_unsigned(px_current_address.y, px_y'length));
 			
 	-- Is displaying info 
 	is_displaying <= '1' when px_data_counter.x < DISPLAY_RES_WIDTH and 
@@ -139,21 +147,23 @@ begin
 	s_synch <= '1' when px_data_counter.y >= DISPLAY_RES_HEIGHT + ROW_FRONT_PORCH and
 						px_data_counter.y < DISPLAY_RES_HEIGHT + ROW_FRONT_PORCH + ROW_SYNC_PULSE else '0';
 		
-	-- encryption with TDMS
+	-- Encryption with TDMS
+	TDMS_color <= (others=>'1') when px_color = '1' else (others=>'0');
+	
 	RG_TMDS: TMDS port map(
 		clk			=> clk,
-		vd_en		=> is_displaying,
+		display		=> is_displaying,
 		ctrl		=> "00",
-		data_in		=> px_color,
+		data_in		=> TDMS_color,
 		data_out	=> TMDS_RG
 	);
 	
 	BC_TMDS: TMDS port map(
 		clk			=> clk,
-		vd_en		=> is_displaying,
-		ctrl		=> hdmi_vs & hdmi_hs, -- encryption clk in blue TDMS
-		data_in		=> px_color,
-		data_out	=> TMDS_BC
+		display		=> is_displaying,
+		ctrl		=> s_synch & h_synch, -- encryption clk in blue TDMS
+		data_in		=> TDMS_color,
+		data_out	=> TMDS_BS
 	);
 	
 	-- Data with frequency of HDMI clock passed by shift register
@@ -175,24 +185,26 @@ begin
 		end if;
 	end process;
 	
-	
 	-- TMDS to differential sygnals
 	CLK_LVDS: LVDS port map(
-		tx_in	=> HDMI_CLKPX,
-		tx_out	=> output_clk
+		lvds_in		=> clk,
+		lvds_out	=> output_clk
 	);
 	
-	RG_LVDS: LVDS port map(
-		tx_in	=> TMDS_RG_Reg(0),
-		tx_out	=> output(1),
-		tx_out	=> output(2)
+	R_LVDS: LVDS port map(
+		lvds_in		=> TMDS_RG_Reg(0),
+		lvds_out	=> output_data(1)
+	);
+	
+	G_LVDS: LVDS port map(
+		lvds_in		=> TMDS_RG_Reg(0),
+		lvds_out	=> output_data(2)
 	);
 	
 	BS_LVDS: LVDS port map(
-		tx_in	=> TMDS_BS_Reg(0),
-		tx_out	=> output(0)
+		lvds_in		=> TMDS_BS_Reg(0),
+		lvds_out	=> output_data(0)
 	);
 	
-		
 end HDMIDriver;	
 	
