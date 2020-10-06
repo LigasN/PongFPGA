@@ -81,6 +81,17 @@ architecture HDMIDriver of HDMIDriver is
 	signal is_displaying	: STD_LOGIC;
 	signal h_synch			: STD_LOGIC;
 	signal s_synch			: STD_LOGIC;
+	
+	-- output for TDMS encryption
+	signal TMDS_RG : STD_LOGIC_VECTOR(9 downto 0);
+	signal TMDS_BS : STD_LOGIC_VECTOR(9 downto 0);
+	
+	-- output for TDMS encryption
+	signal TMDS_RG_Reg : STD_LOGIC_VECTOR(9 downto 0);
+	signal TMDS_BS_Reg : STD_LOGIC_VECTOR(9 downto 0);
+	
+	-- counter with information about which register will be passed now to HDMI. Needed in TDMS shift register 
+	signal reg_counter : integer range 0 to 9;
 
 begin
 
@@ -127,6 +138,61 @@ begin
 	
 	s_synch <= '1' when px_data_counter.y >= DISPLAY_RES_HEIGHT + ROW_FRONT_PORCH and
 						px_data_counter.y < DISPLAY_RES_HEIGHT + ROW_FRONT_PORCH + ROW_SYNC_PULSE else '0';
+		
+	-- encryption with TDMS
+	RG_TMDS: TMDS port map(
+		clk			=> clk,
+		vd_en		=> is_displaying,
+		ctrl		=> "00",
+		data_in		=> px_color,
+		data_out	=> TMDS_RG
+	);
+	
+	BC_TMDS: TMDS port map(
+		clk			=> clk,
+		vd_en		=> is_displaying,
+		ctrl		=> hdmi_vs & hdmi_hs, -- encryption clk in blue TDMS
+		data_in		=> px_color,
+		data_out	=> TMDS_BC
+	);
+	
+	-- Data with frequency of HDMI clock passed by shift register
+	TMDS_Shift: process(HDMI_clk)
+	begin
+		
+		if falling_edge(HDMI_clk) then
+			
+			TMDS_RG_Reg <= '0' & TMDS_RG_Reg(9 downto 0);
+			TMDS_BS_Reg <= '0' & TMDS_BS_Reg(9 downto 0);
+			
+			reg_counter <= reg_counter + 1;
+			
+			if reg_counter = 0 then
+				TMDS_RG_Reg <= TMDS_RG;
+				TMDS_BS_Reg <= TMDS_BS;
+			end if;
+			
+		end if;
+	end process;
+	
+	
+	-- TMDS to differential sygnals
+	CLK_LVDS: LVDS port map(
+		tx_in	=> HDMI_CLKPX,
+		tx_out	=> output_clk
+	);
+	
+	RG_LVDS: LVDS port map(
+		tx_in	=> TMDS_RG_Reg(0),
+		tx_out	=> output(1),
+		tx_out	=> output(2)
+	);
+	
+	BS_LVDS: LVDS port map(
+		tx_in	=> TMDS_BS_Reg(0),
+		tx_out	=> output(0)
+	);
+	
 		
 end HDMIDriver;	
 	
