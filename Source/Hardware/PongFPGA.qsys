@@ -6,15 +6,39 @@
    version="1.0"
    description=""
    tags=""
-   categories="" />
+   categories="System" />
  <parameter name="bonusData"><![CDATA[bonusData 
 {
-   element HDMIDriver
+   element HDMIDriver_0
    {
       datum _sortIndex
       {
          value = "2";
          type = "int";
+      }
+   }
+   element HDMI_IMAGE_GEN_MONO_1b_0
+   {
+      datum _sortIndex
+      {
+         value = "3";
+         type = "int";
+      }
+   }
+   element PongFPGA
+   {
+      datum _originalDeviceFamily
+      {
+         value = "MAX 10";
+         type = "String";
+      }
+   }
+   element PongFPGA
+   {
+      datum _originalDeviceFamily
+      {
+         value = "MAX 10";
+         type = "String";
       }
    }
    element altpll_0
@@ -47,7 +71,7 @@
  <parameter name="hideFromIPCatalog" value="false" />
  <parameter name="lockedInterfaceDefinition" value="" />
  <parameter name="maxAdditionalLatency" value="1" />
- <parameter name="projectName" value="" />
+ <parameter name="projectName" value="PongFPGA.qpf" />
  <parameter name="sopcBorderPoints" value="false" />
  <parameter name="systemHash" value="0" />
  <parameter name="testBenchDutName" value="" />
@@ -55,8 +79,17 @@
  <parameter name="useTestBenchNamingPattern" value="false" />
  <instanceScript></instanceScript>
  <interface name="clk" internal="clk_0.clk_in" type="clock" dir="end" />
+ <interface
+   name="hdmidriver_hdmi"
+   internal="HDMIDriver_0.HDMI"
+   type="conduit"
+   dir="end" />
  <interface name="reset" internal="clk_0.clk_in_reset" type="reset" dir="end" />
- <module name="HDMIDriver" kind="HDMIDriver_mono_1b" version="1.0" enabled="1">
+ <module
+   name="HDMIDriver_0"
+   kind="HDMIDriver_mono_1b"
+   version="1.0"
+   enabled="1">
   <parameter name="DISPLAY_RES_HEIGHT" value="480" />
   <parameter name="DISPLAY_RES_WIDTH" value="640" />
   <parameter name="PX_BACK_PORCH" value="48" />
@@ -66,6 +99,11 @@
   <parameter name="ROW_FRONT_PORCH" value="10" />
   <parameter name="ROW_SYNC_PULSE" value="2" />
  </module>
+ <module
+   name="HDMI_IMAGE_GEN_MONO_1b_0"
+   kind="HDMI_IMAGE_GEN_MONO_1b"
+   version="1.0"
+   enabled="1" />
  <module name="altpll_0" kind="altpll" version="18.1" enabled="1">
   <parameter name="AUTO_DEVICE_FAMILY" value="MAX 10" />
   <parameter name="AUTO_INCLK_INTERFACE_CLOCK_RATE" value="10000000" />
@@ -243,17 +281,55 @@
    kind="clock"
    version="18.1"
    start="altpll_0.c0"
-   end="HDMIDriver.clock" />
+   end="HDMIDriver_0.clock" />
+ <connection
+   kind="clock"
+   version="18.1"
+   start="altpll_0.c0"
+   end="HDMI_IMAGE_GEN_MONO_1b_0.clock" />
  <connection
    kind="clock"
    version="18.1"
    start="altpll_0.c1"
-   end="HDMIDriver.HDMI_clk" />
+   end="HDMIDriver_0.HDMI_clk" />
  <connection
    kind="clock"
    version="18.1"
    start="clk_0.clk"
    end="altpll_0.inclk_interface" />
+ <connection
+   kind="conduit"
+   version="18.1"
+   start="HDMIDriver_0.PX_ADDRESS"
+   end="HDMI_IMAGE_GEN_MONO_1b_0.PX_ADDRESS">
+  <parameter name="endPort" value="" />
+  <parameter name="endPortLSB" value="0" />
+  <parameter name="startPort" value="" />
+  <parameter name="startPortLSB" value="0" />
+  <parameter name="width" value="0" />
+ </connection>
+ <connection
+   kind="conduit"
+   version="18.1"
+   start="HDMIDriver_0.PX_COLOR"
+   end="HDMI_IMAGE_GEN_MONO_1b_0.HDMIImageGenerator">
+  <parameter name="endPort" value="" />
+  <parameter name="endPortLSB" value="0" />
+  <parameter name="startPort" value="" />
+  <parameter name="startPortLSB" value="0" />
+  <parameter name="width" value="0" />
+ </connection>
+ <connection
+   kind="conduit"
+   version="18.1"
+   start="altpll_0.areset_conduit"
+   end="altpll_0.locked_conduit">
+  <parameter name="endPort" value="" />
+  <parameter name="endPortLSB" value="0" />
+  <parameter name="startPort" value="" />
+  <parameter name="startPortLSB" value="0" />
+  <parameter name="width" value="0" />
+ </connection>
  <connection
    kind="reset"
    version="18.1"
