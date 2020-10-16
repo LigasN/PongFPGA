@@ -151,7 +151,7 @@ begin
 	TDMS_color <= (others=>'1') when px_color = '1' else (others=>'0');
 	
 	RG_TMDS: TMDS port map(
-		clk		=> clk,
+		clk			=> clk,
 		vd_en		=> is_displaying,
 		ctrl		=> "00",
 		data_in		=> TDMS_color,
@@ -159,7 +159,7 @@ begin
 	);
 	
 	BC_TMDS: TMDS port map(
-		clk		=> clk,
+		clk			=> clk,
 		vd_en		=> is_displaying,
 		ctrl		=> s_synch & h_synch, -- encryption clk in blue TDMS
 		data_in		=> TDMS_color,

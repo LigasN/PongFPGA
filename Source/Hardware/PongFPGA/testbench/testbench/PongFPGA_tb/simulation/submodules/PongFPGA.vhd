@@ -39,6 +39,12 @@ architecture rtl of PongFPGA is
 	end component HDMIDriver;
 
 	component HDMIImageGenerator is
+		generic (
+			X_RES   : integer := 1080;
+			Y_RES   : integer := 1920;
+			REG_LEN : integer := 200;
+			VEL     : integer := 10
+		);
 		port (
 			clk      : in  std_logic                     := 'X';             -- clk
 			px_color : out std_logic;                                        -- px_color
@@ -75,6 +81,12 @@ begin
 		);
 
 	hdmi_image_gen_mono_1b_0 : component HDMIImageGenerator
+		generic map (
+			X_RES   => 1080,
+			Y_RES   => 1920,
+			REG_LEN => 200,
+			VEL     => 10
+		)
 		port map (
 			clk      => clk_clk,                                              --              clock.clk
 			px_color => hdmi_image_gen_mono_1b_0_hdmiimagegenerator_px_color, -- HDMIImageGenerator.px_color

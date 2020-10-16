@@ -172,8 +172,8 @@ begin
 		
 		if falling_edge(HDMI_clk) then
 			
-			TMDS_RG_Reg <= '0' & TMDS_RG_Reg(8 downto 0);
-			TMDS_BS_Reg <= '0' & TMDS_BS_Reg(8 downto 0);
+			TMDS_RG_Reg <= '0' & TMDS_RG_Reg(9 downto 1);
+			TMDS_BS_Reg <= '0' & TMDS_BS_Reg(9 downto 1);
 			
 			reg_counter <= reg_counter + 1;
 			
