@@ -71,20 +71,20 @@ BEGIN
   Process
 	Begin
 	 clk  <= '0'  ;
-	wait for 2 ns ;
+	wait for 20 ns ;
 -- 2 ns, single loop till start period.
-	for Z in 1 to 3250000
+	for Z in 1 to 325000
 	loop
 	    clk  <= '1'  ;
-	   wait for 2 ns ;
+	   wait for 20 ns ;
 	    clk  <= '0'  ;
-	   wait for 2 ns ;
+	   wait for 20 ns ;
 -- 10 ns, repeat pattern in loop.
 	end  loop;
 	 clk  <= '1'  ;
-	wait for 2 ns ;
+	wait for 20 ns ;
 	 clk  <= '0'  ;
-	wait for 1 ns ;
+	wait for 10 ns ;
 -- dumped values till 13 ns
 	wait;
  End Process;
@@ -95,14 +95,14 @@ BEGIN
   Process
 	Begin
 	 HDMI_clk  <= '0'  ;
-	wait for 20 ns ;
+	wait for 2 ns ;
 -- 2 ns, single loop till start period.
-	for Z in 1 to 325000
+	for Z in 1 to 3250000
 	loop
 	    HDMI_clk  <= '1'  ;
-	   wait for 20 ns ;
+	   wait for 2 ns ;
 	    HDMI_clk  <= '0'  ;
-	   wait for 20 ns ;
+	   wait for 2 ns ;
 -- 10 ns, repeat pattern in loop.
 	end  loop;
 	wait;

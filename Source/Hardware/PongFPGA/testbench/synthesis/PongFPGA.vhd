@@ -29,9 +29,9 @@ architecture rtl of PongFPGA is
 		);
 		port (
 			clk         : in  std_logic                     := 'X'; -- clk
-			HDMI_clk    : in  std_logic                     := 'X'; -- clk
 			px_x        : out std_logic_vector(12 downto 0);        -- px_x
 			px_y        : out std_logic_vector(12 downto 0);        -- px_y
+			HDMI_clk    : in  std_logic                     := 'X'; -- clk
 			output_clk  : out std_logic;                            -- output_clk
 			output_data : out std_logic_vector(2 downto 0);         -- output_data
 			px_color    : in  std_logic                     := 'X'  -- px_color
@@ -72,9 +72,9 @@ begin
 		)
 		port map (
 			clk         => clk_clk,                                    --      clock.clk
-			HDMI_clk    => clk_clk,                                    -- clock_hdmi.clk
 			px_x        => hdmidriver_mono_1b_0_px_address_px_x,       -- px_address.px_x
 			px_y        => hdmidriver_mono_1b_0_px_address_px_y,       --           .px_y
+			HDMI_clk    => clk_clk,                                    --   hdmi_clk.clk
 			output_clk  => hdmi_output_clk,                            --       hdmi.output_clk
 			output_data => hdmi_output_data,                           --           .output_data
 			px_color    => hdmi_image_gen_mono_1b_0_px_color_px_color  --   px_color.px_color

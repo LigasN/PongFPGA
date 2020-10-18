@@ -26,7 +26,7 @@ entity HDMIDriver is
 	port(
 			-- Input Clocks
 			clk			: in	std_logic;
-			HDMI_clk	: in	std_logic; -- 10 times slower than clk
+			hdmi_clk	: in	std_logic; -- 10 times faster than clk
 			
 			-- Output HDMI data
 			output_clk	: out 	std_logic := '0';
@@ -62,12 +62,6 @@ architecture HDMIDriver_arch of HDMIDriver is
 		);
 	end component;
 	
-	type coords is 
-		record 
-			x : integer range 0 to DISPLAY_RES_WIDTH;
-			y : integer range 0 to DISPLAY_RES_HEIGHT;
-		end record;
-		
 	type counters is 
 		record 
 			x : integer range 0 to PX_FRONT_PORCH + PX_SYNC_PULSE + PX_BACK_PORCH + DISPLAY_RES_WIDTH;
@@ -75,7 +69,6 @@ architecture HDMIDriver_arch of HDMIDriver is
 		end record;
 	
 	-- to tell on output which pixel will be next
-	signal px_current_address 	: coords   := (x =>0, y=>0);
 	signal px_data_counter		: counters := (x =>0, y=>0);
 	
 	-- other signals needed for hdmi
@@ -168,10 +161,10 @@ begin
 	);
 	
 	-- Data with frequency of HDMI clock passed by shift register
-	TMDS_Shift: process(HDMI_clk)
+	TMDS_Shift: process(hdmi_clk)
 	begin
 		
-		if falling_edge(HDMI_clk) then
+		if falling_edge(hdmi_clk) then
 			
 			if reg_counter = 9 then
 				reg_counter <= 0;

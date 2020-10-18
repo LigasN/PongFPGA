@@ -81,6 +81,30 @@
          type = "String";
       }
    }
+   element PongFPGA
+   {
+      datum _originalDeviceFamily
+      {
+         value = "MAX 10";
+         type = "String";
+      }
+   }
+   element PongFPGA
+   {
+      datum _originalDeviceFamily
+      {
+         value = "MAX 10";
+         type = "String";
+      }
+   }
+   element PongFPGA
+   {
+      datum _originalDeviceFamily
+      {
+         value = "MAX 10";
+         type = "String";
+      }
+   }
    element clk_0
    {
       datum _sortIndex
@@ -194,18 +218,18 @@
  <connection
    kind="clock"
    version="18.1"
-   start="clock_bridge_0.out_clk"
-   end="HDMI_IMAGE_GEN_MONO_1b_0.clock" />
- <connection
-   kind="clock"
-   version="18.1"
-   start="clock_bridge_0.out_clk"
+   start="clock_bridge_1.out_clk"
    end="HDMIDriver_mono_1b_0.clock" />
  <connection
    kind="clock"
    version="18.1"
    start="clock_bridge_1.out_clk"
-   end="HDMIDriver_mono_1b_0.clock_hdmi" />
+   end="HDMI_IMAGE_GEN_MONO_1b_0.clock" />
+ <connection
+   kind="clock"
+   version="18.1"
+   start="clock_bridge_0.out_clk"
+   end="HDMIDriver_mono_1b_0.hdmi_clk" />
  <connection
    kind="conduit"
    version="18.1"
