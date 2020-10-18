@@ -9,7 +9,7 @@
    categories="System" />
  <parameter name="bonusData"><![CDATA[bonusData 
 {
-   element HDMIDriver_0
+   element HDMIDriver_mono_1b_0
    {
       datum _sortIndex
       {
@@ -23,6 +23,46 @@
       {
          value = "3";
          type = "int";
+      }
+   }
+   element PongFPGA
+   {
+      datum _originalDeviceFamily
+      {
+         value = "MAX 10";
+         type = "String";
+      }
+   }
+   element PongFPGA
+   {
+      datum _originalDeviceFamily
+      {
+         value = "MAX 10";
+         type = "String";
+      }
+   }
+   element PongFPGA
+   {
+      datum _originalDeviceFamily
+      {
+         value = "MAX 10";
+         type = "String";
+      }
+   }
+   element PongFPGA
+   {
+      datum _originalDeviceFamily
+      {
+         value = "MAX 10";
+         type = "String";
+      }
+   }
+   element PongFPGA
+   {
+      datum _originalDeviceFamily
+      {
+         value = "MAX 10";
+         type = "String";
       }
    }
    element PongFPGA
@@ -88,13 +128,13 @@
  <instanceScript></instanceScript>
  <interface name="clk" internal="clk_0.clk_in" type="clock" dir="end" />
  <interface
-   name="hdmidriver_hdmi"
-   internal="HDMIDriver_0.HDMI"
+   name="hdmi"
+   internal="HDMIDriver_mono_1b_0.hdmi"
    type="conduit"
    dir="end" />
  <interface name="reset" internal="clk_0.clk_in_reset" type="reset" dir="end" />
  <module
-   name="HDMIDriver_0"
+   name="HDMIDriver_mono_1b_0"
    kind="HDMIDriver_mono_1b"
    version="1.0"
    enabled="1">
@@ -111,7 +151,12 @@
    name="HDMI_IMAGE_GEN_MONO_1b_0"
    kind="HDMI_IMAGE_GEN_MONO_1b"
    version="1.0"
-   enabled="1" />
+   enabled="1">
+  <parameter name="REG_LEN" value="200" />
+  <parameter name="VEL" value="10" />
+  <parameter name="X_RES" value="640" />
+  <parameter name="Y_RES" value="480" />
+ </module>
  <module name="clk_0" kind="clock_source" version="18.1" enabled="1">
   <parameter name="clockFrequency" value="10000000" />
   <parameter name="clockFrequencyKnown" value="true" />
@@ -149,23 +194,23 @@
  <connection
    kind="clock"
    version="18.1"
-   start="clock_bridge_1.out_clk"
-   end="HDMIDriver_0.HDMI_clk" />
- <connection
-   kind="clock"
-   version="18.1"
    start="clock_bridge_0.out_clk"
    end="HDMI_IMAGE_GEN_MONO_1b_0.clock" />
  <connection
    kind="clock"
    version="18.1"
    start="clock_bridge_0.out_clk"
-   end="HDMIDriver_0.clock" />
+   end="HDMIDriver_mono_1b_0.clock" />
+ <connection
+   kind="clock"
+   version="18.1"
+   start="clock_bridge_1.out_clk"
+   end="HDMIDriver_mono_1b_0.clock_hdmi" />
  <connection
    kind="conduit"
    version="18.1"
-   start="HDMIDriver_0.PX_ADDRESS"
-   end="HDMI_IMAGE_GEN_MONO_1b_0.PX_ADDRESS">
+   start="HDMI_IMAGE_GEN_MONO_1b_0.px_address"
+   end="HDMIDriver_mono_1b_0.px_address">
   <parameter name="endPort" value="" />
   <parameter name="endPortLSB" value="0" />
   <parameter name="startPort" value="" />
@@ -175,8 +220,8 @@
  <connection
    kind="conduit"
    version="18.1"
-   start="HDMIDriver_0.PX_COLOR"
-   end="HDMI_IMAGE_GEN_MONO_1b_0.HDMIImageGenerator">
+   start="HDMIDriver_mono_1b_0.px_color"
+   end="HDMI_IMAGE_GEN_MONO_1b_0.px_color">
   <parameter name="endPort" value="" />
   <parameter name="endPortLSB" value="0" />
   <parameter name="startPort" value="" />

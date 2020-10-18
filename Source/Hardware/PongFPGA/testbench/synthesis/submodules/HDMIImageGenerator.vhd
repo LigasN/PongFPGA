@@ -11,8 +11,8 @@ use ieee.numeric_std.all;
 entity HDMIImageGenerator is
 	generic (
 			-- Display resolution
-			X_RES : integer := 1080;
-			Y_RES : integer := 1920;
+			X_RES : integer := 640;
+			Y_RES : integer := 480;
 			
 			-- Rectangle side length
 			REG_LEN : integer := 200;
@@ -36,20 +36,26 @@ end HDMIImageGenerator;
 			
 architecture HDMIImageGenerator_arch of HDMIImageGenerator is
 		
-	type vec2 is 
-	record 
-		x : integer range 0 to X_RES;
-		y : integer range 0 to Y_RES;
-	end record;
-
+	--type vec2 is 
+	--record 
+	--	x : integer range 0 to X_RES;
+	--	y : integer range 0 to Y_RES;
+	--end record;
+	
 	-- Rectangle velocity in pixels
-	variable reg_vel : vec2 := (x => VEL, y => VEL);
+	--signal reg_vel 	: vec2 := (x => VEL, y => VEL);
+	signal reg_vel_x 	: integer range 0 to X_RES := VEL;
+	signal reg_vel_y 	: integer range 0 to Y_RES := VEL;
 	
-	-- Rectangle left top vertex in pixels
-	variable reg_LT : vec2 := (x => 0, y => 0);
+	-- Rectangle left bottom vertex in pixels
+	--signal reg_LB 	: vec2 := (x => 0, y => 0);
+	signal reg_l 		: integer range 0 to X_RES := 0;
+	signal reg_b 		: integer range 0 to Y_RES := 0;
 	
-	-- Rectangle right bottom vertex in pixels
-	variable reg_RB : vec2 := (x => REG_LEN, y => REG_LEN);
+	-- Rectangle right top vertex in pixels
+	--signal reg_RT 	: vec2 := (x => REG_LEN, y => REG_LEN);
+	signal reg_r 		: integer range 0 to X_RES := REG_LEN;
+	signal reg_t 		: integer range 0 to Y_RES := REG_LEN;
 	
 	-- Information about color from x and y perspective
 	signal color_x : std_logic := '0';
@@ -59,35 +65,41 @@ architecture HDMIImageGenerator_arch of HDMIImageGenerator is
 begin
 
 	process(clk)
+	
 	begin
 		if falling_edge(clk) then
-			
-			-- Colission with max/min value of position
-			if reg_LT.x < 0 OR reg_RB.x > X_RES then
-				reg_vel.x := -reg_vel.x;
-			end if;
-			
-			if reg_LT.y > Y_RES OR reg_RB.y < 0 then
-				reg_vel.y := -reg_vel.y;
-			end if;
-			
-			-- Calculating next position
-			reg_LT.x := reg_LT.x + reg_vel.x;
-			reg_LT.y := reg_LT.y + reg_vel.y;	
-			reg_RB.x := reg_RB.x + reg_vel.x;
-			reg_RB.y := reg_RB.y + reg_vel.y;
-			
+						
 			-- Shader place
-			if px_x > std_logic_vector(to_unsigned(reg_LT.x, 13)) AND px_x < std_logic_vector(to_unsigned(reg_RB.x, 13)) then 
+			if to_integer(unsigned(px_x)) > reg_l AND to_integer(unsigned(px_x)) < reg_r then 
 				color_x  <= '1';
 			else
 				color_x <= '0';
 			end if;
 			
-			if px_y > std_logic_vector(to_unsigned(reg_RB.y, 13)) AND px_y < std_logic_vector(to_unsigned(reg_LT.y, 13)) then 
+			if to_integer(unsigned(px_y)) > reg_b AND to_integer(unsigned(px_y)) < reg_t then 
 				color_y  <= '1';
 			else
 				color_y <= '0';
+			end if;
+			
+			-- Frame finished
+			if px_x = (px_x'range => '0') AND px_y = (px_y'range => '0') then
+				
+				-- Colission with max/min value of position
+				if reg_l < 0 OR reg_r > X_RES then
+					reg_vel_x <= -reg_vel_x;
+				end if;
+				
+				if reg_t > Y_RES OR reg_b < 0 then
+					reg_vel_y <= -reg_vel_y;
+				end if;
+				
+				-- Calculating next position
+				reg_l <= reg_l + reg_vel_x;
+				reg_t <= reg_t + reg_vel_y;	
+				reg_r <= reg_r + reg_vel_x;
+				reg_b <= reg_b + reg_vel_y;
+				
 			end if;
 			
 		end if;

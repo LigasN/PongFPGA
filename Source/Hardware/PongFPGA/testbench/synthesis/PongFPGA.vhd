@@ -8,10 +8,10 @@ use IEEE.numeric_std.all;
 
 entity PongFPGA is
 	port (
-		clk_clk                     : in  std_logic                    := '0'; --             clk.clk
-		hdmidriver_hdmi_output_clk  : out std_logic;                           -- hdmidriver_hdmi.output_clk
-		hdmidriver_hdmi_output_data : out std_logic_vector(2 downto 0);        --                .output_data
-		reset_reset_n               : in  std_logic                    := '0'  --           reset.reset_n
+		clk_clk          : in  std_logic                    := '0'; --   clk.clk
+		hdmi_output_clk  : out std_logic;                           --  hdmi.output_clk
+		hdmi_output_data : out std_logic_vector(2 downto 0);        --      .output_data
+		reset_reset_n    : in  std_logic                    := '0'  -- reset.reset_n
 	);
 end entity PongFPGA;
 
@@ -30,11 +30,11 @@ architecture rtl of PongFPGA is
 		port (
 			clk         : in  std_logic                     := 'X'; -- clk
 			HDMI_clk    : in  std_logic                     := 'X'; -- clk
+			px_x        : out std_logic_vector(12 downto 0);        -- px_x
+			px_y        : out std_logic_vector(12 downto 0);        -- px_y
 			output_clk  : out std_logic;                            -- output_clk
 			output_data : out std_logic_vector(2 downto 0);         -- output_data
-			px_color    : in  std_logic                     := 'X'; -- px_color
-			px_x        : out std_logic_vector(12 downto 0);        -- px_x
-			px_y        : out std_logic_vector(12 downto 0)         -- px_y
+			px_color    : in  std_logic                     := 'X'  -- px_color
 		);
 	end component HDMIDriver;
 
@@ -47,19 +47,19 @@ architecture rtl of PongFPGA is
 		);
 		port (
 			clk      : in  std_logic                     := 'X';             -- clk
-			px_color : out std_logic;                                        -- px_color
 			px_x     : in  std_logic_vector(12 downto 0) := (others => 'X'); -- px_x
-			px_y     : in  std_logic_vector(12 downto 0) := (others => 'X')  -- px_y
+			px_y     : in  std_logic_vector(12 downto 0) := (others => 'X'); -- px_y
+			px_color : out std_logic                                         -- px_color
 		);
 	end component HDMIImageGenerator;
 
-	signal hdmidriver_0_px_address_px_x                         : std_logic_vector(12 downto 0); -- HDMIDriver_0:px_x -> HDMI_IMAGE_GEN_MONO_1b_0:px_x
-	signal hdmidriver_0_px_address_px_y                         : std_logic_vector(12 downto 0); -- HDMIDriver_0:px_y -> HDMI_IMAGE_GEN_MONO_1b_0:px_y
-	signal hdmi_image_gen_mono_1b_0_hdmiimagegenerator_px_color : std_logic;                     -- HDMI_IMAGE_GEN_MONO_1b_0:px_color -> HDMIDriver_0:px_color
+	signal hdmidriver_mono_1b_0_px_address_px_x       : std_logic_vector(12 downto 0); -- HDMIDriver_mono_1b_0:px_x -> HDMI_IMAGE_GEN_MONO_1b_0:px_x
+	signal hdmidriver_mono_1b_0_px_address_px_y       : std_logic_vector(12 downto 0); -- HDMIDriver_mono_1b_0:px_y -> HDMI_IMAGE_GEN_MONO_1b_0:px_y
+	signal hdmi_image_gen_mono_1b_0_px_color_px_color : std_logic;                     -- HDMI_IMAGE_GEN_MONO_1b_0:px_color -> HDMIDriver_mono_1b_0:px_color
 
 begin
 
-	hdmidriver_0 : component HDMIDriver
+	hdmidriver_mono_1b_0 : component HDMIDriver
 		generic map (
 			DISPLAY_RES_WIDTH  => 640,
 			DISPLAY_RES_HEIGHT => 480,
@@ -71,27 +71,27 @@ begin
 			ROW_BACK_PORCH     => 33
 		)
 		port map (
-			clk         => clk_clk,                                              --      clock.clk
-			HDMI_clk    => clk_clk,                                              --   HDMI_clk.clk
-			output_clk  => hdmidriver_hdmi_output_clk,                           --       HDMI.output_clk
-			output_data => hdmidriver_hdmi_output_data,                          --           .output_data
-			px_color    => hdmi_image_gen_mono_1b_0_hdmiimagegenerator_px_color, --   PX_COLOR.px_color
-			px_x        => hdmidriver_0_px_address_px_x,                         -- PX_ADDRESS.px_x
-			px_y        => hdmidriver_0_px_address_px_y                          --           .px_y
+			clk         => clk_clk,                                    --      clock.clk
+			HDMI_clk    => clk_clk,                                    -- clock_hdmi.clk
+			px_x        => hdmidriver_mono_1b_0_px_address_px_x,       -- px_address.px_x
+			px_y        => hdmidriver_mono_1b_0_px_address_px_y,       --           .px_y
+			output_clk  => hdmi_output_clk,                            --       hdmi.output_clk
+			output_data => hdmi_output_data,                           --           .output_data
+			px_color    => hdmi_image_gen_mono_1b_0_px_color_px_color  --   px_color.px_color
 		);
 
 	hdmi_image_gen_mono_1b_0 : component HDMIImageGenerator
 		generic map (
-			X_RES   => 1080,
-			Y_RES   => 1920,
+			X_RES   => 640,
+			Y_RES   => 480,
 			REG_LEN => 200,
 			VEL     => 10
 		)
 		port map (
-			clk      => clk_clk,                                              --              clock.clk
-			px_color => hdmi_image_gen_mono_1b_0_hdmiimagegenerator_px_color, -- HDMIImageGenerator.px_color
-			px_x     => hdmidriver_0_px_address_px_x,                         --         PX_ADDRESS.px_x
-			px_y     => hdmidriver_0_px_address_px_y                          --                   .px_y
+			clk      => clk_clk,                                    --      clock.clk
+			px_x     => hdmidriver_mono_1b_0_px_address_px_x,       -- px_address.px_x
+			px_y     => hdmidriver_mono_1b_0_px_address_px_y,       --           .px_y
+			px_color => hdmi_image_gen_mono_1b_0_px_color_px_color  --   px_color.px_color
 		);
 
 end architecture rtl; -- of PongFPGA

@@ -29,15 +29,15 @@ entity HDMIDriver is
 			HDMI_clk	: in	std_logic; -- 10 times slower than clk
 			
 			-- Output HDMI data
-			output_clk	: out 	std_logic;
-			output_data	: out 	std_logic_vector(2 downto 0);
+			output_clk	: out 	std_logic := '0';
+			output_data	: out 	std_logic_vector(2 downto 0) := (others=>'0');
 			
 			-- Output control data
-			px_x		: out	std_logic_vector(12 downto 0); -- address of the next pixel x coord
-			px_y		: out	std_logic_vector(12 downto 0); -- address of the next pixel y coord
+			px_x		: out	std_logic_vector(12 downto 0) := (others=>'0'); -- address of the next pixel x coord
+			px_y		: out	std_logic_vector(12 downto 0) := (others=>'0'); -- address of the next pixel y coord
 			
 			-- Input color of pixel (1b in this version)
-			px_color	: in	std_logic -- 1- white, 0- black
+			px_color	: in	std_logic := '0'-- 1- white, 0- black
 		);
 end HDMIDriver;
 			
@@ -50,7 +50,7 @@ architecture HDMIDriver_arch of HDMIDriver is
 			vd_en	: in 	std_logic := '0'; 					-- enable (1= display, 0= control data)
 			ctrl	: in 	std_logic_vector(1 downto 0) := (others=>'0'); 	-- control data for synchronization
 			data_in	: in 	std_logic_vector(7 downto 0) := (others=>'0'); 	-- as far as external TDMS is used 8 bit data in
-			data_out: out 	std_logic_vector(9 downto 0)	-- output TDMS(10 bits) data
+			data_out: out 	std_logic_vector(9 downto 0) := (others=>'0')	-- output TDMS(10 bits) data
 		);
 	end component;
 	
@@ -58,7 +58,7 @@ architecture HDMIDriver_arch of HDMIDriver is
 	component LVDS is
 		port(
 			tx_in  : in 	std_logic := '0';
-			tx_out : out 	std_logic
+			tx_out : out 	std_logic := '0'
 		);
 	end component;
 	
@@ -75,31 +75,31 @@ architecture HDMIDriver_arch of HDMIDriver is
 		end record;
 	
 	-- to tell on output which pixel will be next
-	signal px_current_address 	: coords;
-	signal px_data_counter		: counters;
+	signal px_current_address 	: coords   := (x =>0, y=>0);
+	signal px_data_counter		: counters := (x =>0, y=>0);
 	
 	-- other signals needed for hdmi
-	signal is_displaying	: STD_LOGIC;
-	signal h_synch			: STD_LOGIC;
-	signal s_synch			: STD_LOGIC;
+	signal is_displaying	: std_logic := '0';
+	signal h_synch			: std_logic := '0';
+	signal s_synch			: std_logic := '0';
 	
 	-- output for TDMS encryption
-	signal TMDS_RG : STD_LOGIC_VECTOR(9 downto 0);
-	signal TMDS_BS : STD_LOGIC_VECTOR(9 downto 0);
+	signal TMDS_RG : std_logic_vector(9 downto 0) := (others=>'0');
+	signal TMDS_BS : std_logic_vector(9 downto 0) := (others=>'0');
 	
 	-- output for TDMS encryption
-	signal TMDS_RG_Reg : STD_LOGIC_VECTOR(9 downto 0);
-	signal TMDS_BS_Reg : STD_LOGIC_VECTOR(9 downto 0);
+	signal TMDS_RG_Reg : std_logic_vector(9 downto 0) := (others=>'0');
+	signal TMDS_BS_Reg : std_logic_vector(9 downto 0) := (others=>'0');
 	
 	-- counter with information about which register will be passed now to HDMI. Needed in TDMS shift register 
-	signal reg_counter 	: integer range 0 to 9;
+	signal reg_counter 	: integer range 0 to 9 := 0;
 	
 	-- TDMS needs always 8 bits color data
-	signal TDMS_color	: std_logic_vector(7 downto 0);
+	signal TDMS_color	: std_logic_vector(7 downto 0) := (others=>'0');
 
 begin
 
-	HDMI_PX_ADDRESSES: process(clk)
+	HDMI_DATA: process(clk)
 	begin
 		
 		if falling_edge(clk) then
@@ -107,46 +107,47 @@ begin
 			-- Transfer preparation
 			-- Time graph starts from data, then front porch, synchronization, back porch
 			
-			-- pixels addresses
-			-- incrementation only within DISPLAY_RES_WIDTH period, with making overflow at the end
-			if px_data_counter.x = DISPLAY_RES_WIDTH - 1 then
-				--px_current_address.x will overflow now, so increment the y one
-				if px_data_counter.y < DISPLAY_RES_HEIGHT then
-					px_current_address.y <= px_current_address.y + 1;
-				end if;
-			end if;
-			
-			if px_data_counter.x < DISPLAY_RES_WIDTH then
-				px_current_address.x <= px_current_address.x + 1;
-			end if;
-			
-			-- Update counters for next clk
-			if px_data_counter.x = PX_FRONT_PORCH + PX_SYNC_PULSE + PX_BACK_PORCH + DISPLAY_RES_WIDTH - 1 then
-				-- counter.x will overflow in next clock, so increment the y one
-				px_data_counter.y <= px_data_counter.y + 1;
-			end if;
+			-- Pixels addresses update for next clk
+			if px_data_counter.x = PX_FRONT_PORCH + PX_SYNC_PULSE + PX_BACK_PORCH + DISPLAY_RES_WIDTH then
 				
-			-- always increment the counter.x value, when y is prepared
-			px_data_counter.x <= px_data_counter.x + 1;
+				px_data_counter.x <= 0;
+				
+				if px_data_counter.y = ROW_FRONT_PORCH + ROW_SYNC_PULSE + ROW_BACK_PORCH + DISPLAY_RES_HEIGHT then
+					
+					px_data_counter.y <= 0;
+					
+				else
+					
+					px_data_counter.y <= px_data_counter.y + 1;
+					
+				end if;
+			else
+				
+				px_data_counter.x <= px_data_counter.x + 1;
+				
+			end if;
 			
 		end if;
 	end process;
 	
 	-- Passing pixel address to output
-	px_x <= std_logic_vector(to_unsigned(px_current_address.x, px_x'length));
-	px_y <= std_logic_vector(to_unsigned(px_current_address.y, px_y'length));
-			
+	px_x <= std_logic_vector(to_unsigned(px_data_counter.x, px_x'length)) when 
+								px_data_counter.x < DISPLAY_RES_WIDTH else (others=>'0');
+
+	px_y <= std_logic_vector(to_unsigned(px_data_counter.y, px_y'length)) when 
+								px_data_counter.y < DISPLAY_RES_HEIGHT else (others=>'0');
+
 	-- Is displaying info 
 	is_displaying <= '1' when px_data_counter.x < DISPLAY_RES_WIDTH and 
-							px_data_counter.y < DISPLAY_RES_WIDTH else '0';
-		
+							px_data_counter.y < DISPLAY_RES_HEIGHT else '0';
+	
 	-- Synchronization info
 	h_synch <= '1' when px_data_counter.x >= DISPLAY_RES_WIDTH + PX_FRONT_PORCH and
 						px_data_counter.x < DISPLAY_RES_WIDTH + PX_FRONT_PORCH + PX_SYNC_PULSE else '0';
 	
 	s_synch <= '1' when px_data_counter.y >= DISPLAY_RES_HEIGHT + ROW_FRONT_PORCH and
 						px_data_counter.y < DISPLAY_RES_HEIGHT + ROW_FRONT_PORCH + ROW_SYNC_PULSE else '0';
-		
+	
 	-- Encryption with TDMS
 	TDMS_color <= (others=>'1') when px_color = '1' else (others=>'0');
 	
@@ -172,14 +173,14 @@ begin
 		
 		if falling_edge(HDMI_clk) then
 			
-			TMDS_RG_Reg <= '0' & TMDS_RG_Reg(9 downto 1);
-			TMDS_BS_Reg <= '0' & TMDS_BS_Reg(9 downto 1);
-			
-			reg_counter <= reg_counter + 1;
-			
-			if reg_counter = 0 then
+			if reg_counter = 9 then
+				reg_counter <= 0;
 				TMDS_RG_Reg <= TMDS_RG;
 				TMDS_BS_Reg <= TMDS_BS;
+			else
+				reg_counter <= reg_counter + 1;	
+				TMDS_RG_Reg <= '0' & TMDS_RG_Reg(9 downto 1);
+				TMDS_BS_Reg <= '0' & TMDS_BS_Reg(9 downto 1);
 			end if;
 			
 		end if;
