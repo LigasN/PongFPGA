@@ -5,64 +5,74 @@ USE ieee.std_logic_1164.all  ;
 USE ieee.std_logic_textio.all  ; 
 USE ieee.std_logic_unsigned.all  ; 
 USE std.textio.all  ; 
+
+
 ENTITY HDMIDriver_tb  IS 
-  GENERIC (
-    ROW_SYNC_PULSE  : INTEGER   := 2 ;  
-    PX_SYNC_PULSE  : INTEGER   := 96 ;  
-    DISPLAY_RES_WIDTH  : INTEGER   := 640 ;  
-    ROW_BACK_PORCH  : INTEGER   := 33 ;  
-    ROW_FRONT_PORCH  : INTEGER   := 10 ;  
-    PX_BACK_PORCH  : INTEGER   := 48 ;  
-    PX_FRONT_PORCH  : INTEGER   := 16 ;  
-    DISPLAY_RES_HEIGHT  : INTEGER   := 480 ); 
+  GENERIC ( 
+    DISPLAY_RES_WIDTH  : INTEGER   := 6 ;  
+    DISPLAY_RES_HEIGHT : INTEGER   := 4;
+	
+    PX_FRONT_PORCH : INTEGER   := 1 ;
+    PX_SYNC_PULSE  : INTEGER   := 1 ;  
+    PX_BACK_PORCH  : INTEGER   := 1 ;  
+	
+    ROW_FRONT_PORCH : INTEGER   := 1 ; 
+    ROW_SYNC_PULSE  : INTEGER   := 1 ; 
+    ROW_BACK_PORCH  : INTEGER   := 1 ;   
+	
+	FRAMES			: INTEGER := 10;
+	COLOR_LEN		: INTEGER := 2); 
 END ; 
  
 ARCHITECTURE HDMIDriver_tb_arch   OF HDMIDriver_tb  IS
-  SIGNAL px_y   :  std_logic_vector (12 downto 0)  ; 
+  SIGNAL bit_clk   :  STD_LOGIC  ; 
+  SIGNAL px_clk   :  STD_LOGIC  ; 
   SIGNAL px_color   :  STD_LOGIC  ; 
+  SIGNAL px_x   :  std_logic_vector (12 downto 0)  ; 
+  SIGNAL px_y   :  std_logic_vector (12 downto 0)  ; 
   SIGNAL output_data   :  std_logic_vector (2 downto 0)  ; 
   SIGNAL output_clk   :  STD_LOGIC  ; 
-  SIGNAL clk   :  STD_LOGIC  ; 
-  SIGNAL px_x   :  std_logic_vector (12 downto 0)  ; 
-  SIGNAL HDMI_clk   :  STD_LOGIC  ; 
   COMPONENT HDMIDriver  
     GENERIC ( 
-      ROW_SYNC_PULSE  : INTEGER ; 
-      PX_SYNC_PULSE  : INTEGER ; 
-      DISPLAY_RES_WIDTH  : INTEGER ; 
-      ROW_BACK_PORCH  : INTEGER ; 
-      ROW_FRONT_PORCH  : INTEGER ; 
-      PX_BACK_PORCH  : INTEGER ; 
-      PX_FRONT_PORCH  : INTEGER ; 
-      DISPLAY_RES_HEIGHT  : INTEGER  );  
+		DISPLAY_RES_WIDTH	: integer;
+		DISPLAY_RES_HEIGHT	: integer;
+		
+		-- Durations
+		PX_FRONT_PORCH		: integer;
+		PX_SYNC_PULSE		: integer;
+		PX_BACK_PORCH		: integer;
+		ROW_FRONT_PORCH		: integer;
+		ROW_SYNC_PULSE		: integer;
+		ROW_BACK_PORCH		: integer  );  
     PORT ( 
-      px_y  : out std_logic_vector (12 downto 0) ; 
+      bit_clk  : in STD_LOGIC ;  
+      px_clk  : in STD_LOGIC ;
       px_color  : in STD_LOGIC ; 
+      px_x  : out std_logic_vector (12 downto 0) ;
+      px_y  : out std_logic_vector (12 downto 0) ; 
       output_data  : out std_logic_vector (2 downto 0) ; 
-      output_clk  : out STD_LOGIC ; 
-      clk  : in STD_LOGIC ; 
-      px_x  : out std_logic_vector (12 downto 0) ; 
-      HDMI_clk  : in STD_LOGIC ); 
+      output_clk  : out STD_LOGIC ); 
   END COMPONENT ; 
 BEGIN
   DUT  : HDMIDriver  
     GENERIC MAP ( 
-      ROW_SYNC_PULSE  => ROW_SYNC_PULSE  ,
-      PX_SYNC_PULSE  => PX_SYNC_PULSE  ,
       DISPLAY_RES_WIDTH  => DISPLAY_RES_WIDTH  ,
-      ROW_BACK_PORCH  => ROW_BACK_PORCH  ,
-      ROW_FRONT_PORCH  => ROW_FRONT_PORCH  ,
+      DISPLAY_RES_HEIGHT  => DISPLAY_RES_HEIGHT,
+	  
+      PX_FRONT_PORCH  => PX_FRONT_PORCH  , 
+      PX_SYNC_PULSE  => PX_SYNC_PULSE  ,
       PX_BACK_PORCH  => PX_BACK_PORCH  ,
-      PX_FRONT_PORCH  => PX_FRONT_PORCH  ,
-      DISPLAY_RES_HEIGHT  => DISPLAY_RES_HEIGHT   )
+      ROW_FRONT_PORCH  => ROW_FRONT_PORCH  ,
+      ROW_SYNC_PULSE  => ROW_SYNC_PULSE  ,
+      ROW_BACK_PORCH  => ROW_BACK_PORCH   )
     PORT MAP ( 
-      px_y   => px_y  ,
+      bit_clk   => bit_clk , 
+      px_clk   => px_clk  , 
       px_color   => px_color  ,
-      output_data   => output_data  ,
-      output_clk   => output_clk  ,
-      clk   => clk  ,
       px_x   => px_x  ,
-      HDMI_clk   => HDMI_clk   ) ; 
+      px_y   => px_y  ,
+      output_data   => output_data  ,
+      output_clk   => output_clk ) ; 
 
 
 
@@ -70,22 +80,17 @@ BEGIN
 -- Start Time = 0 ns, Period = 4 ns
   Process
 	Begin
-	 clk  <= '0'  ;
+	px_clk  <= '0'  ;
 	wait for 20 ns ;
 -- 2 ns, single loop till start period.
-	for Z in 1 to 325000
+	for Z in 1 to FRAMES*((DISPLAY_RES_WIDTH+PX_FRONT_PORCH+PX_SYNC_PULSE+PX_BACK_PORCH)
+						*DISPLAY_RES_HEIGHT+ROW_FRONT_PORCH+ROW_SYNC_PULSE+ROW_BACK_PORCH)
 	loop
-	    clk  <= '1'  ;
+	    px_clk  <= '1'  ;
 	   wait for 20 ns ;
-	    clk  <= '0'  ;
+	    px_clk  <= '0'  ;
 	   wait for 20 ns ;
--- 10 ns, repeat pattern in loop.
 	end  loop;
-	 clk  <= '1'  ;
-	wait for 20 ns ;
-	 clk  <= '0'  ;
-	wait for 10 ns ;
--- dumped values till 13 ns
 	wait;
  End Process;
 
@@ -94,16 +99,16 @@ BEGIN
 -- Start Time = 0 ns, End Time = 13 ms, Period = 40 ns
   Process
 	Begin
-	 HDMI_clk  <= '0'  ;
+	bit_clk  <= '0'  ;
 	wait for 2 ns ;
 -- 2 ns, single loop till start period.
-	for Z in 1 to 3250000
+	for Z in 1 to FRAMES*((DISPLAY_RES_WIDTH+PX_FRONT_PORCH+PX_SYNC_PULSE+PX_BACK_PORCH)
+						*DISPLAY_RES_HEIGHT+ROW_FRONT_PORCH+ROW_SYNC_PULSE+ROW_BACK_PORCH)*10
 	loop
-	    HDMI_clk  <= '1'  ;
+	    bit_clk  <= '1'  ;
 	   wait for 2 ns ;
-	    HDMI_clk  <= '0'  ;
+	    bit_clk  <= '0'  ;
 	   wait for 2 ns ;
--- 10 ns, repeat pattern in loop.
 	end  loop;
 	wait;
  End Process;
@@ -113,15 +118,15 @@ BEGIN
 -- Start Time = 0 ns, End Time = 13 ms, Period = 800 ns
   Process
 	Begin
-	 px_color  <= '0'  ;
-	wait for 400 ns ;
-	for Z in 1 to 16250
+	px_color  <= '0'  ;
+	wait for COLOR_LEN*40 ns ; --40ns one pixel data duration
+	for Z in 1 to FRAMES*((DISPLAY_RES_WIDTH+PX_FRONT_PORCH+PX_SYNC_PULSE+PX_BACK_PORCH)
+						*DISPLAY_RES_HEIGHT+ROW_FRONT_PORCH+ROW_SYNC_PULSE+ROW_BACK_PORCH)/(2*COLOR_LEN)
 	loop
 	    px_color  <= '1'  ;
-	   wait for 400 ns ;
+	   wait for COLOR_LEN*40 ns ; --40ns one pixel data duration
 	    px_color  <= '0'  ;
-	   wait for 400 ns ;
--- 10 ns, repeat pattern in loop.
+	   wait for COLOR_LEN*40 ns ;
 	end  loop;
 	wait;
  End Process;

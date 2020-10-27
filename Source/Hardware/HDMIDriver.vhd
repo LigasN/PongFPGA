@@ -25,8 +25,8 @@ entity HDMIDriver is
 		);
 	port(
 			-- Input Clocks
-			clk			: in	std_logic;
-			hdmi_clk	: in	std_logic; -- 10 times faster than clk
+			px_clk			: in	std_logic;
+			bit_clk			: in	std_logic; -- 10 times faster than clk
 			
 			-- Output HDMI data
 			output_clk	: out 	std_logic := '0';
@@ -92,20 +92,20 @@ architecture HDMIDriver_arch of HDMIDriver is
 
 begin
 
-	HDMI_DATA: process(clk)
+	HDMI_DATA: process(px_clk)
 	begin
 		
-		if falling_edge(clk) then
+		if falling_edge(px_clk) then
 			
 			-- Transfer preparation
 			-- Time graph starts from data, then front porch, synchronization, back porch
 			
 			-- Pixels addresses update for next clk
-			if px_data_counter.x = PX_FRONT_PORCH + PX_SYNC_PULSE + PX_BACK_PORCH + DISPLAY_RES_WIDTH then
+			if px_data_counter.x = PX_FRONT_PORCH + PX_SYNC_PULSE + PX_BACK_PORCH + DISPLAY_RES_WIDTH - 1 then
 				
 				px_data_counter.x <= 0;
 				
-				if px_data_counter.y = ROW_FRONT_PORCH + ROW_SYNC_PULSE + ROW_BACK_PORCH + DISPLAY_RES_HEIGHT then
+				if px_data_counter.y = ROW_FRONT_PORCH + ROW_SYNC_PULSE + ROW_BACK_PORCH + DISPLAY_RES_HEIGHT - 1 then
 					
 					px_data_counter.y <= 0;
 					
@@ -145,7 +145,7 @@ begin
 	TDMS_color <= (others=>'1') when px_color = '1' else (others=>'0');
 	
 	RG_TMDS: TMDS port map(
-		clk			=> clk,
+		clk			=> px_clk,
 		vd_en		=> is_displaying,
 		ctrl		=> "00",
 		data_in		=> TDMS_color,
@@ -153,18 +153,18 @@ begin
 	);
 	
 	BC_TMDS: TMDS port map(
-		clk			=> clk,
+		clk			=> px_clk,
 		vd_en		=> is_displaying,
-		ctrl		=> s_synch & h_synch, -- encryption clk in blue TDMS
+		ctrl		=> s_synch & h_synch, -- encryption px_clk in blue TDMS
 		data_in		=> TDMS_color,
 		data_out	=> TMDS_BS
 	);
 	
 	-- Data with frequency of HDMI clock passed by shift register
-	TMDS_Shift: process(hdmi_clk)
+	TMDS_Shift: process(bit_clk)
 	begin
 		
-		if falling_edge(hdmi_clk) then
+		if falling_edge(bit_clk) then
 			
 			if reg_counter = 9 then
 				reg_counter <= 0;
@@ -181,7 +181,7 @@ begin
 	
 	-- TMDS to differential sygnals
 	CLK_LVDS: LVDS port map(
-		tx_in		=> clk,
+		tx_in		=> px_clk,
 		tx_out		=> output_clk
 	);
 	
