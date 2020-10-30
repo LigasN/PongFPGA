@@ -8,15 +8,10 @@ use IEEE.numeric_std.all;
 
 entity PongFPGA is
 	port (
-		altpll_0_pll_slave_read      : in  std_logic                     := '0';             -- altpll_0_pll_slave.read
-		altpll_0_pll_slave_write     : in  std_logic                     := '0';             --                   .write
-		altpll_0_pll_slave_address   : in  std_logic_vector(1 downto 0)  := (others => '0'); --                   .address
-		altpll_0_pll_slave_readdata  : out std_logic_vector(31 downto 0);                    --                   .readdata
-		altpll_0_pll_slave_writedata : in  std_logic_vector(31 downto 0) := (others => '0'); --                   .writedata
-		clk_clk                      : in  std_logic                     := '0';             --                clk.clk
-		hdmi_output_clk              : out std_logic;                                        --               hdmi.output_clk
-		hdmi_output_data             : out std_logic_vector(2 downto 0);                     --                   .output_data
-		reset_reset_n                : in  std_logic                     := '0'              --              reset.reset_n
+		clk_clk          : in  std_logic                    := '0'; --   clk.clk
+		hdmi_output_clk  : out std_logic;                           --  hdmi.output_clk
+		hdmi_output_data : out std_logic_vector(2 downto 0);        --      .output_data
+		reset_reset_n    : in  std_logic                    := '0'  -- reset.reset_n
 	);
 end entity PongFPGA;
 
@@ -58,7 +53,38 @@ architecture rtl of PongFPGA is
 		);
 	end component HDMIImageGenerator;
 
-	component PongFPGA_altpll_0 is
+	component PongFPGA_NIOS is
+		port (
+			clk                                 : in  std_logic                     := 'X';             -- clk
+			reset_n                             : in  std_logic                     := 'X';             -- reset_n
+			reset_req                           : in  std_logic                     := 'X';             -- reset_req
+			d_address                           : out std_logic_vector(12 downto 0);                    -- address
+			d_byteenable                        : out std_logic_vector(3 downto 0);                     -- byteenable
+			d_read                              : out std_logic;                                        -- read
+			d_readdata                          : in  std_logic_vector(31 downto 0) := (others => 'X'); -- readdata
+			d_waitrequest                       : in  std_logic                     := 'X';             -- waitrequest
+			d_write                             : out std_logic;                                        -- write
+			d_writedata                         : out std_logic_vector(31 downto 0);                    -- writedata
+			debug_mem_slave_debugaccess_to_roms : out std_logic;                                        -- debugaccess
+			i_address                           : out std_logic_vector(11 downto 0);                    -- address
+			i_read                              : out std_logic;                                        -- read
+			i_readdata                          : in  std_logic_vector(31 downto 0) := (others => 'X'); -- readdata
+			i_waitrequest                       : in  std_logic                     := 'X';             -- waitrequest
+			irq                                 : in  std_logic_vector(31 downto 0) := (others => 'X'); -- irq
+			debug_reset_request                 : out std_logic;                                        -- reset
+			debug_mem_slave_address             : in  std_logic_vector(8 downto 0)  := (others => 'X'); -- address
+			debug_mem_slave_byteenable          : in  std_logic_vector(3 downto 0)  := (others => 'X'); -- byteenable
+			debug_mem_slave_debugaccess         : in  std_logic                     := 'X';             -- debugaccess
+			debug_mem_slave_read                : in  std_logic                     := 'X';             -- read
+			debug_mem_slave_readdata            : out std_logic_vector(31 downto 0);                    -- readdata
+			debug_mem_slave_waitrequest         : out std_logic;                                        -- waitrequest
+			debug_mem_slave_write               : in  std_logic                     := 'X';             -- write
+			debug_mem_slave_writedata           : in  std_logic_vector(31 downto 0) := (others => 'X'); -- writedata
+			dummy_ci_port                       : out std_logic                                         -- readra
+		);
+	end component PongFPGA_NIOS;
+
+	component PongFPGA_PLL is
 		port (
 			clk                : in  std_logic                     := 'X';             -- clk
 			reset              : in  std_logic                     := 'X';             -- reset
@@ -69,9 +95,9 @@ architecture rtl of PongFPGA is
 			writedata          : in  std_logic_vector(31 downto 0) := (others => 'X'); -- writedata
 			c0                 : out std_logic;                                        -- clk
 			c1                 : out std_logic;                                        -- clk
+			c2                 : out std_logic;                                        -- clk
 			scandone           : out std_logic;                                        -- export
 			scandataout        : out std_logic;                                        -- export
-			c2                 : out std_logic;                                        -- clk
 			c3                 : out std_logic;                                        -- clk
 			c4                 : out std_logic;                                        -- clk
 			areset             : in  std_logic                     := 'X';             -- export
@@ -85,9 +111,51 @@ architecture rtl of PongFPGA is
 			scandata           : in  std_logic                     := 'X';             -- export
 			configupdate       : in  std_logic                     := 'X'              -- export
 		);
-	end component PongFPGA_altpll_0;
+	end component PongFPGA_PLL;
 
-	component altera_reset_controller is
+	component PongFPGA_mm_interconnect_0 is
+		port (
+			CLK_clk_clk                                           : in  std_logic                     := 'X';             -- clk
+			PLL_c0_clk                                            : in  std_logic                     := 'X';             -- clk
+			NIOS_reset_reset_bridge_in_reset_reset                : in  std_logic                     := 'X';             -- reset
+			PLL_inclk_interface_reset_reset_bridge_in_reset_reset : in  std_logic                     := 'X';             -- reset
+			NIOS_data_master_address                              : in  std_logic_vector(12 downto 0) := (others => 'X'); -- address
+			NIOS_data_master_waitrequest                          : out std_logic;                                        -- waitrequest
+			NIOS_data_master_byteenable                           : in  std_logic_vector(3 downto 0)  := (others => 'X'); -- byteenable
+			NIOS_data_master_read                                 : in  std_logic                     := 'X';             -- read
+			NIOS_data_master_readdata                             : out std_logic_vector(31 downto 0);                    -- readdata
+			NIOS_data_master_write                                : in  std_logic                     := 'X';             -- write
+			NIOS_data_master_writedata                            : in  std_logic_vector(31 downto 0) := (others => 'X'); -- writedata
+			NIOS_data_master_debugaccess                          : in  std_logic                     := 'X';             -- debugaccess
+			NIOS_instruction_master_address                       : in  std_logic_vector(11 downto 0) := (others => 'X'); -- address
+			NIOS_instruction_master_waitrequest                   : out std_logic;                                        -- waitrequest
+			NIOS_instruction_master_read                          : in  std_logic                     := 'X';             -- read
+			NIOS_instruction_master_readdata                      : out std_logic_vector(31 downto 0);                    -- readdata
+			NIOS_debug_mem_slave_address                          : out std_logic_vector(8 downto 0);                     -- address
+			NIOS_debug_mem_slave_write                            : out std_logic;                                        -- write
+			NIOS_debug_mem_slave_read                             : out std_logic;                                        -- read
+			NIOS_debug_mem_slave_readdata                         : in  std_logic_vector(31 downto 0) := (others => 'X'); -- readdata
+			NIOS_debug_mem_slave_writedata                        : out std_logic_vector(31 downto 0);                    -- writedata
+			NIOS_debug_mem_slave_byteenable                       : out std_logic_vector(3 downto 0);                     -- byteenable
+			NIOS_debug_mem_slave_waitrequest                      : in  std_logic                     := 'X';             -- waitrequest
+			NIOS_debug_mem_slave_debugaccess                      : out std_logic;                                        -- debugaccess
+			PLL_pll_slave_address                                 : out std_logic_vector(1 downto 0);                     -- address
+			PLL_pll_slave_write                                   : out std_logic;                                        -- write
+			PLL_pll_slave_read                                    : out std_logic;                                        -- read
+			PLL_pll_slave_readdata                                : in  std_logic_vector(31 downto 0) := (others => 'X'); -- readdata
+			PLL_pll_slave_writedata                               : out std_logic_vector(31 downto 0)                     -- writedata
+		);
+	end component PongFPGA_mm_interconnect_0;
+
+	component PongFPGA_irq_mapper is
+		port (
+			clk        : in  std_logic                     := 'X'; -- clk
+			reset      : in  std_logic                     := 'X'; -- reset
+			sender_irq : out std_logic_vector(31 downto 0)         -- irq
+		);
+	end component PongFPGA_irq_mapper;
+
+	component pongfpga_rst_controller is
 		generic (
 			NUM_RESET_INPUTS          : integer := 6;
 			OUTPUT_RESET_SYNC_EDGES   : string  := "deassert";
@@ -115,51 +183,147 @@ architecture rtl of PongFPGA is
 			ADAPT_RESET_REQUEST       : integer := 0
 		);
 		port (
-			reset_in0      : in  std_logic := 'X'; -- reset
-			clk            : in  std_logic := 'X'; -- clk
-			reset_out      : out std_logic;        -- reset
-			reset_req      : out std_logic;        -- reset_req
-			reset_req_in0  : in  std_logic := 'X'; -- reset_req
-			reset_in1      : in  std_logic := 'X'; -- reset
-			reset_req_in1  : in  std_logic := 'X'; -- reset_req
-			reset_in2      : in  std_logic := 'X'; -- reset
-			reset_req_in2  : in  std_logic := 'X'; -- reset_req
-			reset_in3      : in  std_logic := 'X'; -- reset
-			reset_req_in3  : in  std_logic := 'X'; -- reset_req
-			reset_in4      : in  std_logic := 'X'; -- reset
-			reset_req_in4  : in  std_logic := 'X'; -- reset_req
-			reset_in5      : in  std_logic := 'X'; -- reset
-			reset_req_in5  : in  std_logic := 'X'; -- reset_req
-			reset_in6      : in  std_logic := 'X'; -- reset
-			reset_req_in6  : in  std_logic := 'X'; -- reset_req
-			reset_in7      : in  std_logic := 'X'; -- reset
-			reset_req_in7  : in  std_logic := 'X'; -- reset_req
-			reset_in8      : in  std_logic := 'X'; -- reset
-			reset_req_in8  : in  std_logic := 'X'; -- reset_req
-			reset_in9      : in  std_logic := 'X'; -- reset
-			reset_req_in9  : in  std_logic := 'X'; -- reset_req
-			reset_in10     : in  std_logic := 'X'; -- reset
-			reset_req_in10 : in  std_logic := 'X'; -- reset_req
-			reset_in11     : in  std_logic := 'X'; -- reset
-			reset_req_in11 : in  std_logic := 'X'; -- reset_req
-			reset_in12     : in  std_logic := 'X'; -- reset
-			reset_req_in12 : in  std_logic := 'X'; -- reset_req
-			reset_in13     : in  std_logic := 'X'; -- reset
-			reset_req_in13 : in  std_logic := 'X'; -- reset_req
-			reset_in14     : in  std_logic := 'X'; -- reset
-			reset_req_in14 : in  std_logic := 'X'; -- reset_req
-			reset_in15     : in  std_logic := 'X'; -- reset
-			reset_req_in15 : in  std_logic := 'X'  -- reset_req
+			reset_in0      : in  std_logic := 'X'; -- reset_in0.reset
+			clk            : in  std_logic := 'X'; --       clk.clk
+			reset_out      : out std_logic;        -- reset_out.reset
+			reset_req      : out std_logic;        --          .reset_req
+			reset_in1      : in  std_logic := 'X';
+			reset_in10     : in  std_logic := 'X';
+			reset_in11     : in  std_logic := 'X';
+			reset_in12     : in  std_logic := 'X';
+			reset_in13     : in  std_logic := 'X';
+			reset_in14     : in  std_logic := 'X';
+			reset_in15     : in  std_logic := 'X';
+			reset_in2      : in  std_logic := 'X';
+			reset_in3      : in  std_logic := 'X';
+			reset_in4      : in  std_logic := 'X';
+			reset_in5      : in  std_logic := 'X';
+			reset_in6      : in  std_logic := 'X';
+			reset_in7      : in  std_logic := 'X';
+			reset_in8      : in  std_logic := 'X';
+			reset_in9      : in  std_logic := 'X';
+			reset_req_in0  : in  std_logic := 'X';
+			reset_req_in1  : in  std_logic := 'X';
+			reset_req_in10 : in  std_logic := 'X';
+			reset_req_in11 : in  std_logic := 'X';
+			reset_req_in12 : in  std_logic := 'X';
+			reset_req_in13 : in  std_logic := 'X';
+			reset_req_in14 : in  std_logic := 'X';
+			reset_req_in15 : in  std_logic := 'X';
+			reset_req_in2  : in  std_logic := 'X';
+			reset_req_in3  : in  std_logic := 'X';
+			reset_req_in4  : in  std_logic := 'X';
+			reset_req_in5  : in  std_logic := 'X';
+			reset_req_in6  : in  std_logic := 'X';
+			reset_req_in7  : in  std_logic := 'X';
+			reset_req_in8  : in  std_logic := 'X';
+			reset_req_in9  : in  std_logic := 'X'
 		);
-	end component altera_reset_controller;
+	end component pongfpga_rst_controller;
 
-	signal altpll_0_c0_clk                            : std_logic;                     -- altpll_0:c0 -> HDMIDriver_mono_1b_0:bit_clk
-	signal altpll_0_c1_clk                            : std_logic;                     -- altpll_0:c1 -> [HDMIDriver_mono_1b_0:px_clk, HDMI_IMAGE_GEN_MONO_1b_0:clk]
-	signal hdmidriver_mono_1b_0_px_address_px_x       : std_logic_vector(12 downto 0); -- HDMIDriver_mono_1b_0:px_x -> HDMI_IMAGE_GEN_MONO_1b_0:px_x
-	signal hdmidriver_mono_1b_0_px_address_px_y       : std_logic_vector(12 downto 0); -- HDMIDriver_mono_1b_0:px_y -> HDMI_IMAGE_GEN_MONO_1b_0:px_y
-	signal hdmi_image_gen_mono_1b_0_px_color_px_color : std_logic;                     -- HDMI_IMAGE_GEN_MONO_1b_0:px_color -> HDMIDriver_mono_1b_0:px_color
-	signal rst_controller_reset_out_reset             : std_logic;                     -- rst_controller:reset_out -> altpll_0:reset
-	signal reset_reset_n_ports_inv                    : std_logic;                     -- reset_reset_n:inv -> rst_controller:reset_in0
+	component pongfpga_rst_controller_001 is
+		generic (
+			NUM_RESET_INPUTS          : integer := 6;
+			OUTPUT_RESET_SYNC_EDGES   : string  := "deassert";
+			SYNC_DEPTH                : integer := 2;
+			RESET_REQUEST_PRESENT     : integer := 0;
+			RESET_REQ_WAIT_TIME       : integer := 1;
+			MIN_RST_ASSERTION_TIME    : integer := 3;
+			RESET_REQ_EARLY_DSRT_TIME : integer := 1;
+			USE_RESET_REQUEST_IN0     : integer := 0;
+			USE_RESET_REQUEST_IN1     : integer := 0;
+			USE_RESET_REQUEST_IN2     : integer := 0;
+			USE_RESET_REQUEST_IN3     : integer := 0;
+			USE_RESET_REQUEST_IN4     : integer := 0;
+			USE_RESET_REQUEST_IN5     : integer := 0;
+			USE_RESET_REQUEST_IN6     : integer := 0;
+			USE_RESET_REQUEST_IN7     : integer := 0;
+			USE_RESET_REQUEST_IN8     : integer := 0;
+			USE_RESET_REQUEST_IN9     : integer := 0;
+			USE_RESET_REQUEST_IN10    : integer := 0;
+			USE_RESET_REQUEST_IN11    : integer := 0;
+			USE_RESET_REQUEST_IN12    : integer := 0;
+			USE_RESET_REQUEST_IN13    : integer := 0;
+			USE_RESET_REQUEST_IN14    : integer := 0;
+			USE_RESET_REQUEST_IN15    : integer := 0;
+			ADAPT_RESET_REQUEST       : integer := 0
+		);
+		port (
+			reset_in0      : in  std_logic := 'X'; -- reset_in0.reset
+			clk            : in  std_logic := 'X'; --       clk.clk
+			reset_out      : out std_logic;        -- reset_out.reset
+			reset_in1      : in  std_logic := 'X';
+			reset_in10     : in  std_logic := 'X';
+			reset_in11     : in  std_logic := 'X';
+			reset_in12     : in  std_logic := 'X';
+			reset_in13     : in  std_logic := 'X';
+			reset_in14     : in  std_logic := 'X';
+			reset_in15     : in  std_logic := 'X';
+			reset_in2      : in  std_logic := 'X';
+			reset_in3      : in  std_logic := 'X';
+			reset_in4      : in  std_logic := 'X';
+			reset_in5      : in  std_logic := 'X';
+			reset_in6      : in  std_logic := 'X';
+			reset_in7      : in  std_logic := 'X';
+			reset_in8      : in  std_logic := 'X';
+			reset_in9      : in  std_logic := 'X';
+			reset_req      : out std_logic;
+			reset_req_in0  : in  std_logic := 'X';
+			reset_req_in1  : in  std_logic := 'X';
+			reset_req_in10 : in  std_logic := 'X';
+			reset_req_in11 : in  std_logic := 'X';
+			reset_req_in12 : in  std_logic := 'X';
+			reset_req_in13 : in  std_logic := 'X';
+			reset_req_in14 : in  std_logic := 'X';
+			reset_req_in15 : in  std_logic := 'X';
+			reset_req_in2  : in  std_logic := 'X';
+			reset_req_in3  : in  std_logic := 'X';
+			reset_req_in4  : in  std_logic := 'X';
+			reset_req_in5  : in  std_logic := 'X';
+			reset_req_in6  : in  std_logic := 'X';
+			reset_req_in7  : in  std_logic := 'X';
+			reset_req_in8  : in  std_logic := 'X';
+			reset_req_in9  : in  std_logic := 'X'
+		);
+	end component pongfpga_rst_controller_001;
+
+	signal pll_c0_clk                                         : std_logic;                     -- PLL:c0 -> [NIOS:clk, irq_mapper:clk, mm_interconnect_0:PLL_c0_clk, rst_controller:clk]
+	signal pll_c1_clk                                         : std_logic;                     -- PLL:c1 -> [HDMIDriver_mono_1b_0:px_clk, HDMI_IMAGE_GEN_MONO_1b_0:clk]
+	signal pll_c2_clk                                         : std_logic;                     -- PLL:c2 -> HDMIDriver_mono_1b_0:bit_clk
+	signal hdmidriver_mono_1b_0_px_address_px_x               : std_logic_vector(12 downto 0); -- HDMIDriver_mono_1b_0:px_x -> HDMI_IMAGE_GEN_MONO_1b_0:px_x
+	signal hdmidriver_mono_1b_0_px_address_px_y               : std_logic_vector(12 downto 0); -- HDMIDriver_mono_1b_0:px_y -> HDMI_IMAGE_GEN_MONO_1b_0:px_y
+	signal hdmi_image_gen_mono_1b_0_px_color_px_color         : std_logic;                     -- HDMI_IMAGE_GEN_MONO_1b_0:px_color -> HDMIDriver_mono_1b_0:px_color
+	signal nios_data_master_readdata                          : std_logic_vector(31 downto 0); -- mm_interconnect_0:NIOS_data_master_readdata -> NIOS:d_readdata
+	signal nios_data_master_waitrequest                       : std_logic;                     -- mm_interconnect_0:NIOS_data_master_waitrequest -> NIOS:d_waitrequest
+	signal nios_data_master_debugaccess                       : std_logic;                     -- NIOS:debug_mem_slave_debugaccess_to_roms -> mm_interconnect_0:NIOS_data_master_debugaccess
+	signal nios_data_master_address                           : std_logic_vector(12 downto 0); -- NIOS:d_address -> mm_interconnect_0:NIOS_data_master_address
+	signal nios_data_master_byteenable                        : std_logic_vector(3 downto 0);  -- NIOS:d_byteenable -> mm_interconnect_0:NIOS_data_master_byteenable
+	signal nios_data_master_read                              : std_logic;                     -- NIOS:d_read -> mm_interconnect_0:NIOS_data_master_read
+	signal nios_data_master_write                             : std_logic;                     -- NIOS:d_write -> mm_interconnect_0:NIOS_data_master_write
+	signal nios_data_master_writedata                         : std_logic_vector(31 downto 0); -- NIOS:d_writedata -> mm_interconnect_0:NIOS_data_master_writedata
+	signal nios_instruction_master_readdata                   : std_logic_vector(31 downto 0); -- mm_interconnect_0:NIOS_instruction_master_readdata -> NIOS:i_readdata
+	signal nios_instruction_master_waitrequest                : std_logic;                     -- mm_interconnect_0:NIOS_instruction_master_waitrequest -> NIOS:i_waitrequest
+	signal nios_instruction_master_address                    : std_logic_vector(11 downto 0); -- NIOS:i_address -> mm_interconnect_0:NIOS_instruction_master_address
+	signal nios_instruction_master_read                       : std_logic;                     -- NIOS:i_read -> mm_interconnect_0:NIOS_instruction_master_read
+	signal mm_interconnect_0_nios_debug_mem_slave_readdata    : std_logic_vector(31 downto 0); -- NIOS:debug_mem_slave_readdata -> mm_interconnect_0:NIOS_debug_mem_slave_readdata
+	signal mm_interconnect_0_nios_debug_mem_slave_waitrequest : std_logic;                     -- NIOS:debug_mem_slave_waitrequest -> mm_interconnect_0:NIOS_debug_mem_slave_waitrequest
+	signal mm_interconnect_0_nios_debug_mem_slave_debugaccess : std_logic;                     -- mm_interconnect_0:NIOS_debug_mem_slave_debugaccess -> NIOS:debug_mem_slave_debugaccess
+	signal mm_interconnect_0_nios_debug_mem_slave_address     : std_logic_vector(8 downto 0);  -- mm_interconnect_0:NIOS_debug_mem_slave_address -> NIOS:debug_mem_slave_address
+	signal mm_interconnect_0_nios_debug_mem_slave_read        : std_logic;                     -- mm_interconnect_0:NIOS_debug_mem_slave_read -> NIOS:debug_mem_slave_read
+	signal mm_interconnect_0_nios_debug_mem_slave_byteenable  : std_logic_vector(3 downto 0);  -- mm_interconnect_0:NIOS_debug_mem_slave_byteenable -> NIOS:debug_mem_slave_byteenable
+	signal mm_interconnect_0_nios_debug_mem_slave_write       : std_logic;                     -- mm_interconnect_0:NIOS_debug_mem_slave_write -> NIOS:debug_mem_slave_write
+	signal mm_interconnect_0_nios_debug_mem_slave_writedata   : std_logic_vector(31 downto 0); -- mm_interconnect_0:NIOS_debug_mem_slave_writedata -> NIOS:debug_mem_slave_writedata
+	signal mm_interconnect_0_pll_pll_slave_readdata           : std_logic_vector(31 downto 0); -- PLL:readdata -> mm_interconnect_0:PLL_pll_slave_readdata
+	signal mm_interconnect_0_pll_pll_slave_address            : std_logic_vector(1 downto 0);  -- mm_interconnect_0:PLL_pll_slave_address -> PLL:address
+	signal mm_interconnect_0_pll_pll_slave_read               : std_logic;                     -- mm_interconnect_0:PLL_pll_slave_read -> PLL:read
+	signal mm_interconnect_0_pll_pll_slave_write              : std_logic;                     -- mm_interconnect_0:PLL_pll_slave_write -> PLL:write
+	signal mm_interconnect_0_pll_pll_slave_writedata          : std_logic_vector(31 downto 0); -- mm_interconnect_0:PLL_pll_slave_writedata -> PLL:writedata
+	signal nios_irq_irq                                       : std_logic_vector(31 downto 0); -- irq_mapper:sender_irq -> NIOS:irq
+	signal rst_controller_reset_out_reset                     : std_logic;                     -- rst_controller:reset_out -> [irq_mapper:reset, mm_interconnect_0:NIOS_reset_reset_bridge_in_reset_reset, rst_controller_reset_out_reset:in]
+	signal rst_controller_reset_out_reset_req                 : std_logic;                     -- rst_controller:reset_req -> [NIOS:reset_req, rst_translator:reset_req_in]
+	signal rst_controller_001_reset_out_reset                 : std_logic;                     -- rst_controller_001:reset_out -> [PLL:reset, mm_interconnect_0:PLL_inclk_interface_reset_reset_bridge_in_reset_reset]
+	signal reset_reset_n_ports_inv                            : std_logic;                     -- reset_reset_n:inv -> [rst_controller:reset_in0, rst_controller_001:reset_in0]
+	signal rst_controller_reset_out_reset_ports_inv           : std_logic;                     -- rst_controller_reset_out_reset:inv -> NIOS:reset_n
 
 begin
 
@@ -175,11 +339,11 @@ begin
 			ROW_BACK_PORCH     => 33
 		)
 		port map (
-			px_clk      => altpll_0_c1_clk,                            --      clock.clk
+			px_clk      => pll_c1_clk,                                 --      clock.clk
 			px_x        => hdmidriver_mono_1b_0_px_address_px_x,       -- px_address.px_x
 			px_y        => hdmidriver_mono_1b_0_px_address_px_y,       --           .px_y
 			px_color    => hdmi_image_gen_mono_1b_0_px_color_px_color, --   px_color.px_color
-			bit_clk     => altpll_0_c0_clk,                            --    bit_clk.clk
+			bit_clk     => pll_c2_clk,                                 --    bit_clk.clk
 			output_clk  => hdmi_output_clk,                            --       hdmi.output_clk
 			output_data => hdmi_output_data                            --           .output_data
 		);
@@ -192,41 +356,176 @@ begin
 			VEL     => 25
 		)
 		port map (
-			clk      => altpll_0_c1_clk,                            --      clock.clk
+			clk      => pll_c1_clk,                                 --      clock.clk
 			px_x     => hdmidriver_mono_1b_0_px_address_px_x,       -- px_address.px_x
 			px_y     => hdmidriver_mono_1b_0_px_address_px_y,       --           .px_y
 			px_color => hdmi_image_gen_mono_1b_0_px_color_px_color  --   px_color.px_color
 		);
 
-	altpll_0 : component PongFPGA_altpll_0
+	nios : component PongFPGA_NIOS
 		port map (
-			clk                => clk_clk,                        --       inclk_interface.clk
-			reset              => rst_controller_reset_out_reset, -- inclk_interface_reset.reset
-			read               => altpll_0_pll_slave_read,        --             pll_slave.read
-			write              => altpll_0_pll_slave_write,       --                      .write
-			address            => altpll_0_pll_slave_address,     --                      .address
-			readdata           => altpll_0_pll_slave_readdata,    --                      .readdata
-			writedata          => altpll_0_pll_slave_writedata,   --                      .writedata
-			c0                 => altpll_0_c0_clk,                --                    c0.clk
-			c1                 => altpll_0_c1_clk,                --                    c1.clk
-			scandone           => open,                           --           (terminated)
-			scandataout        => open,                           --           (terminated)
-			c2                 => open,                           --           (terminated)
-			c3                 => open,                           --           (terminated)
-			c4                 => open,                           --           (terminated)
-			areset             => '0',                            --           (terminated)
-			locked             => open,                           --           (terminated)
-			phasedone          => open,                           --           (terminated)
-			phasecounterselect => "000",                          --           (terminated)
-			phaseupdown        => '0',                            --           (terminated)
-			phasestep          => '0',                            --           (terminated)
-			scanclk            => '0',                            --           (terminated)
-			scanclkena         => '0',                            --           (terminated)
-			scandata           => '0',                            --           (terminated)
-			configupdate       => '0'                             --           (terminated)
+			clk                                 => pll_c0_clk,                                         --                       clk.clk
+			reset_n                             => rst_controller_reset_out_reset_ports_inv,           --                     reset.reset_n
+			reset_req                           => rst_controller_reset_out_reset_req,                 --                          .reset_req
+			d_address                           => nios_data_master_address,                           --               data_master.address
+			d_byteenable                        => nios_data_master_byteenable,                        --                          .byteenable
+			d_read                              => nios_data_master_read,                              --                          .read
+			d_readdata                          => nios_data_master_readdata,                          --                          .readdata
+			d_waitrequest                       => nios_data_master_waitrequest,                       --                          .waitrequest
+			d_write                             => nios_data_master_write,                             --                          .write
+			d_writedata                         => nios_data_master_writedata,                         --                          .writedata
+			debug_mem_slave_debugaccess_to_roms => nios_data_master_debugaccess,                       --                          .debugaccess
+			i_address                           => nios_instruction_master_address,                    --        instruction_master.address
+			i_read                              => nios_instruction_master_read,                       --                          .read
+			i_readdata                          => nios_instruction_master_readdata,                   --                          .readdata
+			i_waitrequest                       => nios_instruction_master_waitrequest,                --                          .waitrequest
+			irq                                 => nios_irq_irq,                                       --                       irq.irq
+			debug_reset_request                 => open,                                               --       debug_reset_request.reset
+			debug_mem_slave_address             => mm_interconnect_0_nios_debug_mem_slave_address,     --           debug_mem_slave.address
+			debug_mem_slave_byteenable          => mm_interconnect_0_nios_debug_mem_slave_byteenable,  --                          .byteenable
+			debug_mem_slave_debugaccess         => mm_interconnect_0_nios_debug_mem_slave_debugaccess, --                          .debugaccess
+			debug_mem_slave_read                => mm_interconnect_0_nios_debug_mem_slave_read,        --                          .read
+			debug_mem_slave_readdata            => mm_interconnect_0_nios_debug_mem_slave_readdata,    --                          .readdata
+			debug_mem_slave_waitrequest         => mm_interconnect_0_nios_debug_mem_slave_waitrequest, --                          .waitrequest
+			debug_mem_slave_write               => mm_interconnect_0_nios_debug_mem_slave_write,       --                          .write
+			debug_mem_slave_writedata           => mm_interconnect_0_nios_debug_mem_slave_writedata,   --                          .writedata
+			dummy_ci_port                       => open                                                -- custom_instruction_master.readra
 		);
 
-	rst_controller : component altera_reset_controller
+	pll : component PongFPGA_PLL
+		port map (
+			clk                => clk_clk,                                   --       inclk_interface.clk
+			reset              => rst_controller_001_reset_out_reset,        -- inclk_interface_reset.reset
+			read               => mm_interconnect_0_pll_pll_slave_read,      --             pll_slave.read
+			write              => mm_interconnect_0_pll_pll_slave_write,     --                      .write
+			address            => mm_interconnect_0_pll_pll_slave_address,   --                      .address
+			readdata           => mm_interconnect_0_pll_pll_slave_readdata,  --                      .readdata
+			writedata          => mm_interconnect_0_pll_pll_slave_writedata, --                      .writedata
+			c0                 => pll_c0_clk,                                --                    c0.clk
+			c1                 => pll_c1_clk,                                --                    c1.clk
+			c2                 => pll_c2_clk,                                --                    c2.clk
+			scandone           => open,                                      --           (terminated)
+			scandataout        => open,                                      --           (terminated)
+			c3                 => open,                                      --           (terminated)
+			c4                 => open,                                      --           (terminated)
+			areset             => '0',                                       --           (terminated)
+			locked             => open,                                      --           (terminated)
+			phasedone          => open,                                      --           (terminated)
+			phasecounterselect => "000",                                     --           (terminated)
+			phaseupdown        => '0',                                       --           (terminated)
+			phasestep          => '0',                                       --           (terminated)
+			scanclk            => '0',                                       --           (terminated)
+			scanclkena         => '0',                                       --           (terminated)
+			scandata           => '0',                                       --           (terminated)
+			configupdate       => '0'                                        --           (terminated)
+		);
+
+	mm_interconnect_0 : component PongFPGA_mm_interconnect_0
+		port map (
+			CLK_clk_clk                                           => clk_clk,                                            --                                         CLK_clk.clk
+			PLL_c0_clk                                            => pll_c0_clk,                                         --                                          PLL_c0.clk
+			NIOS_reset_reset_bridge_in_reset_reset                => rst_controller_reset_out_reset,                     --                NIOS_reset_reset_bridge_in_reset.reset
+			PLL_inclk_interface_reset_reset_bridge_in_reset_reset => rst_controller_001_reset_out_reset,                 -- PLL_inclk_interface_reset_reset_bridge_in_reset.reset
+			NIOS_data_master_address                              => nios_data_master_address,                           --                                NIOS_data_master.address
+			NIOS_data_master_waitrequest                          => nios_data_master_waitrequest,                       --                                                .waitrequest
+			NIOS_data_master_byteenable                           => nios_data_master_byteenable,                        --                                                .byteenable
+			NIOS_data_master_read                                 => nios_data_master_read,                              --                                                .read
+			NIOS_data_master_readdata                             => nios_data_master_readdata,                          --                                                .readdata
+			NIOS_data_master_write                                => nios_data_master_write,                             --                                                .write
+			NIOS_data_master_writedata                            => nios_data_master_writedata,                         --                                                .writedata
+			NIOS_data_master_debugaccess                          => nios_data_master_debugaccess,                       --                                                .debugaccess
+			NIOS_instruction_master_address                       => nios_instruction_master_address,                    --                         NIOS_instruction_master.address
+			NIOS_instruction_master_waitrequest                   => nios_instruction_master_waitrequest,                --                                                .waitrequest
+			NIOS_instruction_master_read                          => nios_instruction_master_read,                       --                                                .read
+			NIOS_instruction_master_readdata                      => nios_instruction_master_readdata,                   --                                                .readdata
+			NIOS_debug_mem_slave_address                          => mm_interconnect_0_nios_debug_mem_slave_address,     --                            NIOS_debug_mem_slave.address
+			NIOS_debug_mem_slave_write                            => mm_interconnect_0_nios_debug_mem_slave_write,       --                                                .write
+			NIOS_debug_mem_slave_read                             => mm_interconnect_0_nios_debug_mem_slave_read,        --                                                .read
+			NIOS_debug_mem_slave_readdata                         => mm_interconnect_0_nios_debug_mem_slave_readdata,    --                                                .readdata
+			NIOS_debug_mem_slave_writedata                        => mm_interconnect_0_nios_debug_mem_slave_writedata,   --                                                .writedata
+			NIOS_debug_mem_slave_byteenable                       => mm_interconnect_0_nios_debug_mem_slave_byteenable,  --                                                .byteenable
+			NIOS_debug_mem_slave_waitrequest                      => mm_interconnect_0_nios_debug_mem_slave_waitrequest, --                                                .waitrequest
+			NIOS_debug_mem_slave_debugaccess                      => mm_interconnect_0_nios_debug_mem_slave_debugaccess, --                                                .debugaccess
+			PLL_pll_slave_address                                 => mm_interconnect_0_pll_pll_slave_address,            --                                   PLL_pll_slave.address
+			PLL_pll_slave_write                                   => mm_interconnect_0_pll_pll_slave_write,              --                                                .write
+			PLL_pll_slave_read                                    => mm_interconnect_0_pll_pll_slave_read,               --                                                .read
+			PLL_pll_slave_readdata                                => mm_interconnect_0_pll_pll_slave_readdata,           --                                                .readdata
+			PLL_pll_slave_writedata                               => mm_interconnect_0_pll_pll_slave_writedata           --                                                .writedata
+		);
+
+	irq_mapper : component PongFPGA_irq_mapper
+		port map (
+			clk        => pll_c0_clk,                     --       clk.clk
+			reset      => rst_controller_reset_out_reset, -- clk_reset.reset
+			sender_irq => nios_irq_irq                    --    sender.irq
+		);
+
+	rst_controller : component pongfpga_rst_controller
+		generic map (
+			NUM_RESET_INPUTS          => 1,
+			OUTPUT_RESET_SYNC_EDGES   => "deassert",
+			SYNC_DEPTH                => 2,
+			RESET_REQUEST_PRESENT     => 1,
+			RESET_REQ_WAIT_TIME       => 1,
+			MIN_RST_ASSERTION_TIME    => 3,
+			RESET_REQ_EARLY_DSRT_TIME => 1,
+			USE_RESET_REQUEST_IN0     => 0,
+			USE_RESET_REQUEST_IN1     => 0,
+			USE_RESET_REQUEST_IN2     => 0,
+			USE_RESET_REQUEST_IN3     => 0,
+			USE_RESET_REQUEST_IN4     => 0,
+			USE_RESET_REQUEST_IN5     => 0,
+			USE_RESET_REQUEST_IN6     => 0,
+			USE_RESET_REQUEST_IN7     => 0,
+			USE_RESET_REQUEST_IN8     => 0,
+			USE_RESET_REQUEST_IN9     => 0,
+			USE_RESET_REQUEST_IN10    => 0,
+			USE_RESET_REQUEST_IN11    => 0,
+			USE_RESET_REQUEST_IN12    => 0,
+			USE_RESET_REQUEST_IN13    => 0,
+			USE_RESET_REQUEST_IN14    => 0,
+			USE_RESET_REQUEST_IN15    => 0,
+			ADAPT_RESET_REQUEST       => 0
+		)
+		port map (
+			reset_in0      => reset_reset_n_ports_inv,            -- reset_in0.reset
+			clk            => pll_c0_clk,                         --       clk.clk
+			reset_out      => rst_controller_reset_out_reset,     -- reset_out.reset
+			reset_req      => rst_controller_reset_out_reset_req, --          .reset_req
+			reset_req_in0  => '0',                                -- (terminated)
+			reset_in1      => '0',                                -- (terminated)
+			reset_req_in1  => '0',                                -- (terminated)
+			reset_in2      => '0',                                -- (terminated)
+			reset_req_in2  => '0',                                -- (terminated)
+			reset_in3      => '0',                                -- (terminated)
+			reset_req_in3  => '0',                                -- (terminated)
+			reset_in4      => '0',                                -- (terminated)
+			reset_req_in4  => '0',                                -- (terminated)
+			reset_in5      => '0',                                -- (terminated)
+			reset_req_in5  => '0',                                -- (terminated)
+			reset_in6      => '0',                                -- (terminated)
+			reset_req_in6  => '0',                                -- (terminated)
+			reset_in7      => '0',                                -- (terminated)
+			reset_req_in7  => '0',                                -- (terminated)
+			reset_in8      => '0',                                -- (terminated)
+			reset_req_in8  => '0',                                -- (terminated)
+			reset_in9      => '0',                                -- (terminated)
+			reset_req_in9  => '0',                                -- (terminated)
+			reset_in10     => '0',                                -- (terminated)
+			reset_req_in10 => '0',                                -- (terminated)
+			reset_in11     => '0',                                -- (terminated)
+			reset_req_in11 => '0',                                -- (terminated)
+			reset_in12     => '0',                                -- (terminated)
+			reset_req_in12 => '0',                                -- (terminated)
+			reset_in13     => '0',                                -- (terminated)
+			reset_req_in13 => '0',                                -- (terminated)
+			reset_in14     => '0',                                -- (terminated)
+			reset_req_in14 => '0',                                -- (terminated)
+			reset_in15     => '0',                                -- (terminated)
+			reset_req_in15 => '0'                                 -- (terminated)
+		);
+
+	rst_controller_001 : component pongfpga_rst_controller_001
 		generic map (
 			NUM_RESET_INPUTS          => 1,
 			OUTPUT_RESET_SYNC_EDGES   => "deassert",
@@ -254,43 +553,45 @@ begin
 			ADAPT_RESET_REQUEST       => 0
 		)
 		port map (
-			reset_in0      => reset_reset_n_ports_inv,        -- reset_in0.reset
-			clk            => clk_clk,                        --       clk.clk
-			reset_out      => rst_controller_reset_out_reset, -- reset_out.reset
-			reset_req      => open,                           -- (terminated)
-			reset_req_in0  => '0',                            -- (terminated)
-			reset_in1      => '0',                            -- (terminated)
-			reset_req_in1  => '0',                            -- (terminated)
-			reset_in2      => '0',                            -- (terminated)
-			reset_req_in2  => '0',                            -- (terminated)
-			reset_in3      => '0',                            -- (terminated)
-			reset_req_in3  => '0',                            -- (terminated)
-			reset_in4      => '0',                            -- (terminated)
-			reset_req_in4  => '0',                            -- (terminated)
-			reset_in5      => '0',                            -- (terminated)
-			reset_req_in5  => '0',                            -- (terminated)
-			reset_in6      => '0',                            -- (terminated)
-			reset_req_in6  => '0',                            -- (terminated)
-			reset_in7      => '0',                            -- (terminated)
-			reset_req_in7  => '0',                            -- (terminated)
-			reset_in8      => '0',                            -- (terminated)
-			reset_req_in8  => '0',                            -- (terminated)
-			reset_in9      => '0',                            -- (terminated)
-			reset_req_in9  => '0',                            -- (terminated)
-			reset_in10     => '0',                            -- (terminated)
-			reset_req_in10 => '0',                            -- (terminated)
-			reset_in11     => '0',                            -- (terminated)
-			reset_req_in11 => '0',                            -- (terminated)
-			reset_in12     => '0',                            -- (terminated)
-			reset_req_in12 => '0',                            -- (terminated)
-			reset_in13     => '0',                            -- (terminated)
-			reset_req_in13 => '0',                            -- (terminated)
-			reset_in14     => '0',                            -- (terminated)
-			reset_req_in14 => '0',                            -- (terminated)
-			reset_in15     => '0',                            -- (terminated)
-			reset_req_in15 => '0'                             -- (terminated)
+			reset_in0      => reset_reset_n_ports_inv,            -- reset_in0.reset
+			clk            => clk_clk,                            --       clk.clk
+			reset_out      => rst_controller_001_reset_out_reset, -- reset_out.reset
+			reset_req      => open,                               -- (terminated)
+			reset_req_in0  => '0',                                -- (terminated)
+			reset_in1      => '0',                                -- (terminated)
+			reset_req_in1  => '0',                                -- (terminated)
+			reset_in2      => '0',                                -- (terminated)
+			reset_req_in2  => '0',                                -- (terminated)
+			reset_in3      => '0',                                -- (terminated)
+			reset_req_in3  => '0',                                -- (terminated)
+			reset_in4      => '0',                                -- (terminated)
+			reset_req_in4  => '0',                                -- (terminated)
+			reset_in5      => '0',                                -- (terminated)
+			reset_req_in5  => '0',                                -- (terminated)
+			reset_in6      => '0',                                -- (terminated)
+			reset_req_in6  => '0',                                -- (terminated)
+			reset_in7      => '0',                                -- (terminated)
+			reset_req_in7  => '0',                                -- (terminated)
+			reset_in8      => '0',                                -- (terminated)
+			reset_req_in8  => '0',                                -- (terminated)
+			reset_in9      => '0',                                -- (terminated)
+			reset_req_in9  => '0',                                -- (terminated)
+			reset_in10     => '0',                                -- (terminated)
+			reset_req_in10 => '0',                                -- (terminated)
+			reset_in11     => '0',                                -- (terminated)
+			reset_req_in11 => '0',                                -- (terminated)
+			reset_in12     => '0',                                -- (terminated)
+			reset_req_in12 => '0',                                -- (terminated)
+			reset_in13     => '0',                                -- (terminated)
+			reset_req_in13 => '0',                                -- (terminated)
+			reset_in14     => '0',                                -- (terminated)
+			reset_req_in14 => '0',                                -- (terminated)
+			reset_in15     => '0',                                -- (terminated)
+			reset_req_in15 => '0'                                 -- (terminated)
 		);
 
 	reset_reset_n_ports_inv <= not reset_reset_n;
+
+	rst_controller_reset_out_reset_ports_inv <= not rst_controller_reset_out_reset;
 
 end architecture rtl; -- of PongFPGA

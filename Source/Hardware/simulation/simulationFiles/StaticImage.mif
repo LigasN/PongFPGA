@@ -1,0 +1,76 @@
+-- Copyright (C) 2018  Intel Corporation. All rights reserved.
+-- Your use of Intel Corporation's design tools, logic functions 
+-- and other software and tools, and its AMPP partner logic 
+-- functions, and any output files from any of the foregoing 
+-- (including device programming or simulation files), and any 
+-- associated documentation or information are expressly subject 
+-- to the terms and conditions of the Intel Program License 
+-- Subscription Agreement, the Intel Quartus Prime License Agreement,
+-- the Intel FPGA IP License Agreement, or other applicable license
+-- agreement, including, without limitation, that your use is for
+-- the sole purpose of programming logic devices manufactured by
+-- Intel and sold by Intel or its authorized distributors.  Please
+-- refer to the applicable agreement for further details.
+
+-- Quartus Prime generated Memory Initialization File (.mif)
+
+WIDTH=1;
+DEPTH=1024;
+
+ADDRESS_RADIX=UNS;
+DATA_RADIX=UNS;
+
+CONTENT BEGIN
+	[0..18]  :   1;
+	[19..38]  :   0;
+	[39..58]  :   1;
+	[59..78]  :   0;
+	[79..98]  :   1;
+	[99..118]  :   0;
+	[119..138]  :   1;
+	[139..158]  :   0;
+	[159..178]  :   1;
+	[179..198]  :   0;
+	[199..218]  :   1;
+	[219..238]  :   0;
+	[239..258]  :   1;
+	[259..278]  :   0;
+	[279..298]  :   1;
+	[299..318]  :   0;
+	[319..338]  :   1;
+	[339..358]  :   0;
+	[359..378]  :   1;
+	[379..398]  :   0;
+	[399..418]  :   1;
+	[419..438]  :   0;
+	[439..458]  :   1;
+	[459..478]  :   0;
+	[479..498]  :   1;
+	[499..518]  :   0;
+	[519..538]  :   1;
+	[539..558]  :   0;
+	[559..578]  :   1;
+	[579..598]  :   0;
+	[599..618]  :   1;
+	[619..638]  :   0;
+	[639..658]  :   1;
+	[659..678]  :   0;
+	[679..698]  :   1;
+	[699..718]  :   0;
+	[719..738]  :   1;
+	[739..758]  :   0;
+	[759..778]  :   1;
+	[779..798]  :   0;
+	[799..818]  :   1;
+	[819..838]  :   0;
+	[839..858]  :   1;
+	[859..878]  :   0;
+	[879..898]  :   1;
+	[899..918]  :   0;
+	[919..938]  :   1;
+	[939..958]  :   0;
+	[959..978]  :   1;
+	[979..998]  :   0;
+	[999..1018]  :   1;
+	[1019..1023]  :   0;
+END;
