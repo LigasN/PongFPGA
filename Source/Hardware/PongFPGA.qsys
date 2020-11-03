@@ -209,6 +209,54 @@
          type = "String";
       }
    }
+   element PongFPGA
+   {
+      datum _originalDeviceFamily
+      {
+         value = "MAX 10";
+         type = "String";
+      }
+   }
+   element PongFPGA
+   {
+      datum _originalDeviceFamily
+      {
+         value = "MAX 10";
+         type = "String";
+      }
+   }
+   element PongFPGA
+   {
+      datum _originalDeviceFamily
+      {
+         value = "MAX 10";
+         type = "String";
+      }
+   }
+   element PongFPGA
+   {
+      datum _originalDeviceFamily
+      {
+         value = "MAX 10";
+         type = "String";
+      }
+   }
+   element PongFPGA
+   {
+      datum _originalDeviceFamily
+      {
+         value = "MAX 10";
+         type = "String";
+      }
+   }
+   element PongFPGA
+   {
+      datum _originalDeviceFamily
+      {
+         value = "MAX 10";
+         type = "String";
+      }
+   }
    element VRAM
    {
       datum _sortIndex
@@ -284,8 +332,8 @@
   <parameter name="Y_RES" value="480" />
  </module>
  <module name="NIOS" kind="altera_nios2_gen2" version="18.1" enabled="1">
-  <parameter name="AUTO_CLK_CLOCK_DOMAIN" value="4" />
-  <parameter name="AUTO_CLK_RESET_DOMAIN" value="4" />
+  <parameter name="AUTO_CLK_CLOCK_DOMAIN" value="3" />
+  <parameter name="AUTO_CLK_RESET_DOMAIN" value="3" />
   <parameter name="AUTO_DEVICE" value="10M08DAF256C8G" />
   <parameter name="AUTO_DEVICE_SPEEDGRADE" value="8" />
   <parameter name="bht_ramBlockType" value="Automatic" />
@@ -738,17 +786,6 @@
    kind="conduit"
    version="18.1"
    start="HDMIDriver_mono_1b_0.px_address"
-   end="HDMI_IMAGE_GEN_MONO_1b_0.px_address">
-  <parameter name="endPort" value="" />
-  <parameter name="endPortLSB" value="0" />
-  <parameter name="startPort" value="" />
-  <parameter name="startPortLSB" value="0" />
-  <parameter name="width" value="0" />
- </connection>
- <connection
-   kind="conduit"
-   version="18.1"
-   start="HDMIDriver_mono_1b_0.px_address"
    end="AvalonRAMConnector_mono_1b_0.px_address">
   <parameter name="endPort" value="" />
   <parameter name="endPortLSB" value="0" />
@@ -759,19 +796,8 @@
  <connection
    kind="conduit"
    version="18.1"
-   start="HDMI_IMAGE_GEN_MONO_1b_0.px_color"
-   end="HDMIDriver_mono_1b_0.px_color">
-  <parameter name="endPort" value="" />
-  <parameter name="endPortLSB" value="0" />
-  <parameter name="startPort" value="" />
-  <parameter name="startPortLSB" value="0" />
-  <parameter name="width" value="0" />
- </connection>
- <connection
-   kind="conduit"
-   version="18.1"
-   start="AvalonRAMConnector_mono_1b_0.px_color"
-   end="HDMIDriver_mono_1b_0.px_color">
+   start="HDMIDriver_mono_1b_0.px_color"
+   end="AvalonRAMConnector_mono_1b_0.px_color">
   <parameter name="endPort" value="" />
   <parameter name="endPortLSB" value="0" />
   <parameter name="startPort" value="" />
@@ -784,12 +810,13 @@
    start="CLK.clk_reset"
    end="PLL.inclk_interface_reset" />
  <connection kind="reset" version="18.1" start="CLK.clk_reset" end="NIOS.reset" />
- <connection kind="reset" version="18.1" start="CLK.clk_reset" end="VRAM.reset1" />
  <connection
    kind="reset"
    version="18.1"
-   start="AvalonRAMConnector_mono_1b_0.reset_n"
-   end="VRAM.reset2" />
+   start="CLK.clk_reset"
+   end="AvalonRAMConnector_mono_1b_0.reset" />
+ <connection kind="reset" version="18.1" start="CLK.clk_reset" end="VRAM.reset1" />
+ <connection kind="reset" version="18.1" start="CLK.clk_reset" end="VRAM.reset2" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.enableEccProtection" value="FALSE" />
  <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="FALSE" />

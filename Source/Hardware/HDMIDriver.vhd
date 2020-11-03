@@ -33,8 +33,8 @@ entity HDMIDriver is
 			output_data	: out 	std_logic_vector(2 downto 0) := (others=>'0');
 			
 			-- Output control data
-			px_x		: out	std_logic_vector(12 downto 0) := (others=>'0'); -- address of the next pixel x coord
-			px_y		: out	std_logic_vector(12 downto 0) := (others=>'0'); -- address of the next pixel y coord
+			px_x		: out	std_logic_vector(11 downto 0) := (others=>'0'); -- address of the next pixel x coord
+			px_y		: out	std_logic_vector(11 downto 0) := (others=>'0'); -- address of the next pixel y coord
 			
 			-- Input color of pixel (1b in this version)
 			px_color	: in	std_logic := '0'-- 1- white, 0- black

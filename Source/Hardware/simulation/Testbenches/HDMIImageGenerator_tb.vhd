@@ -16,8 +16,8 @@ END ;
  
 ARCHITECTURE HDMIImageGenerator_tb_arch  OF HDMIImageGenerator_tb  IS
   SIGNAL clk	: std_logic;
-  SIGNAL px_x   :  std_logic_vector (12 downto 0)  ; 
-  SIGNAL px_y   :  std_logic_vector (12 downto 0)  ; 
+  SIGNAL px_x   :  std_logic_vector (11 downto 0)  ; 
+  SIGNAL px_y   :  std_logic_vector (11 downto 0)  ; 
   SIGNAL px_color   :  STD_LOGIC  ; 
   COMPONENT HDMIImageGenerator  
     GENERIC ( 
@@ -27,8 +27,8 @@ ARCHITECTURE HDMIImageGenerator_tb_arch  OF HDMIImageGenerator_tb  IS
       VEL  : INTEGER  );  
     PORT ( 
 	  clk		: in	std_logic;
-      px_x  : in std_logic_vector (12 downto 0) ; 
-      px_y  : in std_logic_vector (12 downto 0) ; 
+      px_x  : in std_logic_vector (11 downto 0) ; 
+      px_y  : in std_logic_vector (11 downto 0) ; 
       px_color  : out STD_LOGIC ); 
   END COMPONENT ; 
 BEGIN
@@ -47,7 +47,7 @@ BEGIN
 	
 -- Start Time = 0 ns, Time of one frame 960ns; Frames= 10;
   Process
-	variable VARpx_x  : std_logic_vector(12 downto 0);
+	variable VARpx_x  : std_logic_vector(11 downto 0);
 	Begin
 	VARpx_x  := "0000000000000" ;
 	for repeatLength in 1 to X_RES*Y_RES*FRAMES
@@ -65,9 +65,9 @@ BEGIN
  
 -- Start Time = 0 ns, Time of one frame 960ns; Frames= 10;
   Process
-	variable VARpx_y  : std_logic_vector(12 downto 0);
+	variable VARpx_y  : std_logic_vector(11 downto 0);
 	Begin
-	VARpx_y  := "0000000000000" ;
+	VARpx_y  := "000000000000" ;
 	for repeatLength in 1 to Y_RES*FRAMES
 	loop
 	    px_y  <= VARpx_y  ;

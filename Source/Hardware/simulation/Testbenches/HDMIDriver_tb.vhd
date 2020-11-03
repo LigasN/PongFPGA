@@ -48,8 +48,8 @@ ARCHITECTURE HDMIDriver_tb_arch   OF HDMIDriver_tb  IS
       bit_clk  : in STD_LOGIC ;  
       px_clk  : in STD_LOGIC ;
       px_color  : in STD_LOGIC ; 
-      px_x  : out std_logic_vector (12 downto 0) ;
-      px_y  : out std_logic_vector (12 downto 0) ; 
+      px_x  : out std_logic_vector (11 downto 0) ;
+      px_y  : out std_logic_vector (11 downto 0) ; 
       output_data  : out std_logic_vector (2 downto 0) ; 
       output_clk  : out STD_LOGIC ); 
   END COMPONENT ; 

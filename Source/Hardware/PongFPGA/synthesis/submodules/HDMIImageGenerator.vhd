@@ -26,8 +26,8 @@ entity HDMIImageGenerator is
 			clk			: in	std_logic;
 			
 			-- Pixels adresses
-			px_x		: in	std_logic_vector(12 downto 0); -- address of the pixel, x coord
-			px_y		: in	std_logic_vector(12 downto 0); -- address of the pixel, y coord
+			px_x		: in	std_logic_vector(11 downto 0); -- address of the pixel, x coord
+			px_y		: in	std_logic_vector(11 downto 0); -- address of the pixel, y coord
 			
 			-- Color of pixel for (1b in this version)
 			px_color	: out	std_logic -- 1- white, 0- black
@@ -58,7 +58,7 @@ architecture HDMIImageGenerator_arch of HDMIImageGenerator is
 begin
 
 	process(clk)
-	variable last_px_x : std_logic_vector(12 downto 0) := (others=>'0');
+	variable last_px_x : std_logic_vector(11 downto 0) := (others=>'0');
 	begin
 		if falling_edge(clk) then
 			-- Shader place

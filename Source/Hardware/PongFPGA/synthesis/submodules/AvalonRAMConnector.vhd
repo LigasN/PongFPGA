@@ -59,7 +59,9 @@ architecture AvalonRAMConnector_arch of AvalonRAMConnector is
 			result		: out 	std_logic_vector (23 downto 0)
 		);
 	end component Multiplier;
-	
+
+signal reg_counter 	: integer 						:= 0;
+signal data_reg		: std_logic_vector(7 downto 0) 	:= (others=>'0');
 
 -- signals needed for counting right RAM address
 signal RAM_address_x	: std_logic_vector (23 downto 0):= (others=>'0');

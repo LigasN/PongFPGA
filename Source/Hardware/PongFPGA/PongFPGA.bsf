@@ -59,7 +59,7 @@ refer to the applicable agreement for further details.
 		(text "output_data" (rect 133 123 332 256)(font "Arial" (color 0 0 0)))
 		(text "reset" (rect 99 139 228 291)(font "Arial" (color 128 0 0)(font_size 9)))
 		(text "reset_n" (rect 133 163 308 336)(font "Arial" (color 0 0 0)))
-		(text " system " (rect 301 184 650 378)(font "Arial" ))
+		(text " PongFPGA " (rect 285 184 630 378)(font "Arial" ))
 		(line (pt 128 32)(pt 208 32)(line_width 1))
 		(line (pt 208 32)(pt 208 184)(line_width 1))
 		(line (pt 128 184)(pt 208 184)(line_width 1))
