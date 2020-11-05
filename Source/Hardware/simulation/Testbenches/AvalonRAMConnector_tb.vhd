@@ -7,10 +7,11 @@ USE ieee.std_logic_unsigned.all  ;
 USE std.textio.all  ; 
 ENTITY AvalonRAMConnector_tb  IS 
   GENERIC (
-    PX_X_SPLIT  : INTEGER   := 20 ;  
-    DISPLAY_RES_WIDTH  : INTEGER   := 640 ;  
-    PX_Y_SPLIT  : INTEGER   := 20 ;  
-    DISPLAY_RES_HEIGHT  : INTEGER   := 480 ); 
+    PX_X_SPLIT  : INTEGER   := 2 ;  
+    DISPLAY_RES_WIDTH  : INTEGER   := 32 ;  
+    PX_Y_SPLIT  : INTEGER   := 2 ;  
+    DISPLAY_RES_HEIGHT  : INTEGER   := 16 ;
+	FRAMES		: INTEGER	:= 2 ); 
 END ; 
  
 ARCHITECTURE AvalonRAMConnector_tb_arch OF AvalonRAMConnector_tb IS
@@ -63,110 +64,67 @@ BEGIN
 
 
 
--- "Clock Pattern" : dutyCycle = 50
--- Start Time = 0 ns, End Time = 500 ns, Period = 2 ns
-  Process
+	Process
 	Begin
-	 px_clk  <= '0'  ;
-	wait for 1 ns ;
--- 1 ns, single loop till start period.
-	for Z in 1 to 249
-	loop
-	    px_clk  <= '1'  ;
-	   wait for 1 ns ;
-	    px_clk  <= '0'  ;
-	   wait for 1 ns ;
--- 499 ns, repeat pattern in loop.
-	end  loop;
-	 px_clk  <= '1'  ;
-	wait for 1 ns ;
--- dumped values till 500 ns
-	wait;
- End Process;
+		px_clk  <= '0'  ;
+		wait for 1 ns ;
+		for Z in 1 to FRAMES*DISPLAY_RES_WIDTH*DISPLAY_RES_HEIGHT
+		loop
+			px_clk  <= '1'  ;
+			wait for 1 ns ;
+			px_clk  <= '0'  ;
+			wait for 1 ns ;
+		end  loop;
+		wait;
+	End Process;
 
 
--- "Counter Pattern"(Range-Up) : step = 1 Range(000000000000-000000001011)
--- Start Time = 0 ns, End Time = 500 ns, Period = 2 ns
-  Process
-	variable VARpx_x  : std_logic_vector(11 downto 0);
+	Process
+		variable VARpx_x  		: std_logic_vector(11 downto 0):= "000000000000";
+		variable VARpx_y  		: std_logic_vector(11 downto 0):= "000000000000";
+		constant pattern0 		: std_logic_vector(7  downto 0):= "10101010";
+		constant pattern1 		: std_logic_vector(7  downto 0):= "01010101";
+		variable patternCounter : std_logic := '0';
 	Begin
-	for Z in 1 to 20
-	loop
-	VARpx_x  := "000000000000" ;
-	for repeatLength in 1 to 12
-	loop
-	    px_x  <= VARpx_x  ;
-	   wait for 2 ns ;
-	   VARpx_x  := VARpx_x  + 1 ;
-	end loop;
--- 480 ns, repeat pattern in loop.
-	end  loop;
-	VARpx_x  := "000000000000" ;
-	for repeatLength in 1 to 10
-	loop
-	    px_x  <= VARpx_x  ;
-	   wait for 2 ns ;
-	   VARpx_x  := VARpx_x  + 1 ;
-	end loop;
--- 500 ns, periods remaining till edit start time.
-	wait;
- End Process;
-
-
--- "Counter Pattern"(Range-Up) : step = 1 Range(000000000000-000000001001)
--- Start Time = 0 ns, End Time = 500 ns, Period = 24 ns
-  Process
-	variable VARpx_y  : std_logic_vector(11 downto 0);
-	Begin
-	for Z in 1 to 2
-	loop
-	VARpx_y  := "000000000000" ;
-	for repeatLength in 1 to 10
-	loop
-	    px_y  <= VARpx_y  ;
-	   wait for 24 ns ;
-	   VARpx_y  := VARpx_y  + 1 ;
-	end loop;
--- 480 ns, repeat pattern in loop.
-	end  loop;
-	 px_y  <= "000000000000"  ;
-	wait for 20 ns ;
--- dumped values till 500 ns
-	wait;
- End Process;
-
+		readdata 	   <= pattern0;
+		for repeatLength in 1 to FRAMES*DISPLAY_RES_WIDTH*DISPLAY_RES_HEIGHT
+		loop
+			
+			px_x  		<= VARpx_x;
+			px_y  		<= VARpx_y;
+			
+			wait for 1 ns;
+			
+			if read = '1' then
+				if patternCounter = '0' then
+					readdata 	   <= pattern1;
+					patternCounter := '1';
+				else
+					readdata 	   <= pattern0;
+					patternCounter := '0';
+				end if;
+			end if;
+			
+			wait for 1 ns;
+			VARpx_x  := VARpx_x  + 1;
+			
+			if VARpx_x  = DISPLAY_RES_WIDTH then
+				VARpx_y  := VARpx_y  + 1;
+				VARpx_x := (others=>'0');
+				
+				if VARpx_y  = DISPLAY_RES_HEIGHT then
+					VARpx_y := (others=>'0');
+				end if;
+			end if;
+		end loop;
+		wait;
+	End Process;
 
 -- "Constant Pattern"
 -- Start Time = 0 ns, End Time = 500 ns, Period = 0 ns
-  Process
+	Process
 	Begin
-	 reset  <= '0'  ;
-	wait for 500 ns ;
--- dumped values till 500 ns
-	wait;
- End Process;
-
-
--- "Repeater Pattern" Repeat Forever
--- Start Time = 0 ns, End Time = 500 ns, Period = 16 ns
-  Process
-	Begin
-	 readdata  <= "10101010"  ;
-	wait for 64 ns ;
-	 readdata  <= "01010101"  ;
-	wait for 64 ns ;
-	 readdata  <= "10101010"  ;
-	wait for 64 ns ;
-	 readdata  <= "01010101"  ;
-	wait for 64 ns ;
-	 readdata  <= "10101010"  ;
-	wait for 64 ns ;
-	 readdata  <= "01010101"  ;
-	wait for 64 ns ;
-	 readdata  <= "10101010"  ;
-	wait for 64 ns ;
-	 readdata  <= "01010101"  ;
-	wait for 52 ns ;
-	wait;
- End Process;
+		reset  <= '0'  ;
+		wait;
+	End Process;
 END;

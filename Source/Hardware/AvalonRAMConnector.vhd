@@ -66,8 +66,12 @@ signal RAM_address_x	: std_logic_vector (23 downto 0):= (others=>'0');
 signal RAM_address_y	: std_logic_vector (11 downto 0):= (others=>'0');
 signal RAM_addr_y_mlt 	: std_logic_vector (23 downto 0):= (others=>'0');
 
+signal split_part_px	: std_logic_vector (5  downto 0):= (others=>'0');
+
 signal RAM_address_bit 	: std_logic_vector (23 downto 0):= (others=>'0');
 signal bitenable 		: std_logic_vector (2  downto 0):= (others=>'0');
+
+signal readdata_reg		: std_logic_vector (7  downto 0):= (others=>'0');
 
 begin
 	
@@ -75,8 +79,14 @@ begin
 	write <= '0';
 	writedata <= (others=>'0');
 	
-	-- Assigning color value to output before new bitenable comes
-	px_color <= readdata(to_integer(unsigned(bitenable)));
+	process(px_clk) is
+	begin
+		if falling_edge(px_clk) then
+			-- Assigning color value to output before new bitenable comes
+			px_color <= readdata(to_integer(unsigned(bitenable)));
+		end if;
+	end process;
+	
 	
 	-- Divide pixel addresses from screen for RAM pixel size	
 	PX_X_DIV : Divider port map
@@ -84,7 +94,7 @@ begin
 		denom 		=> std_logic_vector(to_unsigned(PX_X_SPLIT, 6)),
 		numer 		=> px_x,
 		quotient 	=> RAM_address_x(11 downto 0),
-		remain 		=> open
+		remain 		=> split_part_px
 	);
 	
 	PX_Y_DIV : Divider port map
@@ -111,7 +121,7 @@ begin
 	address <= RAM_address_bit(23 downto 3);
 	
 	-- Read only when end of byte is clode for biteenable
-	read <= '1' when bitenable = "111" else '0';
+	read <= '1' when bitenable = "111" and to_integer(unsigned(split_part_px)) = PX_X_SPLIT - 1 else '0';
 	
 	-- Get proper bitenable for getting px_color from data
 	bitenable <= RAM_address_bit(2 downto 0);
