@@ -257,6 +257,22 @@
          type = "String";
       }
    }
+   element PongFPGA
+   {
+      datum _originalDeviceFamily
+      {
+         value = "MAX 10";
+         type = "String";
+      }
+   }
+   element PongFPGA
+   {
+      datum _originalDeviceFamily
+      {
+         value = "MAX 10";
+         type = "String";
+      }
+   }
    element VRAM
    {
       datum _sortIndex
@@ -297,9 +313,11 @@
    name="AvalonRAMConnector_mono_1b_0"
    kind="AvalonRAMConnector_mono_1b"
    version="1.0"
-   enabled="1">
+   enabled="0">
   <parameter name="DISPLAY_RES_HEIGHT" value="480" />
   <parameter name="DISPLAY_RES_WIDTH" value="640" />
+  <parameter name="PX_X_SPLIT" value="20" />
+  <parameter name="PX_Y_SPLIT" value="20" />
  </module>
  <module name="CLK" kind="clock_source" version="18.1" enabled="1">
   <parameter name="clockFrequency" value="10000000" />
@@ -325,9 +343,9 @@
    name="HDMI_IMAGE_GEN_MONO_1b_0"
    kind="HDMI_IMAGE_GEN_MONO_1b"
    version="1.0"
-   enabled="0">
-  <parameter name="REG_LEN" value="20" />
-  <parameter name="VEL" value="25" />
+   enabled="1">
+  <parameter name="REG_LEN" value="5" />
+  <parameter name="VEL" value="1" />
   <parameter name="X_RES" value="640" />
   <parameter name="Y_RES" value="480" />
  </module>
@@ -351,7 +369,7 @@
   <parameter name="dataAddrWidth" value="13" />
   <parameter name="dataMasterHighPerformanceAddrWidth" value="1" />
   <parameter name="dataMasterHighPerformanceMapParam" value="" />
-  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='VRAM.s1' start='0x0' end='0x60' type='altera_avalon_onchip_memory2.s1' /><slave name='NIOS.debug_mem_slave' start='0x800' end='0x1000' type='altera_nios2_gen2.debug_mem_slave' /><slave name='PLL.pll_slave' start='0x1000' end='0x1010' type='altpll.pll_slave' /></address-map>]]></parameter>
+  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='NIOS.debug_mem_slave' start='0x800' end='0x1000' type='altera_nios2_gen2.debug_mem_slave' /><slave name='PLL.pll_slave' start='0x1000' end='0x1010' type='altpll.pll_slave' /></address-map>]]></parameter>
   <parameter name="data_master_high_performance_paddr_base" value="0" />
   <parameter name="data_master_high_performance_paddr_size" value="0" />
   <parameter name="data_master_paddr_base" value="0" />
@@ -390,7 +408,7 @@
   <parameter name="icache_tagramBlockType" value="Automatic" />
   <parameter name="impl" value="Tiny" />
   <parameter name="instAddrWidth" value="12" />
-  <parameter name="instSlaveMapParam"><![CDATA[<address-map><slave name='VRAM.s1' start='0x0' end='0x60' type='altera_avalon_onchip_memory2.s1' /><slave name='NIOS.debug_mem_slave' start='0x800' end='0x1000' type='altera_nios2_gen2.debug_mem_slave' /></address-map>]]></parameter>
+  <parameter name="instSlaveMapParam"><![CDATA[<address-map><slave name='NIOS.debug_mem_slave' start='0x800' end='0x1000' type='altera_nios2_gen2.debug_mem_slave' /></address-map>]]></parameter>
   <parameter name="instructionMasterHighPerformanceAddrWidth" value="1" />
   <parameter name="instructionMasterHighPerformanceMapParam" value="" />
   <parameter name="instruction_master_high_performance_paddr_base" value="0" />
@@ -680,9 +698,9 @@
    name="VRAM"
    kind="altera_avalon_onchip_memory2"
    version="18.1"
-   enabled="1">
+   enabled="0">
   <parameter name="allowInSystemMemoryContentEditor" value="false" />
-  <parameter name="autoInitializationFileName" value="$${FILENAME}_VRAM" />
+  <parameter name="autoInitializationFileName" value="PongFPGA_VRAM" />
   <parameter name="blockType" value="AUTO" />
   <parameter name="copyInitFile" value="false" />
   <parameter name="dataWidth" value="8" />
@@ -786,7 +804,7 @@
    kind="conduit"
    version="18.1"
    start="HDMIDriver_mono_1b_0.px_address"
-   end="AvalonRAMConnector_mono_1b_0.px_address">
+   end="HDMI_IMAGE_GEN_MONO_1b_0.px_address">
   <parameter name="endPort" value="" />
   <parameter name="endPortLSB" value="0" />
   <parameter name="startPort" value="" />
@@ -796,8 +814,8 @@
  <connection
    kind="conduit"
    version="18.1"
-   start="HDMIDriver_mono_1b_0.px_color"
-   end="AvalonRAMConnector_mono_1b_0.px_color">
+   start="HDMI_IMAGE_GEN_MONO_1b_0.px_color"
+   end="HDMIDriver_mono_1b_0.px_color">
   <parameter name="endPort" value="" />
   <parameter name="endPortLSB" value="0" />
   <parameter name="startPort" value="" />

@@ -38,7 +38,7 @@
 
 set_global_assignment -name FAMILY "MAX 10"
 set_global_assignment -name DEVICE 10M08DAF256C8G
-set_global_assignment -name TOP_LEVEL_ENTITY PongFPGA
+set_global_assignment -name TOP_LEVEL_ENTITY AvalonRAMConnector
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 18.1.0
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "16:57:51  SEPTEMBER 13, 2020"
 set_global_assignment -name LAST_QUARTUS_VERSION "18.1.0 Lite Edition"
@@ -326,7 +326,6 @@ set_global_assignment -name EDA_TEST_BENCH_FILE simulation/Testbenches/HDMIImage
 set_global_assignment -name EDA_TEST_BENCH_FILE simulation/Testbenches/HDMIDriver_tb.vhd -section_id HDMIDriver_tb
 set_global_assignment -name EDA_TEST_BENCH_FILE simulation/Testbenches/PongFPGA_tb.vhd -section_id PongFPGA_tb
 set_global_assignment -name EDA_TEST_BENCH_FILE simulation/Testbenches/AvalonRAMConnector_tb.vhd -section_id AvalonRAMConnector_tb
-set_global_assignment -name QIP_FILE PongFPGA/synthesis/PongFPGA.qip
 set_global_assignment -name VHDL_FILE simulation/Testbenches/AvalonRAMConnector_tb.vhd
 set_global_assignment -name VHDL_FILE AvalonRAMConnector.vhd
 set_global_assignment -name VHDL_FILE simulation/Testbenches/HDMIDriver_tb.vhd
@@ -345,5 +344,5 @@ set_global_assignment -name SIGNALTAP_FILE simulation/simulationFiles/realTimeSi
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
-set_global_assignment -name SLD_FILE db/realTimeSimulation_auto_stripped.stp
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
+set_global_assignment -name SLD_FILE db/realTimeSimulation_auto_stripped.stp

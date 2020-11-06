@@ -16,27 +16,6 @@ entity PongFPGA is
 end entity PongFPGA;
 
 architecture rtl of PongFPGA is
-	component AvalonRAMConnector is
-		generic (
-			DISPLAY_RES_WIDTH  : integer := 640;
-			DISPLAY_RES_HEIGHT : integer := 480;
-			PX_X_SPLIT         : integer := 20;
-			PX_Y_SPLIT         : integer := 20
-		);
-		port (
-			address   : out std_logic_vector(20 downto 0);                    -- address
-			read      : out std_logic;                                        -- read
-			readdata  : in  std_logic_vector(7 downto 0)  := (others => 'X'); -- readdata
-			write     : out std_logic;                                        -- write
-			writedata : out std_logic_vector(7 downto 0);                     -- writedata
-			px_clk    : in  std_logic                     := 'X';             -- clk
-			px_x      : in  std_logic_vector(11 downto 0) := (others => 'X'); -- px_x
-			px_y      : in  std_logic_vector(11 downto 0) := (others => 'X'); -- px_y
-			px_color  : out std_logic;                                        -- px_color
-			reset     : in  std_logic                     := 'X'              -- reset
-		);
-	end component AvalonRAMConnector;
-
 	component HDMIDriver is
 		generic (
 			DISPLAY_RES_WIDTH  : integer := 640;
@@ -58,6 +37,21 @@ architecture rtl of PongFPGA is
 			output_data : out std_logic_vector(2 downto 0)          -- output_data
 		);
 	end component HDMIDriver;
+
+	component HDMIImageGenerator is
+		generic (
+			X_RES   : integer := 640;
+			Y_RES   : integer := 480;
+			REG_LEN : integer := 200;
+			VEL     : integer := 1
+		);
+		port (
+			clk      : in  std_logic                     := 'X';             -- clk
+			px_x     : in  std_logic_vector(11 downto 0) := (others => 'X'); -- px_x
+			px_y     : in  std_logic_vector(11 downto 0) := (others => 'X'); -- px_y
+			px_color : out std_logic                                         -- px_color
+		);
+	end component HDMIImageGenerator;
 
 	component PongFPGA_NIOS is
 		port (
@@ -119,49 +113,7 @@ architecture rtl of PongFPGA is
 		);
 	end component PongFPGA_PLL;
 
-	component PongFPGA_VRAM is
-		port (
-			clk         : in  std_logic                    := 'X';             -- clk
-			address     : in  std_logic_vector(6 downto 0) := (others => 'X'); -- address
-			clken       : in  std_logic                    := 'X';             -- clken
-			chipselect  : in  std_logic                    := 'X';             -- chipselect
-			write       : in  std_logic                    := 'X';             -- write
-			readdata    : out std_logic_vector(7 downto 0);                    -- readdata
-			writedata   : in  std_logic_vector(7 downto 0) := (others => 'X'); -- writedata
-			reset       : in  std_logic                    := 'X';             -- reset
-			reset_req   : in  std_logic                    := 'X';             -- reset_req
-			address2    : in  std_logic_vector(6 downto 0) := (others => 'X'); -- address
-			chipselect2 : in  std_logic                    := 'X';             -- chipselect
-			clken2      : in  std_logic                    := 'X';             -- clken
-			write2      : in  std_logic                    := 'X';             -- write
-			readdata2   : out std_logic_vector(7 downto 0);                    -- readdata
-			writedata2  : in  std_logic_vector(7 downto 0) := (others => 'X'); -- writedata
-			clk2        : in  std_logic                    := 'X';             -- clk
-			reset2      : in  std_logic                    := 'X';             -- reset
-			reset_req2  : in  std_logic                    := 'X';             -- reset_req
-			freeze      : in  std_logic                    := 'X'              -- freeze
-		);
-	end component PongFPGA_VRAM;
-
 	component PongFPGA_mm_interconnect_0 is
-		port (
-			PLL_c1_clk                                                     : in  std_logic                     := 'X';             -- clk
-			AvalonRAMConnector_mono_1b_0_reset_reset_bridge_in_reset_reset : in  std_logic                     := 'X';             -- reset
-			AvalonRAMConnector_mono_1b_0_avalon_master_address             : in  std_logic_vector(20 downto 0) := (others => 'X'); -- address
-			AvalonRAMConnector_mono_1b_0_avalon_master_read                : in  std_logic                     := 'X';             -- read
-			AvalonRAMConnector_mono_1b_0_avalon_master_readdata            : out std_logic_vector(7 downto 0);                     -- readdata
-			AvalonRAMConnector_mono_1b_0_avalon_master_write               : in  std_logic                     := 'X';             -- write
-			AvalonRAMConnector_mono_1b_0_avalon_master_writedata           : in  std_logic_vector(7 downto 0)  := (others => 'X'); -- writedata
-			VRAM_s2_address                                                : out std_logic_vector(6 downto 0);                     -- address
-			VRAM_s2_write                                                  : out std_logic;                                        -- write
-			VRAM_s2_readdata                                               : in  std_logic_vector(7 downto 0)  := (others => 'X'); -- readdata
-			VRAM_s2_writedata                                              : out std_logic_vector(7 downto 0);                     -- writedata
-			VRAM_s2_chipselect                                             : out std_logic;                                        -- chipselect
-			VRAM_s2_clken                                                  : out std_logic                                         -- clken
-		);
-	end component PongFPGA_mm_interconnect_0;
-
-	component PongFPGA_mm_interconnect_1 is
 		port (
 			CLK_clk_clk                                           : in  std_logic                     := 'X';             -- clk
 			PLL_c0_clk                                            : in  std_logic                     := 'X';             -- clk
@@ -191,15 +143,9 @@ architecture rtl of PongFPGA is
 			PLL_pll_slave_write                                   : out std_logic;                                        -- write
 			PLL_pll_slave_read                                    : out std_logic;                                        -- read
 			PLL_pll_slave_readdata                                : in  std_logic_vector(31 downto 0) := (others => 'X'); -- readdata
-			PLL_pll_slave_writedata                               : out std_logic_vector(31 downto 0);                    -- writedata
-			VRAM_s1_address                                       : out std_logic_vector(6 downto 0);                     -- address
-			VRAM_s1_write                                         : out std_logic;                                        -- write
-			VRAM_s1_readdata                                      : in  std_logic_vector(7 downto 0)  := (others => 'X'); -- readdata
-			VRAM_s1_writedata                                     : out std_logic_vector(7 downto 0);                     -- writedata
-			VRAM_s1_chipselect                                    : out std_logic;                                        -- chipselect
-			VRAM_s1_clken                                         : out std_logic                                         -- clken
+			PLL_pll_slave_writedata                               : out std_logic_vector(31 downto 0)                     -- writedata
 		);
-	end component PongFPGA_mm_interconnect_1;
+	end component PongFPGA_mm_interconnect_0;
 
 	component PongFPGA_irq_mapper is
 		port (
@@ -275,7 +221,7 @@ architecture rtl of PongFPGA is
 		);
 	end component pongfpga_rst_controller;
 
-	component pongfpga_rst_controller_002 is
+	component pongfpga_rst_controller_001 is
 		generic (
 			NUM_RESET_INPUTS          : integer := 6;
 			OUTPUT_RESET_SYNC_EDGES   : string  := "deassert";
@@ -339,86 +285,47 @@ architecture rtl of PongFPGA is
 			reset_req_in8  : in  std_logic := 'X';
 			reset_req_in9  : in  std_logic := 'X'
 		);
-	end component pongfpga_rst_controller_002;
+	end component pongfpga_rst_controller_001;
 
-	signal pll_c0_clk                                           : std_logic;                     -- PLL:c0 -> [NIOS:clk, VRAM:clk, irq_mapper:clk, mm_interconnect_1:PLL_c0_clk, rst_controller_001:clk]
-	signal pll_c1_clk                                           : std_logic;                     -- PLL:c1 -> [AvalonRAMConnector_mono_1b_0:px_clk, HDMIDriver_mono_1b_0:px_clk, VRAM:clk2, mm_interconnect_0:PLL_c1_clk, rst_controller:clk]
-	signal pll_c2_clk                                           : std_logic;                     -- PLL:c2 -> HDMIDriver_mono_1b_0:bit_clk
-	signal hdmidriver_mono_1b_0_px_address_px_x                 : std_logic_vector(11 downto 0); -- HDMIDriver_mono_1b_0:px_x -> AvalonRAMConnector_mono_1b_0:px_x
-	signal hdmidriver_mono_1b_0_px_address_px_y                 : std_logic_vector(11 downto 0); -- HDMIDriver_mono_1b_0:px_y -> AvalonRAMConnector_mono_1b_0:px_y
-	signal avalonramconnector_mono_1b_0_px_color_px_color       : std_logic;                     -- AvalonRAMConnector_mono_1b_0:px_color -> HDMIDriver_mono_1b_0:px_color
-	signal avalonramconnector_mono_1b_0_avalon_master_readdata  : std_logic_vector(7 downto 0);  -- mm_interconnect_0:AvalonRAMConnector_mono_1b_0_avalon_master_readdata -> AvalonRAMConnector_mono_1b_0:readdata
-	signal avalonramconnector_mono_1b_0_avalon_master_address   : std_logic_vector(20 downto 0); -- AvalonRAMConnector_mono_1b_0:address -> mm_interconnect_0:AvalonRAMConnector_mono_1b_0_avalon_master_address
-	signal avalonramconnector_mono_1b_0_avalon_master_read      : std_logic;                     -- AvalonRAMConnector_mono_1b_0:read -> mm_interconnect_0:AvalonRAMConnector_mono_1b_0_avalon_master_read
-	signal avalonramconnector_mono_1b_0_avalon_master_write     : std_logic;                     -- AvalonRAMConnector_mono_1b_0:write -> mm_interconnect_0:AvalonRAMConnector_mono_1b_0_avalon_master_write
-	signal avalonramconnector_mono_1b_0_avalon_master_writedata : std_logic_vector(7 downto 0);  -- AvalonRAMConnector_mono_1b_0:writedata -> mm_interconnect_0:AvalonRAMConnector_mono_1b_0_avalon_master_writedata
-	signal mm_interconnect_0_vram_s2_chipselect                 : std_logic;                     -- mm_interconnect_0:VRAM_s2_chipselect -> VRAM:chipselect2
-	signal mm_interconnect_0_vram_s2_readdata                   : std_logic_vector(7 downto 0);  -- VRAM:readdata2 -> mm_interconnect_0:VRAM_s2_readdata
-	signal mm_interconnect_0_vram_s2_address                    : std_logic_vector(6 downto 0);  -- mm_interconnect_0:VRAM_s2_address -> VRAM:address2
-	signal mm_interconnect_0_vram_s2_write                      : std_logic;                     -- mm_interconnect_0:VRAM_s2_write -> VRAM:write2
-	signal mm_interconnect_0_vram_s2_writedata                  : std_logic_vector(7 downto 0);  -- mm_interconnect_0:VRAM_s2_writedata -> VRAM:writedata2
-	signal mm_interconnect_0_vram_s2_clken                      : std_logic;                     -- mm_interconnect_0:VRAM_s2_clken -> VRAM:clken2
-	signal nios_data_master_readdata                            : std_logic_vector(31 downto 0); -- mm_interconnect_1:NIOS_data_master_readdata -> NIOS:d_readdata
-	signal nios_data_master_waitrequest                         : std_logic;                     -- mm_interconnect_1:NIOS_data_master_waitrequest -> NIOS:d_waitrequest
-	signal nios_data_master_debugaccess                         : std_logic;                     -- NIOS:debug_mem_slave_debugaccess_to_roms -> mm_interconnect_1:NIOS_data_master_debugaccess
-	signal nios_data_master_address                             : std_logic_vector(12 downto 0); -- NIOS:d_address -> mm_interconnect_1:NIOS_data_master_address
-	signal nios_data_master_byteenable                          : std_logic_vector(3 downto 0);  -- NIOS:d_byteenable -> mm_interconnect_1:NIOS_data_master_byteenable
-	signal nios_data_master_read                                : std_logic;                     -- NIOS:d_read -> mm_interconnect_1:NIOS_data_master_read
-	signal nios_data_master_write                               : std_logic;                     -- NIOS:d_write -> mm_interconnect_1:NIOS_data_master_write
-	signal nios_data_master_writedata                           : std_logic_vector(31 downto 0); -- NIOS:d_writedata -> mm_interconnect_1:NIOS_data_master_writedata
-	signal nios_instruction_master_readdata                     : std_logic_vector(31 downto 0); -- mm_interconnect_1:NIOS_instruction_master_readdata -> NIOS:i_readdata
-	signal nios_instruction_master_waitrequest                  : std_logic;                     -- mm_interconnect_1:NIOS_instruction_master_waitrequest -> NIOS:i_waitrequest
-	signal nios_instruction_master_address                      : std_logic_vector(11 downto 0); -- NIOS:i_address -> mm_interconnect_1:NIOS_instruction_master_address
-	signal nios_instruction_master_read                         : std_logic;                     -- NIOS:i_read -> mm_interconnect_1:NIOS_instruction_master_read
-	signal mm_interconnect_1_nios_debug_mem_slave_readdata      : std_logic_vector(31 downto 0); -- NIOS:debug_mem_slave_readdata -> mm_interconnect_1:NIOS_debug_mem_slave_readdata
-	signal mm_interconnect_1_nios_debug_mem_slave_waitrequest   : std_logic;                     -- NIOS:debug_mem_slave_waitrequest -> mm_interconnect_1:NIOS_debug_mem_slave_waitrequest
-	signal mm_interconnect_1_nios_debug_mem_slave_debugaccess   : std_logic;                     -- mm_interconnect_1:NIOS_debug_mem_slave_debugaccess -> NIOS:debug_mem_slave_debugaccess
-	signal mm_interconnect_1_nios_debug_mem_slave_address       : std_logic_vector(8 downto 0);  -- mm_interconnect_1:NIOS_debug_mem_slave_address -> NIOS:debug_mem_slave_address
-	signal mm_interconnect_1_nios_debug_mem_slave_read          : std_logic;                     -- mm_interconnect_1:NIOS_debug_mem_slave_read -> NIOS:debug_mem_slave_read
-	signal mm_interconnect_1_nios_debug_mem_slave_byteenable    : std_logic_vector(3 downto 0);  -- mm_interconnect_1:NIOS_debug_mem_slave_byteenable -> NIOS:debug_mem_slave_byteenable
-	signal mm_interconnect_1_nios_debug_mem_slave_write         : std_logic;                     -- mm_interconnect_1:NIOS_debug_mem_slave_write -> NIOS:debug_mem_slave_write
-	signal mm_interconnect_1_nios_debug_mem_slave_writedata     : std_logic_vector(31 downto 0); -- mm_interconnect_1:NIOS_debug_mem_slave_writedata -> NIOS:debug_mem_slave_writedata
-	signal mm_interconnect_1_pll_pll_slave_readdata             : std_logic_vector(31 downto 0); -- PLL:readdata -> mm_interconnect_1:PLL_pll_slave_readdata
-	signal mm_interconnect_1_pll_pll_slave_address              : std_logic_vector(1 downto 0);  -- mm_interconnect_1:PLL_pll_slave_address -> PLL:address
-	signal mm_interconnect_1_pll_pll_slave_read                 : std_logic;                     -- mm_interconnect_1:PLL_pll_slave_read -> PLL:read
-	signal mm_interconnect_1_pll_pll_slave_write                : std_logic;                     -- mm_interconnect_1:PLL_pll_slave_write -> PLL:write
-	signal mm_interconnect_1_pll_pll_slave_writedata            : std_logic_vector(31 downto 0); -- mm_interconnect_1:PLL_pll_slave_writedata -> PLL:writedata
-	signal mm_interconnect_1_vram_s1_chipselect                 : std_logic;                     -- mm_interconnect_1:VRAM_s1_chipselect -> VRAM:chipselect
-	signal mm_interconnect_1_vram_s1_readdata                   : std_logic_vector(7 downto 0);  -- VRAM:readdata -> mm_interconnect_1:VRAM_s1_readdata
-	signal mm_interconnect_1_vram_s1_address                    : std_logic_vector(6 downto 0);  -- mm_interconnect_1:VRAM_s1_address -> VRAM:address
-	signal mm_interconnect_1_vram_s1_write                      : std_logic;                     -- mm_interconnect_1:VRAM_s1_write -> VRAM:write
-	signal mm_interconnect_1_vram_s1_writedata                  : std_logic_vector(7 downto 0);  -- mm_interconnect_1:VRAM_s1_writedata -> VRAM:writedata
-	signal mm_interconnect_1_vram_s1_clken                      : std_logic;                     -- mm_interconnect_1:VRAM_s1_clken -> VRAM:clken
-	signal nios_irq_irq                                         : std_logic_vector(31 downto 0); -- irq_mapper:sender_irq -> NIOS:irq
-	signal rst_controller_reset_out_reset                       : std_logic;                     -- rst_controller:reset_out -> [AvalonRAMConnector_mono_1b_0:reset, VRAM:reset2, mm_interconnect_0:AvalonRAMConnector_mono_1b_0_reset_reset_bridge_in_reset_reset]
-	signal rst_controller_reset_out_reset_req                   : std_logic;                     -- rst_controller:reset_req -> [VRAM:reset_req2, rst_translator:reset_req_in]
-	signal rst_controller_001_reset_out_reset                   : std_logic;                     -- rst_controller_001:reset_out -> [VRAM:reset, irq_mapper:reset, mm_interconnect_1:NIOS_reset_reset_bridge_in_reset_reset, rst_controller_001_reset_out_reset:in]
-	signal rst_controller_001_reset_out_reset_req               : std_logic;                     -- rst_controller_001:reset_req -> [NIOS:reset_req, VRAM:reset_req, rst_translator_001:reset_req_in]
-	signal rst_controller_002_reset_out_reset                   : std_logic;                     -- rst_controller_002:reset_out -> [PLL:reset, mm_interconnect_1:PLL_inclk_interface_reset_reset_bridge_in_reset_reset]
-	signal reset_reset_n_ports_inv                              : std_logic;                     -- reset_reset_n:inv -> [rst_controller:reset_in0, rst_controller_001:reset_in0, rst_controller_002:reset_in0]
-	signal rst_controller_001_reset_out_reset_ports_inv         : std_logic;                     -- rst_controller_001_reset_out_reset:inv -> NIOS:reset_n
+	signal pll_c0_clk                                         : std_logic;                     -- PLL:c0 -> [NIOS:clk, irq_mapper:clk, mm_interconnect_0:PLL_c0_clk, rst_controller:clk]
+	signal pll_c1_clk                                         : std_logic;                     -- PLL:c1 -> [HDMIDriver_mono_1b_0:px_clk, HDMI_IMAGE_GEN_MONO_1b_0:clk]
+	signal pll_c2_clk                                         : std_logic;                     -- PLL:c2 -> HDMIDriver_mono_1b_0:bit_clk
+	signal hdmidriver_mono_1b_0_px_address_px_x               : std_logic_vector(11 downto 0); -- HDMIDriver_mono_1b_0:px_x -> HDMI_IMAGE_GEN_MONO_1b_0:px_x
+	signal hdmidriver_mono_1b_0_px_address_px_y               : std_logic_vector(11 downto 0); -- HDMIDriver_mono_1b_0:px_y -> HDMI_IMAGE_GEN_MONO_1b_0:px_y
+	signal hdmi_image_gen_mono_1b_0_px_color_px_color         : std_logic;                     -- HDMI_IMAGE_GEN_MONO_1b_0:px_color -> HDMIDriver_mono_1b_0:px_color
+	signal nios_data_master_readdata                          : std_logic_vector(31 downto 0); -- mm_interconnect_0:NIOS_data_master_readdata -> NIOS:d_readdata
+	signal nios_data_master_waitrequest                       : std_logic;                     -- mm_interconnect_0:NIOS_data_master_waitrequest -> NIOS:d_waitrequest
+	signal nios_data_master_debugaccess                       : std_logic;                     -- NIOS:debug_mem_slave_debugaccess_to_roms -> mm_interconnect_0:NIOS_data_master_debugaccess
+	signal nios_data_master_address                           : std_logic_vector(12 downto 0); -- NIOS:d_address -> mm_interconnect_0:NIOS_data_master_address
+	signal nios_data_master_byteenable                        : std_logic_vector(3 downto 0);  -- NIOS:d_byteenable -> mm_interconnect_0:NIOS_data_master_byteenable
+	signal nios_data_master_read                              : std_logic;                     -- NIOS:d_read -> mm_interconnect_0:NIOS_data_master_read
+	signal nios_data_master_write                             : std_logic;                     -- NIOS:d_write -> mm_interconnect_0:NIOS_data_master_write
+	signal nios_data_master_writedata                         : std_logic_vector(31 downto 0); -- NIOS:d_writedata -> mm_interconnect_0:NIOS_data_master_writedata
+	signal nios_instruction_master_readdata                   : std_logic_vector(31 downto 0); -- mm_interconnect_0:NIOS_instruction_master_readdata -> NIOS:i_readdata
+	signal nios_instruction_master_waitrequest                : std_logic;                     -- mm_interconnect_0:NIOS_instruction_master_waitrequest -> NIOS:i_waitrequest
+	signal nios_instruction_master_address                    : std_logic_vector(11 downto 0); -- NIOS:i_address -> mm_interconnect_0:NIOS_instruction_master_address
+	signal nios_instruction_master_read                       : std_logic;                     -- NIOS:i_read -> mm_interconnect_0:NIOS_instruction_master_read
+	signal mm_interconnect_0_nios_debug_mem_slave_readdata    : std_logic_vector(31 downto 0); -- NIOS:debug_mem_slave_readdata -> mm_interconnect_0:NIOS_debug_mem_slave_readdata
+	signal mm_interconnect_0_nios_debug_mem_slave_waitrequest : std_logic;                     -- NIOS:debug_mem_slave_waitrequest -> mm_interconnect_0:NIOS_debug_mem_slave_waitrequest
+	signal mm_interconnect_0_nios_debug_mem_slave_debugaccess : std_logic;                     -- mm_interconnect_0:NIOS_debug_mem_slave_debugaccess -> NIOS:debug_mem_slave_debugaccess
+	signal mm_interconnect_0_nios_debug_mem_slave_address     : std_logic_vector(8 downto 0);  -- mm_interconnect_0:NIOS_debug_mem_slave_address -> NIOS:debug_mem_slave_address
+	signal mm_interconnect_0_nios_debug_mem_slave_read        : std_logic;                     -- mm_interconnect_0:NIOS_debug_mem_slave_read -> NIOS:debug_mem_slave_read
+	signal mm_interconnect_0_nios_debug_mem_slave_byteenable  : std_logic_vector(3 downto 0);  -- mm_interconnect_0:NIOS_debug_mem_slave_byteenable -> NIOS:debug_mem_slave_byteenable
+	signal mm_interconnect_0_nios_debug_mem_slave_write       : std_logic;                     -- mm_interconnect_0:NIOS_debug_mem_slave_write -> NIOS:debug_mem_slave_write
+	signal mm_interconnect_0_nios_debug_mem_slave_writedata   : std_logic_vector(31 downto 0); -- mm_interconnect_0:NIOS_debug_mem_slave_writedata -> NIOS:debug_mem_slave_writedata
+	signal mm_interconnect_0_pll_pll_slave_readdata           : std_logic_vector(31 downto 0); -- PLL:readdata -> mm_interconnect_0:PLL_pll_slave_readdata
+	signal mm_interconnect_0_pll_pll_slave_address            : std_logic_vector(1 downto 0);  -- mm_interconnect_0:PLL_pll_slave_address -> PLL:address
+	signal mm_interconnect_0_pll_pll_slave_read               : std_logic;                     -- mm_interconnect_0:PLL_pll_slave_read -> PLL:read
+	signal mm_interconnect_0_pll_pll_slave_write              : std_logic;                     -- mm_interconnect_0:PLL_pll_slave_write -> PLL:write
+	signal mm_interconnect_0_pll_pll_slave_writedata          : std_logic_vector(31 downto 0); -- mm_interconnect_0:PLL_pll_slave_writedata -> PLL:writedata
+	signal nios_irq_irq                                       : std_logic_vector(31 downto 0); -- irq_mapper:sender_irq -> NIOS:irq
+	signal rst_controller_reset_out_reset                     : std_logic;                     -- rst_controller:reset_out -> [irq_mapper:reset, mm_interconnect_0:NIOS_reset_reset_bridge_in_reset_reset, rst_controller_reset_out_reset:in]
+	signal rst_controller_reset_out_reset_req                 : std_logic;                     -- rst_controller:reset_req -> [NIOS:reset_req, rst_translator:reset_req_in]
+	signal rst_controller_001_reset_out_reset                 : std_logic;                     -- rst_controller_001:reset_out -> [PLL:reset, mm_interconnect_0:PLL_inclk_interface_reset_reset_bridge_in_reset_reset]
+	signal reset_reset_n_ports_inv                            : std_logic;                     -- reset_reset_n:inv -> [rst_controller:reset_in0, rst_controller_001:reset_in0]
+	signal rst_controller_reset_out_reset_ports_inv           : std_logic;                     -- rst_controller_reset_out_reset:inv -> NIOS:reset_n
 
 begin
-
-	avalonramconnector_mono_1b_0 : component AvalonRAMConnector
-		generic map (
-			DISPLAY_RES_WIDTH  => 640,
-			DISPLAY_RES_HEIGHT => 480,
-			PX_X_SPLIT         => 20,
-			PX_Y_SPLIT         => 20
-		)
-		port map (
-			address   => avalonramconnector_mono_1b_0_avalon_master_address,   -- avalon_master.address
-			read      => avalonramconnector_mono_1b_0_avalon_master_read,      --              .read
-			readdata  => avalonramconnector_mono_1b_0_avalon_master_readdata,  --              .readdata
-			write     => avalonramconnector_mono_1b_0_avalon_master_write,     --              .write
-			writedata => avalonramconnector_mono_1b_0_avalon_master_writedata, --              .writedata
-			px_clk    => pll_c1_clk,                                           --        px_clk.clk
-			px_x      => hdmidriver_mono_1b_0_px_address_px_x,                 --    px_address.px_x
-			px_y      => hdmidriver_mono_1b_0_px_address_px_y,                 --              .px_y
-			px_color  => avalonramconnector_mono_1b_0_px_color_px_color,       --      px_color.px_color
-			reset     => rst_controller_reset_out_reset                        --         reset.reset
-		);
 
 	hdmidriver_mono_1b_0 : component HDMIDriver
 		generic map (
@@ -432,20 +339,34 @@ begin
 			ROW_BACK_PORCH     => 33
 		)
 		port map (
-			px_clk      => pll_c1_clk,                                     --      clock.clk
-			px_x        => hdmidriver_mono_1b_0_px_address_px_x,           -- px_address.px_x
-			px_y        => hdmidriver_mono_1b_0_px_address_px_y,           --           .px_y
-			px_color    => avalonramconnector_mono_1b_0_px_color_px_color, --   px_color.px_color
-			bit_clk     => pll_c2_clk,                                     --    bit_clk.clk
-			output_clk  => hdmi_output_clk,                                --       hdmi.output_clk
-			output_data => hdmi_output_data                                --           .output_data
+			px_clk      => pll_c1_clk,                                 --      clock.clk
+			px_x        => hdmidriver_mono_1b_0_px_address_px_x,       -- px_address.px_x
+			px_y        => hdmidriver_mono_1b_0_px_address_px_y,       --           .px_y
+			px_color    => hdmi_image_gen_mono_1b_0_px_color_px_color, --   px_color.px_color
+			bit_clk     => pll_c2_clk,                                 --    bit_clk.clk
+			output_clk  => hdmi_output_clk,                            --       hdmi.output_clk
+			output_data => hdmi_output_data                            --           .output_data
+		);
+
+	hdmi_image_gen_mono_1b_0 : component HDMIImageGenerator
+		generic map (
+			X_RES   => 640,
+			Y_RES   => 480,
+			REG_LEN => 5,
+			VEL     => 1
+		)
+		port map (
+			clk      => pll_c1_clk,                                 --      clock.clk
+			px_x     => hdmidriver_mono_1b_0_px_address_px_x,       -- px_address.px_x
+			px_y     => hdmidriver_mono_1b_0_px_address_px_y,       --           .px_y
+			px_color => hdmi_image_gen_mono_1b_0_px_color_px_color  --   px_color.px_color
 		);
 
 	nios : component PongFPGA_NIOS
 		port map (
 			clk                                 => pll_c0_clk,                                         --                       clk.clk
-			reset_n                             => rst_controller_001_reset_out_reset_ports_inv,       --                     reset.reset_n
-			reset_req                           => rst_controller_001_reset_out_reset_req,             --                          .reset_req
+			reset_n                             => rst_controller_reset_out_reset_ports_inv,           --                     reset.reset_n
+			reset_req                           => rst_controller_reset_out_reset_req,                 --                          .reset_req
 			d_address                           => nios_data_master_address,                           --               data_master.address
 			d_byteenable                        => nios_data_master_byteenable,                        --                          .byteenable
 			d_read                              => nios_data_master_read,                              --                          .read
@@ -460,26 +381,26 @@ begin
 			i_waitrequest                       => nios_instruction_master_waitrequest,                --                          .waitrequest
 			irq                                 => nios_irq_irq,                                       --                       irq.irq
 			debug_reset_request                 => open,                                               --       debug_reset_request.reset
-			debug_mem_slave_address             => mm_interconnect_1_nios_debug_mem_slave_address,     --           debug_mem_slave.address
-			debug_mem_slave_byteenable          => mm_interconnect_1_nios_debug_mem_slave_byteenable,  --                          .byteenable
-			debug_mem_slave_debugaccess         => mm_interconnect_1_nios_debug_mem_slave_debugaccess, --                          .debugaccess
-			debug_mem_slave_read                => mm_interconnect_1_nios_debug_mem_slave_read,        --                          .read
-			debug_mem_slave_readdata            => mm_interconnect_1_nios_debug_mem_slave_readdata,    --                          .readdata
-			debug_mem_slave_waitrequest         => mm_interconnect_1_nios_debug_mem_slave_waitrequest, --                          .waitrequest
-			debug_mem_slave_write               => mm_interconnect_1_nios_debug_mem_slave_write,       --                          .write
-			debug_mem_slave_writedata           => mm_interconnect_1_nios_debug_mem_slave_writedata,   --                          .writedata
+			debug_mem_slave_address             => mm_interconnect_0_nios_debug_mem_slave_address,     --           debug_mem_slave.address
+			debug_mem_slave_byteenable          => mm_interconnect_0_nios_debug_mem_slave_byteenable,  --                          .byteenable
+			debug_mem_slave_debugaccess         => mm_interconnect_0_nios_debug_mem_slave_debugaccess, --                          .debugaccess
+			debug_mem_slave_read                => mm_interconnect_0_nios_debug_mem_slave_read,        --                          .read
+			debug_mem_slave_readdata            => mm_interconnect_0_nios_debug_mem_slave_readdata,    --                          .readdata
+			debug_mem_slave_waitrequest         => mm_interconnect_0_nios_debug_mem_slave_waitrequest, --                          .waitrequest
+			debug_mem_slave_write               => mm_interconnect_0_nios_debug_mem_slave_write,       --                          .write
+			debug_mem_slave_writedata           => mm_interconnect_0_nios_debug_mem_slave_writedata,   --                          .writedata
 			dummy_ci_port                       => open                                                -- custom_instruction_master.readra
 		);
 
 	pll : component PongFPGA_PLL
 		port map (
 			clk                => clk_clk,                                   --       inclk_interface.clk
-			reset              => rst_controller_002_reset_out_reset,        -- inclk_interface_reset.reset
-			read               => mm_interconnect_1_pll_pll_slave_read,      --             pll_slave.read
-			write              => mm_interconnect_1_pll_pll_slave_write,     --                      .write
-			address            => mm_interconnect_1_pll_pll_slave_address,   --                      .address
-			readdata           => mm_interconnect_1_pll_pll_slave_readdata,  --                      .readdata
-			writedata          => mm_interconnect_1_pll_pll_slave_writedata, --                      .writedata
+			reset              => rst_controller_001_reset_out_reset,        -- inclk_interface_reset.reset
+			read               => mm_interconnect_0_pll_pll_slave_read,      --             pll_slave.read
+			write              => mm_interconnect_0_pll_pll_slave_write,     --                      .write
+			address            => mm_interconnect_0_pll_pll_slave_address,   --                      .address
+			readdata           => mm_interconnect_0_pll_pll_slave_readdata,  --                      .readdata
+			writedata          => mm_interconnect_0_pll_pll_slave_writedata, --                      .writedata
 			c0                 => pll_c0_clk,                                --                    c0.clk
 			c1                 => pll_c1_clk,                                --                    c1.clk
 			c2                 => pll_c2_clk,                                --                    c2.clk
@@ -499,52 +420,12 @@ begin
 			configupdate       => '0'                                        --           (terminated)
 		);
 
-	vram : component PongFPGA_VRAM
-		port map (
-			clk         => pll_c0_clk,                             --   clk1.clk
-			address     => mm_interconnect_1_vram_s1_address,      --     s1.address
-			clken       => mm_interconnect_1_vram_s1_clken,        --       .clken
-			chipselect  => mm_interconnect_1_vram_s1_chipselect,   --       .chipselect
-			write       => mm_interconnect_1_vram_s1_write,        --       .write
-			readdata    => mm_interconnect_1_vram_s1_readdata,     --       .readdata
-			writedata   => mm_interconnect_1_vram_s1_writedata,    --       .writedata
-			reset       => rst_controller_001_reset_out_reset,     -- reset1.reset
-			reset_req   => rst_controller_001_reset_out_reset_req, --       .reset_req
-			address2    => mm_interconnect_0_vram_s2_address,      --     s2.address
-			chipselect2 => mm_interconnect_0_vram_s2_chipselect,   --       .chipselect
-			clken2      => mm_interconnect_0_vram_s2_clken,        --       .clken
-			write2      => mm_interconnect_0_vram_s2_write,        --       .write
-			readdata2   => mm_interconnect_0_vram_s2_readdata,     --       .readdata
-			writedata2  => mm_interconnect_0_vram_s2_writedata,    --       .writedata
-			clk2        => pll_c1_clk,                             --   clk2.clk
-			reset2      => rst_controller_reset_out_reset,         -- reset2.reset
-			reset_req2  => rst_controller_reset_out_reset_req,     --       .reset_req
-			freeze      => '0'                                     -- (terminated)
-		);
-
 	mm_interconnect_0 : component PongFPGA_mm_interconnect_0
-		port map (
-			PLL_c1_clk                                                     => pll_c1_clk,                                           --                                                   PLL_c1.clk
-			AvalonRAMConnector_mono_1b_0_reset_reset_bridge_in_reset_reset => rst_controller_reset_out_reset,                       -- AvalonRAMConnector_mono_1b_0_reset_reset_bridge_in_reset.reset
-			AvalonRAMConnector_mono_1b_0_avalon_master_address             => avalonramconnector_mono_1b_0_avalon_master_address,   --               AvalonRAMConnector_mono_1b_0_avalon_master.address
-			AvalonRAMConnector_mono_1b_0_avalon_master_read                => avalonramconnector_mono_1b_0_avalon_master_read,      --                                                         .read
-			AvalonRAMConnector_mono_1b_0_avalon_master_readdata            => avalonramconnector_mono_1b_0_avalon_master_readdata,  --                                                         .readdata
-			AvalonRAMConnector_mono_1b_0_avalon_master_write               => avalonramconnector_mono_1b_0_avalon_master_write,     --                                                         .write
-			AvalonRAMConnector_mono_1b_0_avalon_master_writedata           => avalonramconnector_mono_1b_0_avalon_master_writedata, --                                                         .writedata
-			VRAM_s2_address                                                => mm_interconnect_0_vram_s2_address,                    --                                                  VRAM_s2.address
-			VRAM_s2_write                                                  => mm_interconnect_0_vram_s2_write,                      --                                                         .write
-			VRAM_s2_readdata                                               => mm_interconnect_0_vram_s2_readdata,                   --                                                         .readdata
-			VRAM_s2_writedata                                              => mm_interconnect_0_vram_s2_writedata,                  --                                                         .writedata
-			VRAM_s2_chipselect                                             => mm_interconnect_0_vram_s2_chipselect,                 --                                                         .chipselect
-			VRAM_s2_clken                                                  => mm_interconnect_0_vram_s2_clken                       --                                                         .clken
-		);
-
-	mm_interconnect_1 : component PongFPGA_mm_interconnect_1
 		port map (
 			CLK_clk_clk                                           => clk_clk,                                            --                                         CLK_clk.clk
 			PLL_c0_clk                                            => pll_c0_clk,                                         --                                          PLL_c0.clk
-			NIOS_reset_reset_bridge_in_reset_reset                => rst_controller_001_reset_out_reset,                 --                NIOS_reset_reset_bridge_in_reset.reset
-			PLL_inclk_interface_reset_reset_bridge_in_reset_reset => rst_controller_002_reset_out_reset,                 -- PLL_inclk_interface_reset_reset_bridge_in_reset.reset
+			NIOS_reset_reset_bridge_in_reset_reset                => rst_controller_reset_out_reset,                     --                NIOS_reset_reset_bridge_in_reset.reset
+			PLL_inclk_interface_reset_reset_bridge_in_reset_reset => rst_controller_001_reset_out_reset,                 -- PLL_inclk_interface_reset_reset_bridge_in_reset.reset
 			NIOS_data_master_address                              => nios_data_master_address,                           --                                NIOS_data_master.address
 			NIOS_data_master_waitrequest                          => nios_data_master_waitrequest,                       --                                                .waitrequest
 			NIOS_data_master_byteenable                           => nios_data_master_byteenable,                        --                                                .byteenable
@@ -557,32 +438,26 @@ begin
 			NIOS_instruction_master_waitrequest                   => nios_instruction_master_waitrequest,                --                                                .waitrequest
 			NIOS_instruction_master_read                          => nios_instruction_master_read,                       --                                                .read
 			NIOS_instruction_master_readdata                      => nios_instruction_master_readdata,                   --                                                .readdata
-			NIOS_debug_mem_slave_address                          => mm_interconnect_1_nios_debug_mem_slave_address,     --                            NIOS_debug_mem_slave.address
-			NIOS_debug_mem_slave_write                            => mm_interconnect_1_nios_debug_mem_slave_write,       --                                                .write
-			NIOS_debug_mem_slave_read                             => mm_interconnect_1_nios_debug_mem_slave_read,        --                                                .read
-			NIOS_debug_mem_slave_readdata                         => mm_interconnect_1_nios_debug_mem_slave_readdata,    --                                                .readdata
-			NIOS_debug_mem_slave_writedata                        => mm_interconnect_1_nios_debug_mem_slave_writedata,   --                                                .writedata
-			NIOS_debug_mem_slave_byteenable                       => mm_interconnect_1_nios_debug_mem_slave_byteenable,  --                                                .byteenable
-			NIOS_debug_mem_slave_waitrequest                      => mm_interconnect_1_nios_debug_mem_slave_waitrequest, --                                                .waitrequest
-			NIOS_debug_mem_slave_debugaccess                      => mm_interconnect_1_nios_debug_mem_slave_debugaccess, --                                                .debugaccess
-			PLL_pll_slave_address                                 => mm_interconnect_1_pll_pll_slave_address,            --                                   PLL_pll_slave.address
-			PLL_pll_slave_write                                   => mm_interconnect_1_pll_pll_slave_write,              --                                                .write
-			PLL_pll_slave_read                                    => mm_interconnect_1_pll_pll_slave_read,               --                                                .read
-			PLL_pll_slave_readdata                                => mm_interconnect_1_pll_pll_slave_readdata,           --                                                .readdata
-			PLL_pll_slave_writedata                               => mm_interconnect_1_pll_pll_slave_writedata,          --                                                .writedata
-			VRAM_s1_address                                       => mm_interconnect_1_vram_s1_address,                  --                                         VRAM_s1.address
-			VRAM_s1_write                                         => mm_interconnect_1_vram_s1_write,                    --                                                .write
-			VRAM_s1_readdata                                      => mm_interconnect_1_vram_s1_readdata,                 --                                                .readdata
-			VRAM_s1_writedata                                     => mm_interconnect_1_vram_s1_writedata,                --                                                .writedata
-			VRAM_s1_chipselect                                    => mm_interconnect_1_vram_s1_chipselect,               --                                                .chipselect
-			VRAM_s1_clken                                         => mm_interconnect_1_vram_s1_clken                     --                                                .clken
+			NIOS_debug_mem_slave_address                          => mm_interconnect_0_nios_debug_mem_slave_address,     --                            NIOS_debug_mem_slave.address
+			NIOS_debug_mem_slave_write                            => mm_interconnect_0_nios_debug_mem_slave_write,       --                                                .write
+			NIOS_debug_mem_slave_read                             => mm_interconnect_0_nios_debug_mem_slave_read,        --                                                .read
+			NIOS_debug_mem_slave_readdata                         => mm_interconnect_0_nios_debug_mem_slave_readdata,    --                                                .readdata
+			NIOS_debug_mem_slave_writedata                        => mm_interconnect_0_nios_debug_mem_slave_writedata,   --                                                .writedata
+			NIOS_debug_mem_slave_byteenable                       => mm_interconnect_0_nios_debug_mem_slave_byteenable,  --                                                .byteenable
+			NIOS_debug_mem_slave_waitrequest                      => mm_interconnect_0_nios_debug_mem_slave_waitrequest, --                                                .waitrequest
+			NIOS_debug_mem_slave_debugaccess                      => mm_interconnect_0_nios_debug_mem_slave_debugaccess, --                                                .debugaccess
+			PLL_pll_slave_address                                 => mm_interconnect_0_pll_pll_slave_address,            --                                   PLL_pll_slave.address
+			PLL_pll_slave_write                                   => mm_interconnect_0_pll_pll_slave_write,              --                                                .write
+			PLL_pll_slave_read                                    => mm_interconnect_0_pll_pll_slave_read,               --                                                .read
+			PLL_pll_slave_readdata                                => mm_interconnect_0_pll_pll_slave_readdata,           --                                                .readdata
+			PLL_pll_slave_writedata                               => mm_interconnect_0_pll_pll_slave_writedata           --                                                .writedata
 		);
 
 	irq_mapper : component PongFPGA_irq_mapper
 		port map (
-			clk        => pll_c0_clk,                         --       clk.clk
-			reset      => rst_controller_001_reset_out_reset, -- clk_reset.reset
-			sender_irq => nios_irq_irq                        --    sender.irq
+			clk        => pll_c0_clk,                     --       clk.clk
+			reset      => rst_controller_reset_out_reset, -- clk_reset.reset
+			sender_irq => nios_irq_irq                    --    sender.irq
 		);
 
 	rst_controller : component pongfpga_rst_controller
@@ -614,7 +489,7 @@ begin
 		)
 		port map (
 			reset_in0      => reset_reset_n_ports_inv,            -- reset_in0.reset
-			clk            => pll_c1_clk,                         --       clk.clk
+			clk            => pll_c0_clk,                         --       clk.clk
 			reset_out      => rst_controller_reset_out_reset,     -- reset_out.reset
 			reset_req      => rst_controller_reset_out_reset_req, --          .reset_req
 			reset_req_in0  => '0',                                -- (terminated)
@@ -650,72 +525,7 @@ begin
 			reset_req_in15 => '0'                                 -- (terminated)
 		);
 
-	rst_controller_001 : component pongfpga_rst_controller
-		generic map (
-			NUM_RESET_INPUTS          => 1,
-			OUTPUT_RESET_SYNC_EDGES   => "deassert",
-			SYNC_DEPTH                => 2,
-			RESET_REQUEST_PRESENT     => 1,
-			RESET_REQ_WAIT_TIME       => 1,
-			MIN_RST_ASSERTION_TIME    => 3,
-			RESET_REQ_EARLY_DSRT_TIME => 1,
-			USE_RESET_REQUEST_IN0     => 0,
-			USE_RESET_REQUEST_IN1     => 0,
-			USE_RESET_REQUEST_IN2     => 0,
-			USE_RESET_REQUEST_IN3     => 0,
-			USE_RESET_REQUEST_IN4     => 0,
-			USE_RESET_REQUEST_IN5     => 0,
-			USE_RESET_REQUEST_IN6     => 0,
-			USE_RESET_REQUEST_IN7     => 0,
-			USE_RESET_REQUEST_IN8     => 0,
-			USE_RESET_REQUEST_IN9     => 0,
-			USE_RESET_REQUEST_IN10    => 0,
-			USE_RESET_REQUEST_IN11    => 0,
-			USE_RESET_REQUEST_IN12    => 0,
-			USE_RESET_REQUEST_IN13    => 0,
-			USE_RESET_REQUEST_IN14    => 0,
-			USE_RESET_REQUEST_IN15    => 0,
-			ADAPT_RESET_REQUEST       => 0
-		)
-		port map (
-			reset_in0      => reset_reset_n_ports_inv,                -- reset_in0.reset
-			clk            => pll_c0_clk,                             --       clk.clk
-			reset_out      => rst_controller_001_reset_out_reset,     -- reset_out.reset
-			reset_req      => rst_controller_001_reset_out_reset_req, --          .reset_req
-			reset_req_in0  => '0',                                    -- (terminated)
-			reset_in1      => '0',                                    -- (terminated)
-			reset_req_in1  => '0',                                    -- (terminated)
-			reset_in2      => '0',                                    -- (terminated)
-			reset_req_in2  => '0',                                    -- (terminated)
-			reset_in3      => '0',                                    -- (terminated)
-			reset_req_in3  => '0',                                    -- (terminated)
-			reset_in4      => '0',                                    -- (terminated)
-			reset_req_in4  => '0',                                    -- (terminated)
-			reset_in5      => '0',                                    -- (terminated)
-			reset_req_in5  => '0',                                    -- (terminated)
-			reset_in6      => '0',                                    -- (terminated)
-			reset_req_in6  => '0',                                    -- (terminated)
-			reset_in7      => '0',                                    -- (terminated)
-			reset_req_in7  => '0',                                    -- (terminated)
-			reset_in8      => '0',                                    -- (terminated)
-			reset_req_in8  => '0',                                    -- (terminated)
-			reset_in9      => '0',                                    -- (terminated)
-			reset_req_in9  => '0',                                    -- (terminated)
-			reset_in10     => '0',                                    -- (terminated)
-			reset_req_in10 => '0',                                    -- (terminated)
-			reset_in11     => '0',                                    -- (terminated)
-			reset_req_in11 => '0',                                    -- (terminated)
-			reset_in12     => '0',                                    -- (terminated)
-			reset_req_in12 => '0',                                    -- (terminated)
-			reset_in13     => '0',                                    -- (terminated)
-			reset_req_in13 => '0',                                    -- (terminated)
-			reset_in14     => '0',                                    -- (terminated)
-			reset_req_in14 => '0',                                    -- (terminated)
-			reset_in15     => '0',                                    -- (terminated)
-			reset_req_in15 => '0'                                     -- (terminated)
-		);
-
-	rst_controller_002 : component pongfpga_rst_controller_002
+	rst_controller_001 : component pongfpga_rst_controller_001
 		generic map (
 			NUM_RESET_INPUTS          => 1,
 			OUTPUT_RESET_SYNC_EDGES   => "deassert",
@@ -745,7 +555,7 @@ begin
 		port map (
 			reset_in0      => reset_reset_n_ports_inv,            -- reset_in0.reset
 			clk            => clk_clk,                            --       clk.clk
-			reset_out      => rst_controller_002_reset_out_reset, -- reset_out.reset
+			reset_out      => rst_controller_001_reset_out_reset, -- reset_out.reset
 			reset_req      => open,                               -- (terminated)
 			reset_req_in0  => '0',                                -- (terminated)
 			reset_in1      => '0',                                -- (terminated)
@@ -782,6 +592,6 @@ begin
 
 	reset_reset_n_ports_inv <= not reset_reset_n;
 
-	rst_controller_001_reset_out_reset_ports_inv <= not rst_controller_001_reset_out_reset;
+	rst_controller_reset_out_reset_ports_inv <= not rst_controller_reset_out_reset;
 
 end architecture rtl; -- of PongFPGA

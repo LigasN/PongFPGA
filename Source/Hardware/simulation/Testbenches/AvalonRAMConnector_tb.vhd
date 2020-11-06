@@ -123,7 +123,7 @@ BEGIN
 			--	readDataInNext := '0';
 			--end if;
 			
-			--lastaddress := address;
+			lastaddress := address;
 			
 		end loop;
 		wait;
