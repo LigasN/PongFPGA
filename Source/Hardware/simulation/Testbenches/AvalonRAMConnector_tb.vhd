@@ -80,32 +80,17 @@ BEGIN
 
 
 	Process
-		variable VARpx_x  		: std_logic_vector(11 downto 0):= "000000000000";
-		variable VARpx_y  		: std_logic_vector(11 downto 0):= "000000000000";
+		variable VARpx_x  		: std_logic_vector(11 downto 0):= (others=>'0');
+		variable VARpx_y  		: std_logic_vector(11 downto 0):= (others=>'0');
 		constant pattern0 		: std_logic_vector(7  downto 0):= "10101010";
 		constant pattern1 		: std_logic_vector(7  downto 0):= "01010101";
 		variable patternCounter : std_logic := '0';
+		variable readDataInNext : std_logic := '0';
+		variable lastaddress    : std_logic_vector(20 downto 0):= (others=>'0');
 	Begin
 		readdata 	   <= pattern0;
 		for repeatLength in 1 to FRAMES*DISPLAY_RES_WIDTH*DISPLAY_RES_HEIGHT
-		loop
-			
-			px_x  		<= VARpx_x;
-			px_y  		<= VARpx_y;
-			
-			wait for 1 ns;
-			
-			if read = '1' then
-				if patternCounter = '0' then
-					readdata 	   <= pattern1;
-					patternCounter := '1';
-				else
-					readdata 	   <= pattern0;
-					patternCounter := '0';
-				end if;
-			end if;
-			
-			wait for 1 ns;
+		loop			
 			VARpx_x  := VARpx_x  + 1;
 			
 			if VARpx_x  = DISPLAY_RES_WIDTH then
@@ -116,6 +101,30 @@ BEGIN
 					VARpx_y := (others=>'0');
 				end if;
 			end if;
+			
+			px_x  		<= VARpx_x;
+			px_y  		<= VARpx_y;
+			
+			wait for 2 ns;
+			
+			if lastaddress /= address then
+				if patternCounter = '0' then
+					readdata 	   <= pattern1;
+					patternCounter := '1';
+				else
+					readdata 	   <= pattern0;
+					patternCounter := '0';
+				end if;
+			end if;
+			
+			--if lastaddress /= address then
+			--	readDataInNext := '1';
+			--else
+			--	readDataInNext := '0';
+			--end if;
+			
+			--lastaddress := address;
+			
 		end loop;
 		wait;
 	End Process;

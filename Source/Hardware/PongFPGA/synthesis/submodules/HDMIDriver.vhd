@@ -123,12 +123,14 @@ begin
 		end if;
 	end process;
 	
-	-- Passing pixel address to output
-	px_x <= std_logic_vector(to_unsigned(px_data_counter.x, px_x'length)) when 
-								px_data_counter.x < DISPLAY_RES_WIDTH else (others=>'0');
+	-- Passing next pixel address to output
+	px_x <= std_logic_vector(to_unsigned(px_data_counter.x + 1, px_x'length)) when 
+											px_data_counter.x + 1 < DISPLAY_RES_WIDTH else (others=>'0');
 
 	px_y <= std_logic_vector(to_unsigned(px_data_counter.y, px_y'length)) when 
-								px_data_counter.y < DISPLAY_RES_HEIGHT else (others=>'0');
+											px_data_counter.x + 1 < DISPLAY_RES_WIDTH else 
+			std_logic_vector(to_unsigned(px_data_counter.y + 1, px_y'length)) when 
+								px_data_counter.y + 1 < DISPLAY_RES_HEIGHT else (others=>'0');
 
 	-- Is displaying info 
 	is_displaying <= '1' when px_data_counter.x < DISPLAY_RES_WIDTH and 

@@ -79,12 +79,12 @@ begin
 	
 	process(px_clk) is
 	begin
-		-- Assigning values on clock falling edge
 		if falling_edge(px_clk) then
 			-- Assigning color value to output before new bitenable comes
 			px_color <= readdata(to_integer(unsigned(bitenable)));
 		end if;
 	end process;
+	
 	
 	-- Divide pixel addresses from screen for RAM pixel size	
 	PX_X_DIV : Divider port map
@@ -119,7 +119,7 @@ begin
 	address <= RAM_address_bit(23 downto 3);
 	
 	-- Read only when end of byte is clode for biteenable
-	read <= '1' when bitenable = "111" and to_integer(unsigned(split_part_px)) = PX_X_SPLIT - 1 else '0';
+	read <= '0';--'1' when bitenable = "111" and to_integer(unsigned(split_part_px)) = PX_X_SPLIT - 1 else '0';
 	
 	-- Get proper bitenable for getting px_color from data
 	bitenable <= RAM_address_bit(2 downto 0);

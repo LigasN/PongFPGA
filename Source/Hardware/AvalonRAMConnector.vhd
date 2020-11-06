@@ -71,8 +71,6 @@ signal split_part_px	: std_logic_vector (5  downto 0):= (others=>'0');
 signal RAM_address_bit 	: std_logic_vector (23 downto 0):= (others=>'0');
 signal bitenable 		: std_logic_vector (2  downto 0):= (others=>'0');
 
-signal readdata_reg		: std_logic_vector (7  downto 0):= (others=>'0');
-
 begin
 	
 	-- constant values (we needs only reading from memory at this place)
@@ -121,7 +119,7 @@ begin
 	address <= RAM_address_bit(23 downto 3);
 	
 	-- Read only when end of byte is clode for biteenable
-	read <= '1' when bitenable = "111" and to_integer(unsigned(split_part_px)) = PX_X_SPLIT - 1 else '0';
+	read <= '0';--'1' when bitenable = "111" and to_integer(unsigned(split_part_px)) = PX_X_SPLIT - 1 else '0';
 	
 	-- Get proper bitenable for getting px_color from data
 	bitenable <= RAM_address_bit(2 downto 0);
