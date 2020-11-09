@@ -72,3 +72,6 @@
 
 # Materials from book "Systemy embedded w FPGA".
 !/Documents/*
+
+# Assets with graphics for Platform Designer components
+!/Assets/*
