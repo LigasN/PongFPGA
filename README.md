@@ -20,8 +20,8 @@ Opracowanie sprzętowo-programowego systemu realizującego grę typu "Pong". Kon
 * wykonanej pracy, lista dat z komentarzami- [LogWork](Documents/LogWork.md "LogWork")
 
 ## Linki
-* [HardwareSources](Source/Hardware/ "hardware sources")
-* [Testbenches](Source/Hardware/simulation/Testbenches/ "testbenches")
-* [TopLevelEntity](Source/Hardware/PongFPGA/synthesis/PongFPGA.vhd "top level entity")
-* [RAMInitialisationFile](Source/Hardware/simulation/simulationFiles/StaticImage.mif "RAM initialisation file")
-* [ReadyBoardConfiguration](Source/Hardware/output_files/ "ready board configuration")
+* [hardware sources](Source/Hardware/ "hardware sources")
+* [testbenches](Source/Hardware/simulation/Testbenches/ "testbenches")
+* [top level entity](Source/Hardware/PongFPGA/synthesis/PongFPGA.vhd "top level entity")
+* [RAM initialisation file](Source/Hardware/simulation/simulationFiles/StaticImage.mif "RAM initialisation file")
+* [ready board configuration](Source/Hardware/output_files/ "ready board configuration")
