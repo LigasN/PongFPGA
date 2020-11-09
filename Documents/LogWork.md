@@ -13,4 +13,4 @@ Zrobiony sterownik HDMI ze sprzętowym, testowym generatorem obrazu.
 
 # 06.11.2020
 Dołączony VRAM, działający connector RAM-u i sterownika HDMI, poprawione adresowanie pikseli w sterowniku.
-![ReadFromRAM](Documents/Assets/ReadFromRAM.jpg)
+![ReadFromRAM](Assets/ReadFromRAM.jpg)
