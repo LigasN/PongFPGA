@@ -18,3 +18,10 @@ Opracowanie sprzętowo-programowego systemu realizującego grę typu "Pong". Kon
 * specyfikacja projektu, plik formatu markdown- [Specifications](Documents/Specifications.md "Specifications")
 * szybka instrukcja rozgrywki, plik formatu markdown- [HowToPlay](Documents/HowToPlay.md "HowToPlay")
 * wykonanej pracy, lista dat z komentarzami- [LogWork](Documents/LogWork.md "LogWork")
+
+## Linki
+* [hardware sources](Source/Hardware/ "hardware sources")
+* [testbenches](Source/Hardware/simulation/Testbenches/ "testbenches")
+* [top level entity](Source/Hardware/PongFPGA/synthesis/PongFPGA.vhd "top level entity")
+* [RAM initialisation file](Source/Hardware/simulation/simulationFiles/StaticImage.mif "RAM initialisation file")
+* [ready board configuration](Source/Hardware/output_files/ "ready board configuration")
