@@ -64,7 +64,7 @@ architecture rtl of PongFPGA is
 			clk                                 : in  std_logic                     := 'X';             -- clk
 			reset_n                             : in  std_logic                     := 'X';             -- reset_n
 			reset_req                           : in  std_logic                     := 'X';             -- reset_req
-			d_address                           : out std_logic_vector(16 downto 0);                    -- address
+			d_address                           : out std_logic_vector(15 downto 0);                    -- address
 			d_byteenable                        : out std_logic_vector(3 downto 0);                     -- byteenable
 			d_read                              : out std_logic;                                        -- read
 			d_readdata                          : in  std_logic_vector(31 downto 0) := (others => 'X'); -- readdata
@@ -72,7 +72,7 @@ architecture rtl of PongFPGA is
 			d_write                             : out std_logic;                                        -- write
 			d_writedata                         : out std_logic_vector(31 downto 0);                    -- writedata
 			debug_mem_slave_debugaccess_to_roms : out std_logic;                                        -- debugaccess
-			i_address                           : out std_logic_vector(16 downto 0);                    -- address
+			i_address                           : out std_logic_vector(15 downto 0);                    -- address
 			i_read                              : out std_logic;                                        -- read
 			i_readdata                          : in  std_logic_vector(31 downto 0) := (others => 'X'); -- readdata
 			i_waitrequest                       : in  std_logic                     := 'X';             -- waitrequest
@@ -192,7 +192,7 @@ architecture rtl of PongFPGA is
 			PLL_c0_clk                                            : in  std_logic                     := 'X';             -- clk
 			NIOS_reset_reset_bridge_in_reset_reset                : in  std_logic                     := 'X';             -- reset
 			PLL_inclk_interface_reset_reset_bridge_in_reset_reset : in  std_logic                     := 'X';             -- reset
-			NIOS_data_master_address                              : in  std_logic_vector(16 downto 0) := (others => 'X'); -- address
+			NIOS_data_master_address                              : in  std_logic_vector(15 downto 0) := (others => 'X'); -- address
 			NIOS_data_master_waitrequest                          : out std_logic;                                        -- waitrequest
 			NIOS_data_master_byteenable                           : in  std_logic_vector(3 downto 0)  := (others => 'X'); -- byteenable
 			NIOS_data_master_read                                 : in  std_logic                     := 'X';             -- read
@@ -200,7 +200,7 @@ architecture rtl of PongFPGA is
 			NIOS_data_master_write                                : in  std_logic                     := 'X';             -- write
 			NIOS_data_master_writedata                            : in  std_logic_vector(31 downto 0) := (others => 'X'); -- writedata
 			NIOS_data_master_debugaccess                          : in  std_logic                     := 'X';             -- debugaccess
-			NIOS_instruction_master_address                       : in  std_logic_vector(16 downto 0) := (others => 'X'); -- address
+			NIOS_instruction_master_address                       : in  std_logic_vector(15 downto 0) := (others => 'X'); -- address
 			NIOS_instruction_master_waitrequest                   : out std_logic;                                        -- waitrequest
 			NIOS_instruction_master_read                          : in  std_logic                     := 'X';             -- read
 			NIOS_instruction_master_readdata                      : out std_logic_vector(31 downto 0);                    -- readdata
@@ -395,14 +395,14 @@ architecture rtl of PongFPGA is
 	signal nios_data_master_readdata                            : std_logic_vector(31 downto 0); -- mm_interconnect_1:NIOS_data_master_readdata -> NIOS:d_readdata
 	signal nios_data_master_waitrequest                         : std_logic;                     -- mm_interconnect_1:NIOS_data_master_waitrequest -> NIOS:d_waitrequest
 	signal nios_data_master_debugaccess                         : std_logic;                     -- NIOS:debug_mem_slave_debugaccess_to_roms -> mm_interconnect_1:NIOS_data_master_debugaccess
-	signal nios_data_master_address                             : std_logic_vector(16 downto 0); -- NIOS:d_address -> mm_interconnect_1:NIOS_data_master_address
+	signal nios_data_master_address                             : std_logic_vector(15 downto 0); -- NIOS:d_address -> mm_interconnect_1:NIOS_data_master_address
 	signal nios_data_master_byteenable                          : std_logic_vector(3 downto 0);  -- NIOS:d_byteenable -> mm_interconnect_1:NIOS_data_master_byteenable
 	signal nios_data_master_read                                : std_logic;                     -- NIOS:d_read -> mm_interconnect_1:NIOS_data_master_read
 	signal nios_data_master_write                               : std_logic;                     -- NIOS:d_write -> mm_interconnect_1:NIOS_data_master_write
 	signal nios_data_master_writedata                           : std_logic_vector(31 downto 0); -- NIOS:d_writedata -> mm_interconnect_1:NIOS_data_master_writedata
 	signal nios_instruction_master_readdata                     : std_logic_vector(31 downto 0); -- mm_interconnect_1:NIOS_instruction_master_readdata -> NIOS:i_readdata
 	signal nios_instruction_master_waitrequest                  : std_logic;                     -- mm_interconnect_1:NIOS_instruction_master_waitrequest -> NIOS:i_waitrequest
-	signal nios_instruction_master_address                      : std_logic_vector(16 downto 0); -- NIOS:i_address -> mm_interconnect_1:NIOS_instruction_master_address
+	signal nios_instruction_master_address                      : std_logic_vector(15 downto 0); -- NIOS:i_address -> mm_interconnect_1:NIOS_instruction_master_address
 	signal nios_instruction_master_read                         : std_logic;                     -- NIOS:i_read -> mm_interconnect_1:NIOS_instruction_master_read
 	signal mm_interconnect_1_sysid_control_slave_readdata       : std_logic_vector(31 downto 0); -- SysID:readdata -> mm_interconnect_1:SysID_control_slave_readdata
 	signal mm_interconnect_1_sysid_control_slave_address        : std_logic_vector(0 downto 0);  -- mm_interconnect_1:SysID_control_slave_address -> SysID:address

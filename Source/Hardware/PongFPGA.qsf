@@ -346,5 +346,5 @@ set_instance_assignment -name IO_STANDARD SLVS -to hdmi_output_data[1]
 set_instance_assignment -name IO_STANDARD SLVS -to hdmi_output_data[0]
 set_instance_assignment -name IO_STANDARD SLVS -to hdmi_output_data
 set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVTTL"
-set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
 set_global_assignment -name SLD_FILE db/realTimeSimulation_auto_stripped.stp
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

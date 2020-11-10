@@ -69,12 +69,12 @@
 # Other stuff
 !*.tcl
 
-## Check if foregoing are not in subdirectories
-!*/
-
 # Materials from book "Systemy embedded w FPGA".
 !/Documents/*
-!/Documents/Assets/*
 
 # Assets with graphics for Platform Designer components
 !/Assets/*
+
+## Check if foregoing are not in subdirectories
+!*/
+
