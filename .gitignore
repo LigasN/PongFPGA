@@ -69,8 +69,11 @@
 # Other stuff
 !*.tcl
 
-# Materials from book "Systemy embedded w FPGA".
+# Materials from book "Systemy embedded w FPGA" and assets formats
 !/Documents/*
+!*.mp4
+!*.jpg
+!*.xcf
 
 # Assets with graphics for Platform Designer components
 !/Assets/*
