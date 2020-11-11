@@ -9,14 +9,17 @@ Zakończenie przerabiania książki "Systemy embedded w FPGA" autorstwa dr. Piot
 
 # 28.10.2020
 Zrobiony sterownik HDMI ze sprzętowym, testowym generatorem obrazu.
+
 ![HDMIDriver&ImageGenerator](https://j.gifs.com/WL4rZn.gif)
 
 # 06.11.2020
 Dołączony VRAM, działający connector RAM-u i sterownika HDMI, poprawione adresowanie pikseli w sterowniku.
+
 ![ReadFromRAM](Assets/ReadFromRAM.jpg)
 
 # 10.11.2020
 Podmiana statycznego obrazu z inicjalizacji pamięci VRAM, obrazem statycznym ustawionym z "kodu".
+
 ![StaticImageFromSoft](https://j.gifs.com/vlV1qX.gif)
 
 # 11.11.2020
