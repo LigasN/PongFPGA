@@ -4,7 +4,7 @@
  * Machine generated for CPU 'NIOS' in SOPC Builder design 'PongFPGA'
  * SOPC Builder design path: D:/Dokumenty/Pulpit/programming_stuff/projekty_wersje_ostateczne/PongFPGA/Source/Hardware/PongFPGA.sopcinfo
  *
- * Generated: Tue Nov 10 16:04:56 CET 2020
+ * Generated: Wed Nov 11 21:09:47 CET 2020
  */
 
 /*
@@ -60,6 +60,7 @@
 
 #include "altera_nios2_gen2_irq.h"
 #include "altera_avalon_sysid_qsys.h"
+#include "altera_avalon_timer.h"
 
 /*
  * Allocate the device storage
@@ -67,6 +68,7 @@
 
 ALTERA_NIOS2_GEN2_IRQ_INSTANCE ( NIOS, NIOS);
 ALTERA_AVALON_SYSID_QSYS_INSTANCE ( SYSID, SysID);
+ALTERA_AVALON_TIMER_INSTANCE ( SW_TIMER, SW_TIMER);
 
 /*
  * Initialize the interrupt controller devices
@@ -89,5 +91,6 @@ void alt_irq_init ( const void* base )
 
 void alt_sys_init( void )
 {
+    ALTERA_AVALON_TIMER_INIT ( SW_TIMER, SW_TIMER);
     ALTERA_AVALON_SYSID_QSYS_INIT ( SYSID, SysID);
 }

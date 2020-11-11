@@ -42,6 +42,7 @@
 *
 # But..
 !/*.gitignore
+
 ## Quartus files
 !*.qpf
 !*.qsf
@@ -62,20 +63,26 @@
 !*.sof
 !*.qip
 !*.sip
-## tbd
-# C programming files
+### tbd
+
+## C programming files
 !*.c
+!*.cpp
 !*.h
-# Other stuff
+!*.project
+!Makefile
+!*.map
+
+## Other stuff
 !*.tcl
 
-# Materials from book "Systemy embedded w FPGA" and assets formats
+## Materials from book "Systemy embedded w FPGA" and assets formats
 !/Documents/*
 !*.mp4
 !*.jpg
 !*.xcf
 
-# Assets with graphics for Platform Designer components
+## Assets with graphics for Platform Designer components
 !/Assets/*
 
 ## Check if foregoing are not in subdirectories

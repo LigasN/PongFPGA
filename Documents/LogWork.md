@@ -18,3 +18,8 @@ Dołączony VRAM, działający connector RAM-u i sterownika HDMI, poprawione adr
 # 10.11.2020
 Podmiana statycznego obrazu z inicjalizacji pamięci VRAM, obrazem statycznym ustawionym z "kodu".
 ![StaticImageFromSoft](https://j.gifs.com/vlV1qX.gif)
+
+# 11.11.2020
+Zaiplementowany licznik do likwidacji drgania styków i porty wejścia/ wyjścia na przyciski. W oprogramowaniu
+dodana obsługa przerwań i wyświetlanie reagującego na nie kwadratu.
+![Interrupts&MoveOnScreen](https://j.gifs.com/D145vK.gif)

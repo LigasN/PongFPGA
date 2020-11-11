@@ -8,10 +8,11 @@ use IEEE.numeric_std.all;
 
 entity PongFPGA is
 	port (
-		clk_clk          : in  std_logic                    := '0'; --   clk.clk
-		hdmi_output_clk  : out std_logic;                           --  hdmi.output_clk
-		hdmi_output_data : out std_logic_vector(2 downto 0);        --      .output_data
-		reset_reset_n    : in  std_logic                    := '0'  -- reset.reset_n
+		clk_clk          : in  std_logic                    := '0';             --   clk.clk
+		hdmi_output_clk  : out std_logic;                                       --  hdmi.output_clk
+		hdmi_output_data : out std_logic_vector(2 downto 0);                    --      .output_data
+		reset_reset_n    : in  std_logic                    := '0';             -- reset.reset_n
+		sw_export        : in  std_logic_vector(2 downto 0) := (others => '0')  --    sw.export
 	);
 end entity PongFPGA;
 
@@ -135,6 +136,33 @@ architecture rtl of PongFPGA is
 		);
 	end component PongFPGA_RAM;
 
+	component PongFPGA_SW is
+		port (
+			clk        : in  std_logic                     := 'X';             -- clk
+			reset_n    : in  std_logic                     := 'X';             -- reset_n
+			address    : in  std_logic_vector(1 downto 0)  := (others => 'X'); -- address
+			write_n    : in  std_logic                     := 'X';             -- write_n
+			writedata  : in  std_logic_vector(31 downto 0) := (others => 'X'); -- writedata
+			chipselect : in  std_logic                     := 'X';             -- chipselect
+			readdata   : out std_logic_vector(31 downto 0);                    -- readdata
+			in_port    : in  std_logic_vector(2 downto 0)  := (others => 'X'); -- export
+			irq        : out std_logic                                         -- irq
+		);
+	end component PongFPGA_SW;
+
+	component PongFPGA_SW_TIMER is
+		port (
+			clk        : in  std_logic                     := 'X';             -- clk
+			reset_n    : in  std_logic                     := 'X';             -- reset_n
+			address    : in  std_logic_vector(2 downto 0)  := (others => 'X'); -- address
+			writedata  : in  std_logic_vector(15 downto 0) := (others => 'X'); -- writedata
+			readdata   : out std_logic_vector(15 downto 0);                    -- readdata
+			chipselect : in  std_logic                     := 'X';             -- chipselect
+			write_n    : in  std_logic                     := 'X';             -- write_n
+			irq        : out std_logic                                         -- irq
+		);
+	end component PongFPGA_SW_TIMER;
+
 	component PongFPGA_SysID is
 		port (
 			clock    : in  std_logic                     := 'X'; -- clk
@@ -224,6 +252,16 @@ architecture rtl of PongFPGA is
 			RAM_s1_byteenable                                     : out std_logic_vector(3 downto 0);                     -- byteenable
 			RAM_s1_chipselect                                     : out std_logic;                                        -- chipselect
 			RAM_s1_clken                                          : out std_logic;                                        -- clken
+			SW_s1_address                                         : out std_logic_vector(1 downto 0);                     -- address
+			SW_s1_write                                           : out std_logic;                                        -- write
+			SW_s1_readdata                                        : in  std_logic_vector(31 downto 0) := (others => 'X'); -- readdata
+			SW_s1_writedata                                       : out std_logic_vector(31 downto 0);                    -- writedata
+			SW_s1_chipselect                                      : out std_logic;                                        -- chipselect
+			SW_TIMER_s1_address                                   : out std_logic_vector(2 downto 0);                     -- address
+			SW_TIMER_s1_write                                     : out std_logic;                                        -- write
+			SW_TIMER_s1_readdata                                  : in  std_logic_vector(15 downto 0) := (others => 'X'); -- readdata
+			SW_TIMER_s1_writedata                                 : out std_logic_vector(15 downto 0);                    -- writedata
+			SW_TIMER_s1_chipselect                                : out std_logic;                                        -- chipselect
 			SysID_control_slave_address                           : out std_logic_vector(0 downto 0);                     -- address
 			SysID_control_slave_readdata                          : in  std_logic_vector(31 downto 0) := (others => 'X'); -- readdata
 			VRAM_s1_address                                       : out std_logic_vector(6 downto 0);                     -- address
@@ -237,9 +275,11 @@ architecture rtl of PongFPGA is
 
 	component PongFPGA_irq_mapper is
 		port (
-			clk        : in  std_logic                     := 'X'; -- clk
-			reset      : in  std_logic                     := 'X'; -- reset
-			sender_irq : out std_logic_vector(31 downto 0)         -- irq
+			clk           : in  std_logic                     := 'X'; -- clk
+			reset         : in  std_logic                     := 'X'; -- reset
+			receiver0_irq : in  std_logic                     := 'X'; -- irq
+			receiver1_irq : in  std_logic                     := 'X'; -- irq
+			sender_irq    : out std_logic_vector(31 downto 0)         -- irq
 		);
 	end component PongFPGA_irq_mapper;
 
@@ -375,7 +415,7 @@ architecture rtl of PongFPGA is
 		);
 	end component pongfpga_rst_controller_002;
 
-	signal pll_c0_clk                                           : std_logic;                     -- PLL:c0 -> [NIOS:clk, RAM:clk, SysID:clock, VRAM:clk, irq_mapper:clk, mm_interconnect_1:PLL_c0_clk, rst_controller_001:clk]
+	signal pll_c0_clk                                           : std_logic;                     -- PLL:c0 -> [NIOS:clk, RAM:clk, SW:clk, SW_TIMER:clk, SysID:clock, VRAM:clk, irq_mapper:clk, mm_interconnect_1:PLL_c0_clk, rst_controller_001:clk]
 	signal pll_c1_clk                                           : std_logic;                     -- PLL:c1 -> [AvalonRAMConnector_mono_1b_0:px_clk, HDMIDriver_mono_1b_0:px_clk, VRAM:clk2, mm_interconnect_0:PLL_c1_clk, rst_controller:clk]
 	signal pll_c2_clk                                           : std_logic;                     -- PLL:c2 -> HDMIDriver_mono_1b_0:bit_clk
 	signal hdmidriver_mono_1b_0_px_address_px_x                 : std_logic_vector(11 downto 0); -- HDMIDriver_mono_1b_0:px_x -> AvalonRAMConnector_mono_1b_0:px_x
@@ -432,6 +472,18 @@ architecture rtl of PongFPGA is
 	signal mm_interconnect_1_ram_s1_write                       : std_logic;                     -- mm_interconnect_1:RAM_s1_write -> RAM:write
 	signal mm_interconnect_1_ram_s1_writedata                   : std_logic_vector(31 downto 0); -- mm_interconnect_1:RAM_s1_writedata -> RAM:writedata
 	signal mm_interconnect_1_ram_s1_clken                       : std_logic;                     -- mm_interconnect_1:RAM_s1_clken -> RAM:clken
+	signal mm_interconnect_1_sw_s1_chipselect                   : std_logic;                     -- mm_interconnect_1:SW_s1_chipselect -> SW:chipselect
+	signal mm_interconnect_1_sw_s1_readdata                     : std_logic_vector(31 downto 0); -- SW:readdata -> mm_interconnect_1:SW_s1_readdata
+	signal mm_interconnect_1_sw_s1_address                      : std_logic_vector(1 downto 0);  -- mm_interconnect_1:SW_s1_address -> SW:address
+	signal mm_interconnect_1_sw_s1_write                        : std_logic;                     -- mm_interconnect_1:SW_s1_write -> mm_interconnect_1_sw_s1_write:in
+	signal mm_interconnect_1_sw_s1_writedata                    : std_logic_vector(31 downto 0); -- mm_interconnect_1:SW_s1_writedata -> SW:writedata
+	signal mm_interconnect_1_sw_timer_s1_chipselect             : std_logic;                     -- mm_interconnect_1:SW_TIMER_s1_chipselect -> SW_TIMER:chipselect
+	signal mm_interconnect_1_sw_timer_s1_readdata               : std_logic_vector(15 downto 0); -- SW_TIMER:readdata -> mm_interconnect_1:SW_TIMER_s1_readdata
+	signal mm_interconnect_1_sw_timer_s1_address                : std_logic_vector(2 downto 0);  -- mm_interconnect_1:SW_TIMER_s1_address -> SW_TIMER:address
+	signal mm_interconnect_1_sw_timer_s1_write                  : std_logic;                     -- mm_interconnect_1:SW_TIMER_s1_write -> mm_interconnect_1_sw_timer_s1_write:in
+	signal mm_interconnect_1_sw_timer_s1_writedata              : std_logic_vector(15 downto 0); -- mm_interconnect_1:SW_TIMER_s1_writedata -> SW_TIMER:writedata
+	signal irq_mapper_receiver0_irq                             : std_logic;                     -- SW:irq -> irq_mapper:receiver0_irq
+	signal irq_mapper_receiver1_irq                             : std_logic;                     -- SW_TIMER:irq -> irq_mapper:receiver1_irq
 	signal nios_irq_irq                                         : std_logic_vector(31 downto 0); -- irq_mapper:sender_irq -> NIOS:irq
 	signal rst_controller_reset_out_reset                       : std_logic;                     -- rst_controller:reset_out -> [AvalonRAMConnector_mono_1b_0:reset, VRAM:reset2, mm_interconnect_0:AvalonRAMConnector_mono_1b_0_reset_reset_bridge_in_reset_reset]
 	signal rst_controller_reset_out_reset_req                   : std_logic;                     -- rst_controller:reset_req -> [VRAM:reset_req2, rst_translator:reset_req_in]
@@ -439,7 +491,9 @@ architecture rtl of PongFPGA is
 	signal rst_controller_001_reset_out_reset_req               : std_logic;                     -- rst_controller_001:reset_req -> [NIOS:reset_req, RAM:reset_req, VRAM:reset_req, rst_translator_001:reset_req_in]
 	signal rst_controller_002_reset_out_reset                   : std_logic;                     -- rst_controller_002:reset_out -> [PLL:reset, mm_interconnect_1:PLL_inclk_interface_reset_reset_bridge_in_reset_reset]
 	signal reset_reset_n_ports_inv                              : std_logic;                     -- reset_reset_n:inv -> [rst_controller:reset_in0, rst_controller_001:reset_in0, rst_controller_002:reset_in0]
-	signal rst_controller_001_reset_out_reset_ports_inv         : std_logic;                     -- rst_controller_001_reset_out_reset:inv -> [NIOS:reset_n, SysID:reset_n]
+	signal mm_interconnect_1_sw_s1_write_ports_inv              : std_logic;                     -- mm_interconnect_1_sw_s1_write:inv -> SW:write_n
+	signal mm_interconnect_1_sw_timer_s1_write_ports_inv        : std_logic;                     -- mm_interconnect_1_sw_timer_s1_write:inv -> SW_TIMER:write_n
+	signal rst_controller_001_reset_out_reset_ports_inv         : std_logic;                     -- rst_controller_001_reset_out_reset:inv -> [NIOS:reset_n, SW:reset_n, SW_TIMER:reset_n, SysID:reset_n]
 
 begin
 
@@ -557,6 +611,31 @@ begin
 			freeze     => '0'                                     -- (terminated)
 		);
 
+	sw : component PongFPGA_SW
+		port map (
+			clk        => pll_c0_clk,                                   --                 clk.clk
+			reset_n    => rst_controller_001_reset_out_reset_ports_inv, --               reset.reset_n
+			address    => mm_interconnect_1_sw_s1_address,              --                  s1.address
+			write_n    => mm_interconnect_1_sw_s1_write_ports_inv,      --                    .write_n
+			writedata  => mm_interconnect_1_sw_s1_writedata,            --                    .writedata
+			chipselect => mm_interconnect_1_sw_s1_chipselect,           --                    .chipselect
+			readdata   => mm_interconnect_1_sw_s1_readdata,             --                    .readdata
+			in_port    => sw_export,                                    -- external_connection.export
+			irq        => irq_mapper_receiver0_irq                      --                 irq.irq
+		);
+
+	sw_timer : component PongFPGA_SW_TIMER
+		port map (
+			clk        => pll_c0_clk,                                    --   clk.clk
+			reset_n    => rst_controller_001_reset_out_reset_ports_inv,  -- reset.reset_n
+			address    => mm_interconnect_1_sw_timer_s1_address,         --    s1.address
+			writedata  => mm_interconnect_1_sw_timer_s1_writedata,       --      .writedata
+			readdata   => mm_interconnect_1_sw_timer_s1_readdata,        --      .readdata
+			chipselect => mm_interconnect_1_sw_timer_s1_chipselect,      --      .chipselect
+			write_n    => mm_interconnect_1_sw_timer_s1_write_ports_inv, --      .write_n
+			irq        => irq_mapper_receiver1_irq                       --   irq.irq
+		);
+
 	sysid : component PongFPGA_SysID
 		port map (
 			clock    => pll_c0_clk,                                       --           clk.clk
@@ -643,6 +722,16 @@ begin
 			RAM_s1_byteenable                                     => mm_interconnect_1_ram_s1_byteenable,                --                                                .byteenable
 			RAM_s1_chipselect                                     => mm_interconnect_1_ram_s1_chipselect,                --                                                .chipselect
 			RAM_s1_clken                                          => mm_interconnect_1_ram_s1_clken,                     --                                                .clken
+			SW_s1_address                                         => mm_interconnect_1_sw_s1_address,                    --                                           SW_s1.address
+			SW_s1_write                                           => mm_interconnect_1_sw_s1_write,                      --                                                .write
+			SW_s1_readdata                                        => mm_interconnect_1_sw_s1_readdata,                   --                                                .readdata
+			SW_s1_writedata                                       => mm_interconnect_1_sw_s1_writedata,                  --                                                .writedata
+			SW_s1_chipselect                                      => mm_interconnect_1_sw_s1_chipselect,                 --                                                .chipselect
+			SW_TIMER_s1_address                                   => mm_interconnect_1_sw_timer_s1_address,              --                                     SW_TIMER_s1.address
+			SW_TIMER_s1_write                                     => mm_interconnect_1_sw_timer_s1_write,                --                                                .write
+			SW_TIMER_s1_readdata                                  => mm_interconnect_1_sw_timer_s1_readdata,             --                                                .readdata
+			SW_TIMER_s1_writedata                                 => mm_interconnect_1_sw_timer_s1_writedata,            --                                                .writedata
+			SW_TIMER_s1_chipselect                                => mm_interconnect_1_sw_timer_s1_chipselect,           --                                                .chipselect
 			SysID_control_slave_address                           => mm_interconnect_1_sysid_control_slave_address,      --                             SysID_control_slave.address
 			SysID_control_slave_readdata                          => mm_interconnect_1_sysid_control_slave_readdata,     --                                                .readdata
 			VRAM_s1_address                                       => mm_interconnect_1_vram_s1_address,                  --                                         VRAM_s1.address
@@ -655,9 +744,11 @@ begin
 
 	irq_mapper : component PongFPGA_irq_mapper
 		port map (
-			clk        => pll_c0_clk,                         --       clk.clk
-			reset      => rst_controller_001_reset_out_reset, -- clk_reset.reset
-			sender_irq => nios_irq_irq                        --    sender.irq
+			clk           => pll_c0_clk,                         --       clk.clk
+			reset         => rst_controller_001_reset_out_reset, -- clk_reset.reset
+			receiver0_irq => irq_mapper_receiver0_irq,           -- receiver0.irq
+			receiver1_irq => irq_mapper_receiver1_irq,           -- receiver1.irq
+			sender_irq    => nios_irq_irq                        --    sender.irq
 		);
 
 	rst_controller : component pongfpga_rst_controller
@@ -856,6 +947,10 @@ begin
 		);
 
 	reset_reset_n_ports_inv <= not reset_reset_n;
+
+	mm_interconnect_1_sw_s1_write_ports_inv <= not mm_interconnect_1_sw_s1_write;
+
+	mm_interconnect_1_sw_timer_s1_write_ports_inv <= not mm_interconnect_1_sw_timer_s1_write;
 
 	rst_controller_001_reset_out_reset_ports_inv <= not rst_controller_001_reset_out_reset;
 

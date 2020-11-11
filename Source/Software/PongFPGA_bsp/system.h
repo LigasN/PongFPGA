@@ -4,7 +4,7 @@
  * Machine generated for CPU 'NIOS' in SOPC Builder design 'PongFPGA'
  * SOPC Builder design path: D:/Dokumenty/Pulpit/programming_stuff/projekty_wersje_ostateczne/PongFPGA/Source/Hardware/PongFPGA.sopcinfo
  *
- * Generated: Tue Nov 10 16:04:56 CET 2020
+ * Generated: Wed Nov 11 21:09:48 CET 2020
  */
 
 /*
@@ -134,7 +134,9 @@
  */
 
 #define __ALTERA_AVALON_ONCHIP_MEMORY2
+#define __ALTERA_AVALON_PIO
 #define __ALTERA_AVALON_SYSID_QSYS
+#define __ALTERA_AVALON_TIMER
 #define __ALTERA_NIOS2_GEN2
 #define __ALTPLL
 
@@ -145,7 +147,7 @@
  */
 
 #define ALT_MODULE_CLASS_PLL altpll
-#define PLL_BASE 0x80
+#define PLL_BASE 0xb0
 #define PLL_IRQ -1
 #define PLL_IRQ_INTERRUPT_CONTROLLER_ID -1
 #define PLL_NAME "/dev/PLL"
@@ -183,18 +185,71 @@
 
 
 /*
+ * SW configuration
+ *
+ */
+
+#define ALT_MODULE_CLASS_SW altera_avalon_pio
+#define SW_BASE 0xa0
+#define SW_BIT_CLEARING_EDGE_REGISTER 0
+#define SW_BIT_MODIFYING_OUTPUT_REGISTER 0
+#define SW_CAPTURE 1
+#define SW_DATA_WIDTH 3
+#define SW_DO_TEST_BENCH_WIRING 0
+#define SW_DRIVEN_SIM_VALUE 0
+#define SW_EDGE_TYPE "FALLING"
+#define SW_FREQ 50000000
+#define SW_HAS_IN 1
+#define SW_HAS_OUT 0
+#define SW_HAS_TRI 0
+#define SW_IRQ 0
+#define SW_IRQ_INTERRUPT_CONTROLLER_ID 0
+#define SW_IRQ_TYPE "EDGE"
+#define SW_NAME "/dev/SW"
+#define SW_RESET_VALUE 0
+#define SW_SPAN 16
+#define SW_TYPE "altera_avalon_pio"
+
+
+/*
+ * SW_TIMER configuration
+ *
+ */
+
+#define ALT_MODULE_CLASS_SW_TIMER altera_avalon_timer
+#define SW_TIMER_ALWAYS_RUN 1
+#define SW_TIMER_BASE 0x80
+#define SW_TIMER_COUNTER_SIZE 32
+#define SW_TIMER_FIXED_PERIOD 1
+#define SW_TIMER_FREQ 50000000
+#define SW_TIMER_IRQ 1
+#define SW_TIMER_IRQ_INTERRUPT_CONTROLLER_ID 0
+#define SW_TIMER_LOAD_VALUE 49999
+#define SW_TIMER_MULT 0.001
+#define SW_TIMER_NAME "/dev/SW_TIMER"
+#define SW_TIMER_PERIOD 1
+#define SW_TIMER_PERIOD_UNITS "ms"
+#define SW_TIMER_RESET_OUTPUT 0
+#define SW_TIMER_SNAPSHOT 1
+#define SW_TIMER_SPAN 32
+#define SW_TIMER_TICKS_PER_SEC 1000
+#define SW_TIMER_TIMEOUT_PULSE_OUTPUT 0
+#define SW_TIMER_TYPE "altera_avalon_timer"
+
+
+/*
  * SysID configuration
  *
  */
 
 #define ALT_MODULE_CLASS_SysID altera_avalon_sysid_qsys
-#define SYSID_BASE 0x90
+#define SYSID_BASE 0xc0
 #define SYSID_ID 305419896
 #define SYSID_IRQ -1
 #define SYSID_IRQ_INTERRUPT_CONTROLLER_ID -1
 #define SYSID_NAME "/dev/SysID"
 #define SYSID_SPAN 8
-#define SYSID_TIMESTAMP 1605020218
+#define SYSID_TIMESTAMP 1605122153
 #define SYSID_TYPE "altera_avalon_sysid_qsys"
 
 
@@ -204,6 +259,7 @@
  */
 
 #define ALT_DEVICE_FAMILY "MAX 10"
+#define ALT_ENHANCED_INTERRUPT_API_PRESENT
 #define ALT_IRQ_BASE NULL
 #define ALT_LOG_PORT "/dev/null"
 #define ALT_LOG_PORT_BASE 0x0

@@ -13,7 +13,7 @@
    {
       datum _sortIndex
       {
-         value = "7";
+         value = "9";
          type = "int";
       }
    }
@@ -29,7 +29,7 @@
    {
       datum _sortIndex
       {
-         value = "8";
+         value = "10";
          type = "int";
       }
    }
@@ -37,7 +37,7 @@
    {
       datum _sortIndex
       {
-         value = "6";
+         value = "8";
          type = "int";
       }
    }
@@ -69,7 +69,7 @@
    {
       datum baseAddress
       {
-         value = "128";
+         value = "176";
          type = "String";
       }
    }
@@ -289,6 +289,38 @@
          type = "String";
       }
    }
+   element SW
+   {
+      datum _sortIndex
+      {
+         value = "6";
+         type = "int";
+      }
+   }
+   element SW.s1
+   {
+      datum baseAddress
+      {
+         value = "160";
+         type = "String";
+      }
+   }
+   element SW_TIMER
+   {
+      datum _sortIndex
+      {
+         value = "5";
+         type = "int";
+      }
+   }
+   element SW_TIMER.s1
+   {
+      datum baseAddress
+      {
+         value = "128";
+         type = "String";
+      }
+   }
    element SysID
    {
       datum _sortIndex
@@ -301,7 +333,7 @@
    {
       datum baseAddress
       {
-         value = "144";
+         value = "192";
          type = "String";
       }
    }
@@ -309,7 +341,7 @@
    {
       datum _sortIndex
       {
-         value = "5";
+         value = "7";
          type = "int";
       }
    }
@@ -357,6 +389,7 @@
    type="conduit"
    dir="end" />
  <interface name="reset" internal="CLK.clk_in_reset" type="reset" dir="end" />
+ <interface name="sw" internal="SW.external_connection" type="conduit" dir="end" />
  <module
    name="AvalonRAMConnector_mono_1b_0"
    kind="AvalonRAMConnector_mono_1b"
@@ -417,7 +450,7 @@
   <parameter name="dataAddrWidth" value="16" />
   <parameter name="dataMasterHighPerformanceAddrWidth" value="1" />
   <parameter name="dataMasterHighPerformanceMapParam" value="" />
-  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='VRAM.s1' start='0x0' end='0x60' type='altera_avalon_onchip_memory2.s1' /><slave name='PLL.pll_slave' start='0x80' end='0x90' type='altpll.pll_slave' /><slave name='SysID.control_slave' start='0x90' end='0x98' type='altera_avalon_sysid_qsys.control_slave' /><slave name='NIOS.debug_mem_slave' start='0x1000' end='0x1800' type='altera_nios2_gen2.debug_mem_slave' /><slave name='RAM.s1' start='0x8000' end='0xC000' type='altera_avalon_onchip_memory2.s1' /></address-map>]]></parameter>
+  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='VRAM.s1' start='0x0' end='0x60' type='altera_avalon_onchip_memory2.s1' /><slave name='SW_TIMER.s1' start='0x80' end='0xA0' type='altera_avalon_timer.s1' /><slave name='SW.s1' start='0xA0' end='0xB0' type='altera_avalon_pio.s1' /><slave name='PLL.pll_slave' start='0xB0' end='0xC0' type='altpll.pll_slave' /><slave name='SysID.control_slave' start='0xC0' end='0xC8' type='altera_avalon_sysid_qsys.control_slave' /><slave name='NIOS.debug_mem_slave' start='0x1000' end='0x1800' type='altera_nios2_gen2.debug_mem_slave' /><slave name='RAM.s1' start='0x8000' end='0xC000' type='altera_avalon_onchip_memory2.s1' /></address-map>]]></parameter>
   <parameter name="data_master_high_performance_paddr_base" value="0" />
   <parameter name="data_master_high_performance_paddr_size" value="0" />
   <parameter name="data_master_paddr_base" value="0" />
@@ -463,7 +496,7 @@
   <parameter name="instruction_master_high_performance_paddr_size" value="0" />
   <parameter name="instruction_master_paddr_base" value="0" />
   <parameter name="instruction_master_paddr_size" value="0" />
-  <parameter name="internalIrqMaskSystemInfo" value="0" />
+  <parameter name="internalIrqMaskSystemInfo" value="3" />
   <parameter name="io_regionbase" value="0" />
   <parameter name="io_regionsize" value="0" />
   <parameter name="master_addr_map" value="false" />
@@ -774,6 +807,32 @@
   <parameter name="useShallowMemBlocks" value="false" />
   <parameter name="writable" value="true" />
  </module>
+ <module name="SW" kind="altera_avalon_pio" version="18.1" enabled="1">
+  <parameter name="bitClearingEdgeCapReg" value="false" />
+  <parameter name="bitModifyingOutReg" value="false" />
+  <parameter name="captureEdge" value="true" />
+  <parameter name="clockRate" value="50000000" />
+  <parameter name="direction" value="Input" />
+  <parameter name="edgeType" value="FALLING" />
+  <parameter name="generateIRQ" value="true" />
+  <parameter name="irqType" value="EDGE" />
+  <parameter name="resetValue" value="0" />
+  <parameter name="simDoTestBenchWiring" value="false" />
+  <parameter name="simDrivenValue" value="0" />
+  <parameter name="width" value="3" />
+ </module>
+ <module name="SW_TIMER" kind="altera_avalon_timer" version="18.1" enabled="1">
+  <parameter name="alwaysRun" value="true" />
+  <parameter name="counterSize" value="32" />
+  <parameter name="fixedPeriod" value="true" />
+  <parameter name="period" value="1" />
+  <parameter name="periodUnits" value="MSEC" />
+  <parameter name="resetOutput" value="false" />
+  <parameter name="snapshot" value="true" />
+  <parameter name="systemFrequency" value="50000000" />
+  <parameter name="timeoutPulseOutput" value="false" />
+  <parameter name="watchdogPulse" value="2" />
+ </module>
  <module
    name="SysID"
    kind="altera_avalon_sysid_qsys"
@@ -828,7 +887,7 @@
    start="NIOS.data_master"
    end="SysID.control_slave">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x0090" />
+  <parameter name="baseAddress" value="0x00c0" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -846,7 +905,7 @@
    start="NIOS.data_master"
    end="PLL.pll_slave">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x0080" />
+  <parameter name="baseAddress" value="0x00b0" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection kind="avalon" version="18.1" start="NIOS.data_master" end="VRAM.s1">
@@ -857,6 +916,20 @@
  <connection kind="avalon" version="18.1" start="NIOS.data_master" end="RAM.s1">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x8000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection kind="avalon" version="18.1" start="NIOS.data_master" end="SW.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x00a0" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="18.1"
+   start="NIOS.data_master"
+   end="SW_TIMER.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0080" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -879,6 +952,8 @@
  </connection>
  <connection kind="clock" version="18.1" start="PLL.c0" end="NIOS.clk" />
  <connection kind="clock" version="18.1" start="PLL.c0" end="SysID.clk" />
+ <connection kind="clock" version="18.1" start="PLL.c0" end="SW.clk" />
+ <connection kind="clock" version="18.1" start="PLL.c0" end="SW_TIMER.clk" />
  <connection kind="clock" version="18.1" start="PLL.c0" end="VRAM.clk1" />
  <connection kind="clock" version="18.1" start="PLL.c0" end="RAM.clk1" />
  <connection kind="clock" version="18.1" start="PLL.c1" end="VRAM.clk2" />
@@ -925,6 +1000,12 @@
   <parameter name="startPortLSB" value="0" />
   <parameter name="width" value="0" />
  </connection>
+ <connection kind="interrupt" version="18.1" start="NIOS.irq" end="SW.irq">
+  <parameter name="irqNumber" value="0" />
+ </connection>
+ <connection kind="interrupt" version="18.1" start="NIOS.irq" end="SW_TIMER.irq">
+  <parameter name="irqNumber" value="1" />
+ </connection>
  <connection
    kind="reset"
    version="18.1"
@@ -937,6 +1018,12 @@
    start="CLK.clk_reset"
    end="AvalonRAMConnector_mono_1b_0.reset" />
  <connection kind="reset" version="18.1" start="CLK.clk_reset" end="SysID.reset" />
+ <connection kind="reset" version="18.1" start="CLK.clk_reset" end="SW.reset" />
+ <connection
+   kind="reset"
+   version="18.1"
+   start="CLK.clk_reset"
+   end="SW_TIMER.reset" />
  <connection kind="reset" version="18.1" start="CLK.clk_reset" end="VRAM.reset1" />
  <connection kind="reset" version="18.1" start="CLK.clk_reset" end="RAM.reset1" />
  <connection kind="reset" version="18.1" start="CLK.clk_reset" end="VRAM.reset2" />
