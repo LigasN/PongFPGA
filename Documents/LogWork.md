@@ -22,4 +22,5 @@ Podmiana statycznego obrazu z inicjalizacji pamięci VRAM, obrazem statycznym us
 # 11.11.2020
 Zaiplementowany licznik do likwidacji drgania styków i porty wejścia/ wyjścia na przyciski. W oprogramowaniu
 dodana obsługa przerwań i wyświetlanie reagującego na nie kwadratu.
+
 ![Interrupts&MoveOnScreen](https://j.gifs.com/D145vK.gif)
