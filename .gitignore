@@ -65,13 +65,10 @@
 !*.sip
 ### tbd
 
-## C programming files
+## C programming files and BSP
 !*.c
 !*.cpp
 !*.h
-!*.project
-!Makefile
-!*.map
 
 ## Other stuff
 !*.tcl
