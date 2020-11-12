@@ -65,10 +65,13 @@
 !*.sip
 ### tbd
 
-## C programming files and BSP
-!*.c
-!*.cpp
-!*.h
+## C programming files
+!Source/Software/PongFPGA/*/*.c
+!Source/Software/PongFPGA/*/*.cpp
+!Source/Software/PongFPGA/*/*.h
+
+## Despite the above bsp file should be generated locally
+Source/Software/PongFPGA_bsp
 
 ## Other stuff
 !*.tcl
