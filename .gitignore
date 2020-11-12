@@ -66,9 +66,9 @@
 ### tbd
 
 ## C programming files
-!Source/Software/PongFPGA/*/*.c
-!Source/Software/PongFPGA/*/*.cpp
-!Source/Software/PongFPGA/*/*.h
+!Source/Software/PongFPGA/**/*.c
+!Source/Software/PongFPGA/**/*.cpp
+!Source/Software/PongFPGA/**/*.h
 
 ## Despite the above bsp file should be generated locally
 Source/Software/PongFPGA_bsp
