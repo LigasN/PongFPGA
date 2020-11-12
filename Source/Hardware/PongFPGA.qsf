@@ -76,7 +76,7 @@ set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME PongFPGA_tb -section_id P
 set_global_assignment -name ENABLE_OCT_DONE ON
 set_global_assignment -name EXTERNAL_FLASH_FALLBACK_ADDRESS 00000000
 set_global_assignment -name USE_CONFIGURATION_DEVICE OFF
-set_global_assignment -name INTERNAL_FLASH_UPDATE_MODE "SINGLE IMAGE WITH ERAM"
+set_global_assignment -name INTERNAL_FLASH_UPDATE_MODE "SINGLE IMAGE"
 set_global_assignment -name CRC_ERROR_OPEN_DRAIN OFF
 set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -rise
 set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -fall
@@ -349,5 +349,5 @@ set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVTTL"
 set_location_assignment PIN_B15 -to sw_export[2]
 set_location_assignment PIN_B16 -to sw_export[1]
 set_location_assignment PIN_R15 -to sw_export[0]
-set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
 set_global_assignment -name SLD_FILE db/realTimeSimulation_auto_stripped.stp
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

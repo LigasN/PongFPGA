@@ -44,9 +44,6 @@ module PongFPGA_VRAM (
                      )
 ;
 
-  parameter INIT_FILE = "D:/Dokumenty/Pulpit/programming_stuff/projekty_wersje_ostateczne/PongFPGA/Source/Hardware/simulation/simulationFiles/StaticImage.mif";
-
-
   output  [  7: 0] readdata;
   output  [  7: 0] readdata2;
   input   [  6: 0] address;
@@ -98,7 +95,7 @@ wire             wren2;
            the_altsyncram.byte_size = 8,
            the_altsyncram.byteena_reg_b = "CLOCK1",
            the_altsyncram.indata_reg_b = "CLOCK1",
-           the_altsyncram.init_file = INIT_FILE,
+           the_altsyncram.init_file = "UNUSED",
            the_altsyncram.lpm_type = "altsyncram",
            the_altsyncram.maximum_depth = 96,
            the_altsyncram.numwords_a = 96,
