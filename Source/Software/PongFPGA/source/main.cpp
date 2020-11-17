@@ -1,3 +1,6 @@
+#include "GfxEngine/GfxEngine.h"
+#include "Game/Game.h"
+
 #include <io.h>
 #include <stdint.h>
 
@@ -9,55 +12,12 @@
 #include "altera_avalon_timer_regs.h"
 #include "altera_avalon_timer.h"
 
-/// Position of square on screen
-volatile int16_t pos = 0;
-
-void SetPosOnRAM( )
-{
-	// Setting pos
-	uint8_t data = 0;
-	uint8_t address = pos / 8;
-	data |= 1 << (pos % 8);
-	IOWR_8DIRECT( VRAM_BASE, address, data );
-
-	// Clearing other parts of RAM
-	for( uint8_t i = 0; i < 96; ++i )
-	{
-		if( i != address )
-		{
-			IOWR_8DIRECT( VRAM_BASE, i, 0 );
-		}
-	}
-}
-
-/// Input from key interrupts
-void processInput( uint8_t state )
-{
-	if( state == 0b101 ) // right button
-	{
-		++pos;
-		if( pos > 767 )
-		{
-			pos = 0;
-		}
-	}
-	else if( state == 0b011 ) // left button
-	{
-		--pos;
-		if( pos < 0 )
-		{
-			pos = 767;
-		}
-	}
-	else if( state == 0b110 ) // reset button
-	{
-		pos = 0;
-	}
-	SetPosOnRAM( );
-}
+/// Unfortunately global pointer to GfxEngine since I have no
+/// idea how to solve interrupts without it
+gfx::GfxEngine* gGfxEngine;
 
 /// Keys interrupts
-void swTimerInterrupt( void* context )
+static void swTimerInterrupt( void* context )
 {
 	// Clear interrupt record
 	IOWR_ALTERA_AVALON_TIMER_STATUS( SW_TIMER_BASE, 0 );
@@ -72,7 +32,7 @@ void swTimerInterrupt( void* context )
 	{
 		if( bounceMsCounter == 50 )
 		{
-			processInput( state );
+			gGfxEngine->processInput( state );
 		}
 		++bounceMsCounter;
 	}
@@ -82,9 +42,9 @@ void swTimerInterrupt( void* context )
 	}
 }
 
-int main( )
+void initInterrupts( )
 {
-	// Timer initialisation
+	// Timer initialization
 	alt_ic_isr_register( SW_TIMER_IRQ_INTERRUPT_CONTROLLER_ID, SW_TIMER_IRQ, swTimerInterrupt, NULL,
 	        NULL );
 
@@ -92,13 +52,26 @@ int main( )
 	        ALTERA_AVALON_TIMER_CONTROL_START_MSK | ALTERA_AVALON_TIMER_CONTROL_CONT_MSK
 	                | ALTERA_AVALON_TIMER_CONTROL_ITO_MSK );
 
-	// Switch initialisation
+	// Switch initialization
 	alt_ic_isr_register( SW_IRQ_INTERRUPT_CONTROLLER_ID, SW_IRQ, NULL, NULL, NULL );
 	IOWR_ALTERA_AVALON_PIO_IRQ_MASK( SW_BASE, 0b111 );
+}
+
+int main( )
+{
+	int deltaTime = 1;
+
+	gfx::IGame* game = new game::Game( );
+	gGfxEngine = new gfx::GfxEngine( game, math::Vector2i( 32, 20 ) );
+
+	game->init( gGfxEngine );
 
 	while( 1 )
 	{
+		gGfxEngine->update( deltaTime );
+		gGfxEngine->render( );
 	}
+	delete gGfxEngine;
 
 	return 0;
 }
