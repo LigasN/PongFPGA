@@ -8,30 +8,27 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "../GfxEngine/GameInterface.h"
-#include "../GfxEngine/Rectangle.h"
+#include "Rectangle.h"
+#include <stdint.h>
 
-namespace game
-{
-
-class Game : public gfx::IGame
+class Game
 {
 public:
-	Game( );
+	Game( const uint16_t width, const uint16_t hight );
 	~Game( );
 
-	// Main Interface
-	void init( gfx::GfxEngine* gfxEngine );
-	void processInput( const int key );
+	// Main Interface16
+	void processInput( const uint8_t state );
 	void update( const float dt );
 	void render( );
 
 private:
-	gfx::Rectangle m_ball;
-	bool ballMoving;
+	const uint16_t m_width;
+	const uint16_t m_hight;
+	Rectangle m_ball;
+	bool m_ballMovingToRight;
+	bool m_ballMovingToLeft;
 
 };
-
-}
 
 #endif // !GAME_H

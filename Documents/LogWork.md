@@ -27,3 +27,11 @@ Zaiplementowany licznik do likwidacji drgania styków i porty wejścia/ wyjścia
 dodana obsługa przerwań i wyświetlanie reagującego na nie kwadratu.
 
 ![Interrupts&MoveOnScreen](https://j.gifs.com/D145vK.gif)
+
+# 18.11.2020
+Gotowy silnik gry (zoptymalizowany po przesadzeniu z zajmowaną przez oprogramowanie pamięcią o jakieś 14kB). 
+W pełni funkcjonalny z obsługą przerwań i interfejsem typu process input, update, render. Na wideo latająca 
+piłka, na razie bez ograniczeń, sterowana przez przyciski. Przycisk "L" kieruje piłkę w lewy górny róg, "R" 
+w prawy dolny, a "RES" zatrzymuje.
+
+![GameEngine](https://j.gifs.com/k8q7DJ.gif)

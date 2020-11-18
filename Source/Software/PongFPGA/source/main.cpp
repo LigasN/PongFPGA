@@ -1,4 +1,3 @@
-#include "GfxEngine/GfxEngine.h"
 #include "Game/Game.h"
 
 #include <io.h>
@@ -12,9 +11,9 @@
 #include "altera_avalon_timer_regs.h"
 #include "altera_avalon_timer.h"
 
-/// Unfortunately global pointer to GfxEngine since I have no
+/// Unfortunately global pointer to Game since I have no
 /// idea how to solve interrupts without it
-gfx::GfxEngine* gGfxEngine;
+Game gGame = Game( 32u, 24u );
 
 /// Keys interrupts
 static void swTimerInterrupt( void* context )
@@ -26,13 +25,13 @@ static void swTimerInterrupt( void* context )
 	static uint8_t bounceMsCounter = 0;
 
 	/// Buttons state
-	uint8_t state = IORD_ALTERA_AVALON_PIO_DATA( SW_BASE );
+	const uint8_t state = IORD_ALTERA_AVALON_PIO_DATA( SW_BASE );
 
 	if( state != 0b111 )
 	{
 		if( bounceMsCounter == 50 )
 		{
-			gGfxEngine->processInput( state );
+			gGame.processInput( state );
 		}
 		++bounceMsCounter;
 	}
@@ -59,19 +58,15 @@ void initInterrupts( )
 
 int main( )
 {
-	int deltaTime = 1;
+	const int deltaTime = 1;
 
-	gfx::IGame* game = new game::Game( );
-	gGfxEngine = new gfx::GfxEngine( game, math::Vector2i( 32, 20 ) );
-
-	game->init( gGfxEngine );
+	initInterrupts( );
 
 	while( 1 )
 	{
-		gGfxEngine->update( deltaTime );
-		gGfxEngine->render( );
+		gGame.update( deltaTime );
+		gGame.render( );
 	}
-	delete gGfxEngine;
 
 	return 0;
 }
