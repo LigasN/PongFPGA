@@ -21,7 +21,9 @@ Opracowanie sprzętowo-programowego systemu realizującego grę typu "Pong". Kon
 
 ## Linki
 * [hardware sources](Source/Hardware/ "hardware sources")
+* [software sources](Source/Software/PongFPGA/source "software sources")
 * [testbenches](Source/Hardware/simulation/Testbenches/ "testbenches")
 * [top level entity](Source/Hardware/PongFPGA/synthesis/PongFPGA.vhd "top level entity")
 * [RAM initialisation file](Source/Hardware/simulation/simulationFiles/StaticImage.mif "RAM initialisation file")
 * [ready board configuration](Source/Hardware/output_files/ "ready board configuration")
+* [elf file](Source/Software/PongFPGA/PongFPGA.elf "elf file")
