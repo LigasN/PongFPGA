@@ -13,6 +13,7 @@ Opracowanie sprzętowo-programowego systemu realizującego grę typu "Pong". Kon
 * zmiana parametrów (szybkość, rozmiar rakiety, kąt odbicia itp.)
 * gra podstawowa + ew. dodatki (gra z automatem, gra w debla, squash itp.).
 * ...
+![Original Atari PONG(1972)](https://www.youtube.com/watch?v=fiShX2pTz9A)
 
 ## Dokumentacja
 * specyfikacja projektu, plik formatu markdown- [Specifications](Documents/Specifications.md "Specifications")

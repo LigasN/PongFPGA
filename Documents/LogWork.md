@@ -35,3 +35,13 @@ piłka, na razie bez ograniczeń, sterowana przez przyciski. Przycisk "L" kieruj
 w prawy dolny, a "RES" zatrzymuje.
 
 ![GameEngine](https://j.gifs.com/k8q7DJ.gif)
+
+
+# 20.11.2020
+Implementacja renderowania obiektów przeniesiona do obiektu "Rectangle" należącego do silnika. Tym samym 
+programista samej gry nie musi się zastanawiać jak wyrenderować swój obiekt. "Tosz to nie jego zmartwienie":wink:
+
+Po drodze było dosyć ciekawie:
+![Waste](Assets/Waste.jpg)
+
+![RectangleRendering](https://j.gifs.com/p8y77X.gif)

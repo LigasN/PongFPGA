@@ -1,5 +1,3 @@
-#include "Game/Game.h"
-
 #include <io.h>
 #include <stdint.h>
 
@@ -10,10 +8,11 @@
 #include "altera_avalon_pio_regs.h"
 #include "altera_avalon_timer_regs.h"
 #include "altera_avalon_timer.h"
+#include "Game/GameEngine.h"
 
 /// Unfortunately global pointer to Game since I have no
 /// idea how to solve interrupts without it
-Game gGame = Game( 32u, 24u );
+GameEngine gGameEngine = GameEngine( );
 
 /// Keys interrupts
 static void swTimerInterrupt( void* context )
@@ -31,7 +30,7 @@ static void swTimerInterrupt( void* context )
 	{
 		if( bounceMsCounter == 50 )
 		{
-			gGame.processInput( state );
+			gGameEngine.processInput( state );
 		}
 		++bounceMsCounter;
 	}
@@ -64,8 +63,8 @@ int main( )
 
 	while( 1 )
 	{
-		gGame.update( deltaTime );
-		gGame.render( );
+		gGameEngine.update( deltaTime );
+		gGameEngine.render( );
 	}
 
 	return 0;

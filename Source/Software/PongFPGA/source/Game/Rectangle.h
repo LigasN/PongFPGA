@@ -8,8 +8,17 @@
 #ifndef RECTANGLE_H
 #define RECTANGLE_H
 
-struct Rectangle
+class GameEngine;
+
+class Rectangle
 {
+public:
+	Rectangle( int left, int top, int width, int hight );
+
+	void render( GameEngine* gameEngine );
+
+	// Public members because only by includes
+	// problems it is not a struct
 	int left;
 	int top;
 	int width;
