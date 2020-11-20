@@ -17,8 +17,8 @@ class GameEngine;
 class Player
 {
 public:
-	Player( const Vector2i batSize, const int gameHeight, const bool leftSide =
-	        true, const bool isAI = false );
+	Player( const Vector2i batSize, const bool leftSide = true,
+	        const bool isAI = false );
 
 	// Main interface
 	void processInput( const uint8_t state );
@@ -32,6 +32,8 @@ private:
 	// Moving flags
 	bool m_movingUp;
 	bool m_movingDown;
+
+	bool m_leftSide;
 
 };
 

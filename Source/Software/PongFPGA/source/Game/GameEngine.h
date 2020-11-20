@@ -8,8 +8,9 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "Player.h"
 #include "Rectangle.h"
+#include "Net.h"
+#include "Player.h"
 #include <stdint.h>
 
 #define WINDOW_WIDTH 32u
@@ -33,18 +34,15 @@ public:
 private:
 
 	// Objects
-	Rectangle m_net;
+	Net m_net;
 	Rectangle m_ball;
 
 	// Players
 	Player m_player;
+	Player m_AIPlayer;
 
 	// Data to render
 	int8_t m_renderData[RAM_ADDRESS_AMOUNT];
-
-	// To delete in feature
-	bool m_ballMovingToRight;
-	bool m_ballMovingToLeft;
 
 };
 

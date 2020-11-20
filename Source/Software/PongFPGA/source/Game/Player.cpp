@@ -9,11 +9,11 @@
 #include "GameEngine.h"
 #include "Player.h"
 
-Player::Player( const Vector2i batSize, const int gameHeight,
-        const bool leftSide, const bool isAI ) :
-		m_bat( batSize.x, 0/*(gameHeight / batSize.y) / 2*/, batSize.x,
-		        batSize.y ),
-		m_isAI( isAI ), m_movingUp( false ), m_movingDown( false )
+Player::Player( const Vector2i batSize, const bool leftSide, const bool isAI ) :
+		m_bat( leftSide ? batSize.x : WINDOW_WIDTH - 2 * batSize.x,
+		        (WINDOW_HIGHT / batSize.y) / 2, batSize.x, batSize.y ),
+		m_isAI( isAI ), m_movingUp( false ), m_movingDown( false ),
+		m_leftSide( leftSide )
 {
 }
 
@@ -24,14 +24,14 @@ void Player::processInput( const uint8_t state )
 	{
 	case Lbutton: // L button
 	{
-		m_movingDown = false;
-		m_movingUp = true;
+		m_movingUp = m_leftSide ? true : false;
+		m_movingDown = m_leftSide ? false : true;
 		break;
 	}
 	case Rbutton: // R button
 	{
-		m_movingDown = true;
-		m_movingUp = false;
+		m_movingUp = m_leftSide ? false : true;
+		m_movingDown = m_leftSide ? true : false;
 		break;
 	}
 	}

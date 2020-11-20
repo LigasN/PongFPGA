@@ -45,3 +45,15 @@ Po drodze było dosyć ciekawie:
 ![Waste](Assets/Waste.jpg)
 
 ![RectangleRendering](https://j.gifs.com/p8y77X.gif)
+
+
+# 20.11.2020
+Gotowe obiekty dla gracza, siatki i paletki. Do zrobienia jeszcze piłka.
+Najbliższe plany:
+* kolizje, poruszanie piłki, poruszanie AI
+* zliczanie punktów
+* gameplay, czyli przyspieszająca piłka i inne łakocie
+* start gry "Press RES to start". Na razie sam press przez przycisk "RES".
+* renderowanie tekstu 
+
+![PongObjects](Assets/PongObjects.jpg)

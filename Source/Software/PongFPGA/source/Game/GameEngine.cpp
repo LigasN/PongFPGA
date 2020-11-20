@@ -14,10 +14,10 @@
 #include <stdio.h>
 
 GameEngine::GameEngine( ) :
-		m_net( WINDOW_WIDTH / 2, 0, 1 + WINDOW_WIDTH % 2, WINDOW_HIGHT ), m_ball( 0, 0, 1, 1 ),
-		m_player( Vector2i
-			{ 1, 4 }, WINDOW_HIGHT ),
-		m_ballMovingToRight( false ), m_ballMovingToLeft( false )
+		m_net( WINDOW_WIDTH, WINDOW_HIGHT ),
+		m_ball( WINDOW_WIDTH / 2 - 6, WINDOW_HIGHT / 2 - 4, 1, 1 ),
+		m_player( Vector2i { 1, 4 }, false ),
+		m_AIPlayer( Vector2i { 1, 4 }, true, true )
 {
 }
 
@@ -42,7 +42,10 @@ void GameEngine::render( )
 	// 8- as far as data is sent byte by byte used in random places in this function
 
 	// Render objects
+	m_net.render( this );
 	m_player.render( this );
+	m_AIPlayer.render( this );
+	m_ball.render( this );
 
 	for( unsigned int address = 0; address < RAM_ADDRESS_AMOUNT; ++address )
 	{
