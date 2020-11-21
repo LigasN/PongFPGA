@@ -9,6 +9,7 @@
 #define GAME_H
 
 #include "Rectangle.h"
+#include "Ball.h"
 #include "Net.h"
 #include "Player.h"
 #include <stdint.h>
@@ -33,9 +34,12 @@ public:
 
 private:
 
+	bool m_gameStarted;
+
 	// Objects
 	Net m_net;
-	Rectangle m_ball;
+	Ball m_ball;
+	Rectangle m_borders;
 
 	// Players
 	Player m_player;

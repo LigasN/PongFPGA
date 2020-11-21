@@ -24,14 +24,17 @@ public:
 	void processInput( const uint8_t state );
 	void update( const float dt );
 	void render( GameEngine* gameEngine );
+	const Rectangle* getRect( ) const;
+	void handleCollision( const Vector2i rect );
 
 private:
-	Rectangle m_bat;
+	Rectangle m_rect;
 	bool m_isAI;
 
 	// Moving flags
 	bool m_movingUp;
 	bool m_movingDown;
+	int m_velocity;
 
 	bool m_leftSide;
 

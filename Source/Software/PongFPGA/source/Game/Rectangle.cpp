@@ -5,6 +5,8 @@
  *      Author: Norbert
  */
 
+#include "MathUtils.h"
+#include "Vector2i.h"
 #include "Rectangle.h"
 #include "GameEngine.h"
 
@@ -22,9 +24,24 @@ void Rectangle::render( GameEngine* gameEngine )
 		for( int i = 0; i < width; ++i )
 		{
 			pos = (left + i + WINDOW_WIDTH * (top + j));
-			renderData[pos / 8] |= 1 << (pos % 8);
+			SET_BIT( renderData[pos / 8], pos % 8 );
 		}
 	}
 	gameEngine->addToRender( renderData );
 }
 
+bool Rectangle::checkCollisions( const Rectangle* otherRect ) const
+{
+	return (left <= otherRect->left + otherRect->width
+	        && left + width >= otherRect->left)
+	        && (top <= otherRect->top + otherRect->hight
+	                && top + hight >= otherRect->top);
+}
+
+const Vector2i Rectangle::getIntersection( const Rectangle* otherRect ) const
+{
+	return Vector2i { MIN( left + width, otherRect->left + otherRect->width )
+	                          - MAX( left, otherRect->left ),
+	                  MIN( top + hight, otherRect->top + otherRect->hight )
+	                          - MAX( top, otherRect->top ) };
+}

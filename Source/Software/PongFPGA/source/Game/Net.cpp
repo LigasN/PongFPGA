@@ -6,6 +6,14 @@
  */
 
 #include "GameEngine.h"
+#include "MathUtils.h"
+
+Net::Net( const int windowWidth, const int windowHight ) :
+		m_windowSize { windowWidth, windowHight },
+		m_rect( windowWidth / 2 - 1, 0, windowWidth % 2 == 0 ? 2 : 1,
+		        windowHight )
+{
+}
 
 void Net::render( GameEngine* gameEngine )
 {
@@ -17,7 +25,7 @@ void Net::render( GameEngine* gameEngine )
 	for( int j = 0, i = 0; j < m_rect.hight; ++j )
 	{
 		pos = (m_rect.left + i % 2 + m_windowSize.x * (m_rect.top + j));
-		renderData[pos / 8] |= 1 << (pos % 8);
+		SET_BIT( renderData[pos / 8], pos % 8 );
 
 		if( m_rect.width > 1 )
 			++i;

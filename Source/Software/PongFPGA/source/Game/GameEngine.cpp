@@ -6,16 +6,17 @@
  */
 
 #include "Vector2i.h"
+#include "Player.h"
 #include "Utils.h"
-#include "Rectangle.h"
 #include "system.h"
 #include "GameEngine.h"
 #include <io.h>
 #include <stdio.h>
 
 GameEngine::GameEngine( ) :
-		m_net( WINDOW_WIDTH, WINDOW_HIGHT ),
-		m_ball( WINDOW_WIDTH / 2 - 6, WINDOW_HIGHT / 2 - 4, 1, 1 ),
+		m_gameStarted( false ), m_net( WINDOW_WIDTH, WINDOW_HIGHT ),
+		m_ball( 1, Vector2i { WINDOW_WIDTH, WINDOW_HIGHT } ),
+		m_borders( 0, 0, WINDOW_WIDTH, WINDOW_HIGHT ),
 		m_player( Vector2i { 1, 4 }, false ),
 		m_AIPlayer( Vector2i { 1, 4 }, true, true )
 {
@@ -28,13 +29,44 @@ GameEngine::~GameEngine( )
 // Main Interface
 void GameEngine::processInput( const uint8_t state )
 {
+	if( state == ENTER )
+	{
+		m_gameStarted = true;
+	}
 	m_player.processInput( ( int )state );
 
 }
 
 void GameEngine::update( const float dt )
 {
-	m_player.update( dt );
+	if( m_gameStarted )
+	{
+		m_player.update( dt );
+		m_AIPlayer.update( dt );
+		m_ball.update( dt );
+
+		// Checking collisions
+		if( m_ball.getRect( )->checkCollisions( m_player.getRect( ) ) )
+		{
+			m_ball.handleCollision(
+			        m_ball.getRect( )->getIntersection( m_player.getRect( ) ) );
+		}
+		if( m_ball.getRect( )->checkCollisions( &m_borders ) )
+		{
+			m_ball.handleCollision(
+			        m_ball.getRect( )->getIntersection( &m_borders ) );
+		}
+		if( m_player.getRect( )->checkCollisions( &m_borders ) )
+		{
+			m_player.handleCollision(
+			        m_player.getRect( )->getIntersection( &m_borders ) );
+		}
+		if( m_AIPlayer.getRect( )->checkCollisions( &m_borders ) )
+		{
+			m_AIPlayer.handleCollision(
+			        m_AIPlayer.getRect( )->getIntersection( &m_borders ) );
+		}
+	}
 }
 
 void GameEngine::render( )
@@ -45,7 +77,7 @@ void GameEngine::render( )
 	m_net.render( this );
 	m_player.render( this );
 	m_AIPlayer.render( this );
-	m_ball.render( this );
+	//m_ball.render( this );
 
 	for( unsigned int address = 0; address < RAM_ADDRESS_AMOUNT; ++address )
 	{

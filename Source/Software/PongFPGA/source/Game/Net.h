@@ -17,12 +17,7 @@ class GameEngine;
 class Net
 {
 public:
-	Net( const int windowWidth, const int windowHight ) :
-			m_windowSize { windowWidth, windowHight },
-			m_rect( windowWidth / 2 - 1, 0, windowWidth % 2 == 0 ? 2 : 1,
-			        windowHight )
-	{
-	}
+	Net( const int windowWidth, const int windowHight );
 
 	void render( GameEngine* gameEngine );
 
