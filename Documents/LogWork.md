@@ -15,7 +15,7 @@ Zrobiony sterownik HDMI ze sprzętowym, testowym generatorem obrazu.
 # 06.11.2020
 Dołączony VRAM, działający connector RAM-u i sterownika HDMI, poprawione adresowanie pikseli w sterowniku.
 
-![ReadFromRAM](Assets/ReadFromRAM.jpg)
+<img src="Assets/ReadFromRAM.jpg" width="500" hight="300">
 
 # 10.11.2020
 Podmiana statycznego obrazu z inicjalizacji pamięci VRAM, obrazem statycznym ustawionym z "kodu".
@@ -42,7 +42,8 @@ Implementacja renderowania obiektów przeniesiona do obiektu "Rectangle" należ�
 programista samej gry nie musi się zastanawiać jak wyrenderować swój obiekt. "Tosz to nie jego zmartwienie":wink:
 
 Po drodze było dosyć ciekawie:
-![Waste](Assets/Waste.jpg)
+
+<img src="Assets/Waste.jpg" width="500" hight="300">
 
 ![RectangleRendering](https://j.gifs.com/p8y77X.gif)
 
@@ -56,4 +57,4 @@ Najbliższe plany:
 * start gry "Press RES to start". Na razie sam press przez przycisk "RES".
 * renderowanie tekstu 
 
-![PongObjects](Assets/PongObjects.jpg)
+<img src="Assets/PongObjects.jpg" width="500" hight="300">
