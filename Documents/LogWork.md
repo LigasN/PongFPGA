@@ -42,6 +42,7 @@ Implementacja renderowania obiektów przeniesiona do obiektu "Rectangle" należ�
 programista samej gry nie musi się zastanawiać jak wyrenderować swój obiekt. "Tosz to nie jego zmartwienie":wink:
 
 Po drodze było dosyć ciekawie:
+
 <img src="Assets/Waste.jpg" width="500" hight="300">
 
 ![RectangleRendering](https://j.gifs.com/p8y77X.gif)
