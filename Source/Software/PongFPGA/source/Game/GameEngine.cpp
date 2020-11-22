@@ -16,10 +16,10 @@
 GameEngine::GameEngine( ) :
 		m_gameStarted( false ), m_net( WINDOW_WIDTH, WINDOW_HIGHT ),
 		m_ball( 1, Vector2i { WINDOW_WIDTH, WINDOW_HIGHT } ),
-		m_leftBorder( -1, -1, 1, WINDOW_HIGHT + 2 ),
-		m_rightBorder( WINDOW_WIDTH, -1, 1, WINDOW_HIGHT + 2 ),
-		m_topBorder( -1, -1, WINDOW_WIDTH + 2, 1 ),
-		m_bottomBorder( WINDOW_HIGHT, -1, WINDOW_WIDTH + 2, 1 ),
+		m_leftBorder( -2, -2, 2, WINDOW_HIGHT + 4 ),
+		m_rightBorder( WINDOW_WIDTH, -2, 2, WINDOW_HIGHT + 4 ),
+		m_topBorder( -2, -2, WINDOW_WIDTH + 4, 2 ),
+		m_bottomBorder( -2, WINDOW_HIGHT, WINDOW_WIDTH + 4, 2 ),
 		m_player( WINDOW_HIGHT, Vector2i { 1, 4 }, false, false ),
 		m_AIPlayer( WINDOW_HIGHT, Vector2i { 1, 4 }, true, true )
 {
@@ -49,49 +49,53 @@ void GameEngine::update( )
 	{
 		m_player.update( );
 		m_AIPlayer.update( );
-		/*m_ball.update( );
-
+		m_ball.update( );
+		/*
 		 // Checking collisions
 		 if( m_ball.getRect( )->checkCollisions( m_player.getRect( ) ) )
 		 {
 		 m_ball.handleCollision(
 		 m_ball.getRect( )->getIntersection( m_player.getRect( ) ) );
-		 }
-		 if( m_ball.getRect( )->checkCollisions( &m_leftBorder ) )
-		 {
-		 m_ball.handleCollision(
-		 m_ball.getRect( )->getIntersection( &m_leftBorder ) );
-		 m_gameStarted = false;
-
-		 }
-		 if( m_ball.getRect( )->checkCollisions( &m_rightBorder ) )
-		 {
-		 m_ball.handleCollision(
-		 m_ball.getRect( )->getIntersection( &m_rightBorder ) );
-		 m_gameStarted = false;
-
-		 }
-		 if( m_ball.getRect( )->checkCollisions( &m_topBorder ) )
-		 {
-		 m_ball.handleCollision(
-		 m_ball.getRect( )->getIntersection( &m_topBorder ) );
-
-		 }
-		 if( m_ball.getRect( )->checkCollisions( &m_bottomBorder ) )
-		 {
-		 m_ball.handleCollision(
-		 m_ball.getRect( )->getIntersection( &m_bottomBorder ) );
-
 		 }*/
+		if( m_ball.getRect( )->checkCollisions( &m_leftBorder ) )
+		{
+			m_ball.handleCollision(
+			        m_ball.getRect( )->getIntersection( &m_leftBorder ),
+			        VERTICAL_BORDER );
+			m_gameStarted = false;
+
+		}
+		else if( m_ball.getRect( )->checkCollisions( &m_rightBorder ) )
+		{
+			m_ball.handleCollision(
+			        m_ball.getRect( )->getIntersection( &m_rightBorder ),
+			        VERTICAL_BORDER );
+			m_gameStarted = false;
+
+		}
+		if( m_ball.getRect( )->checkCollisions( &m_topBorder ) )
+		{
+			m_ball.handleCollision(
+			        m_ball.getRect( )->getIntersection( &m_topBorder ),
+			        HORIZONTAL_BORDER );
+
+		}
+		else if( m_ball.getRect( )->checkCollisions( &m_bottomBorder ) )
+		{
+			m_ball.handleCollision(
+			        m_ball.getRect( )->getIntersection( &m_bottomBorder ),
+			        HORIZONTAL_BORDER );
+
+		}
 	}
 }
 
 void GameEngine::render( )
 {
-	// 8- as far as data is sent byte by byte used in random places in this function
+// 8- as far as data is sent byte by byte used in random places in this function
 
-	// Render objects
-	//m_net.render( this );
+// Render objects
+	m_net.render( this );
 	m_player.render( this );
 	m_AIPlayer.render( this );
 	m_ball.render( this );
