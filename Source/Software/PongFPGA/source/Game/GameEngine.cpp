@@ -50,13 +50,20 @@ void GameEngine::update( )
 		m_player.update( );
 		m_AIPlayer.update( );
 		m_ball.update( );
-		/*
-		 // Checking collisions
-		 if( m_ball.getRect( )->checkCollisions( m_player.getRect( ) ) )
-		 {
-		 m_ball.handleCollision(
-		 m_ball.getRect( )->getIntersection( m_player.getRect( ) ) );
-		 }*/
+
+		// Checking collisions
+		if( m_ball.getRect( )->checkCollisions( m_player.getRect( ) ) )
+		{
+			m_ball.handleCollision(
+			        m_ball.getRect( )->getIntersection( m_player.getRect( ) ),
+			        BAT );
+		}
+		if( m_ball.getRect( )->checkCollisions( m_AIPlayer.getRect( ) ) )
+		{
+			m_ball.handleCollision(
+			        m_ball.getRect( )->getIntersection( m_AIPlayer.getRect( ) ),
+			        BAT );
+		}
 		if( m_ball.getRect( )->checkCollisions( &m_leftBorder ) )
 		{
 			m_ball.handleCollision(

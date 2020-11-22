@@ -55,7 +55,6 @@ public:
 		if( (collisionObjectId & VERTICAL_BORDER) > 0 )
 		{
 			m_rect.left = m_gameSize.x / 2;
-			m_rect.top = m_gameSize.y / 2;
 			m_velocity.x = -m_velocity.x;
 			m_velocity.y = -m_velocity.y;
 		}
