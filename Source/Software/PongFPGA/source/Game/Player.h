@@ -17,25 +17,27 @@ class GameEngine;
 class Player
 {
 public:
-	Player( const Vector2i batSize, const bool leftSide = true,
-	        const bool isAI = false );
+	Player( const int windowHight, const Vector2i batSize, const bool leftSide,
+	        const bool isAI );
 
 	// Main interface
 	void processInput( const uint8_t state );
-	void update( const float dt );
+	void update( );
 	void render( GameEngine* gameEngine );
 	const Rectangle* getRect( ) const;
 	void handleCollision( const Vector2i rect );
 
 private:
+	const int m_windowHight;
 	Rectangle m_rect;
 	bool m_isAI;
+
+	int m_velocity;
+	const int m_updateDelay;
 
 	// Moving flags
 	bool m_movingUp;
 	bool m_movingDown;
-	int m_velocity;
-
 	bool m_leftSide;
 
 };

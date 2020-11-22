@@ -10,7 +10,7 @@
 
 enum Key
 {
-	ENTER = 0b110, RBUTTON = 0b101, LBUTTON = 0b011
+	ENTER = 0b110, RBUTTON = 0b011, LBUTTON = 0b101
 };
 
 #endif // !UTILS_H

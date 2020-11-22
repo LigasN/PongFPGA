@@ -43,28 +43,35 @@ static void swTimerInterrupt( void* context )
 void initInterrupts( )
 {
 	// Timer initialization
-	alt_ic_isr_register( SW_TIMER_IRQ_INTERRUPT_CONTROLLER_ID, SW_TIMER_IRQ, swTimerInterrupt, NULL,
-	        NULL );
+	alt_ic_isr_register( SW_TIMER_IRQ_INTERRUPT_CONTROLLER_ID, SW_TIMER_IRQ,
+	        swTimerInterrupt, NULL, NULL );
 
 	IOWR_ALTERA_AVALON_TIMER_CONTROL( SW_TIMER_BASE,
-	        ALTERA_AVALON_TIMER_CONTROL_START_MSK | ALTERA_AVALON_TIMER_CONTROL_CONT_MSK
+	        ALTERA_AVALON_TIMER_CONTROL_START_MSK
+	                | ALTERA_AVALON_TIMER_CONTROL_CONT_MSK
 	                | ALTERA_AVALON_TIMER_CONTROL_ITO_MSK );
 
 	// Switch initialization
-	alt_ic_isr_register( SW_IRQ_INTERRUPT_CONTROLLER_ID, SW_IRQ, NULL, NULL, NULL );
+	alt_ic_isr_register( SW_IRQ_INTERRUPT_CONTROLLER_ID, SW_IRQ, NULL, NULL,
+	        NULL );
 	IOWR_ALTERA_AVALON_PIO_IRQ_MASK( SW_BASE, 0b111 );
 }
 
 int main( )
 {
-	const int deltaTime = 1;
+	uint8_t delayCounter = 0;
 
 	initInterrupts( );
 
 	while( 1 )
 	{
-		gGameEngine.update( deltaTime );
+		if( delayCounter >= 0 )
+		{
+			gGameEngine.update( );
+			delayCounter = 0;
+		}
 		gGameEngine.render( );
+		++delayCounter;
 	}
 
 	return 0;

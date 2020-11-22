@@ -9,11 +9,13 @@
 #include "GameEngine.h"
 #include "Player.h"
 
-Player::Player( const Vector2i batSize, const bool leftSide, const bool isAI ) :
+Player::Player( const int windowHight, const Vector2i batSize,
+        const bool leftSide, const bool isAI ) :
+		m_windowHight( windowHight ),
 		m_rect( leftSide ? batSize.x : WINDOW_WIDTH - 2 * batSize.x,
 		        (WINDOW_HIGHT / batSize.y) / 2, batSize.x, batSize.y ),
-		m_isAI( isAI ), m_movingUp( false ), m_movingDown( false ),
-		m_leftSide( leftSide )
+		m_isAI( isAI ), m_velocity( 0 ), m_updateDelay( 100 ),
+		m_movingUp( false ), m_movingDown( false ), m_leftSide( leftSide )
 {
 }
 
@@ -36,13 +38,16 @@ void Player::processInput( const uint8_t state )
 	}
 	}
 }
-void Player::update( const float dt )
+void Player::update( )
 {
-	if( m_movingUp )
+	static int updateDelayCounter = 0;
+	if( m_movingUp && updateDelayCounter > m_updateDelay )
 	{
+		updateDelayCounter = 0;
+
 		if( m_velocity <= 0 )
 		{
-			m_velocity -= dt;
+			m_velocity -= 1;
 		}
 		else
 		{
@@ -53,16 +58,26 @@ void Player::update( const float dt )
 	{
 		if( m_velocity >= 0 )
 		{
-			m_velocity += dt;
+			m_velocity += 1;
 		}
 		else
 		{
 			m_velocity = 0;
 		}
 	}
-	m_rect.top += m_velocity;
-	m_movingDown = false;
-	m_movingUp = false;
+
+// Border collision and applying  velocity to position
+	if( (m_rect.top + m_rect.hight < m_windowHight || m_velocity < 0)
+	        && (m_rect.top > 0 || m_velocity > 0) )
+	{
+		m_rect.top += m_velocity;
+	}
+	else
+	{
+		m_velocity = 0;
+	}
+
+	++updateDelayCounter;
 }
 void Player::render( GameEngine* gameEngine )
 {

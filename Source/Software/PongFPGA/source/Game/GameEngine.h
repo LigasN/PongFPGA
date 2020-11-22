@@ -26,7 +26,7 @@ public:
 
 	// Main interface
 	void processInput( const uint8_t state );
-	void update( const float dt );
+	void update( );
 	void render( );
 
 	// Engine methods
@@ -39,7 +39,10 @@ private:
 	// Objects
 	Net m_net;
 	Ball m_ball;
-	Rectangle m_borders;
+	Rectangle m_leftBorder;
+	Rectangle m_rightBorder;
+	Rectangle m_topBorder;
+	Rectangle m_bottomBorder;
 
 	// Players
 	Player m_player;
