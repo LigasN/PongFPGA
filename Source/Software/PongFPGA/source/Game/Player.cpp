@@ -10,11 +10,11 @@
 #include "Player.h"
 
 Player::Player( const int windowHight, const Vector2i batSize,
-        const bool leftSide, const bool isAI ) :
+        const bool leftSide, const Rectangle* AIAimRect ) :
 		m_windowHight( windowHight ),
 		m_rect( leftSide ? batSize.x : WINDOW_WIDTH - 2 * batSize.x,
 		        (WINDOW_HIGHT / batSize.y) / 2, batSize.x, batSize.y ),
-		m_isAI( isAI ), m_velocity( 0 ), m_movingUp( false ),
+		m_AIAimRect( AIAimRect ), m_velocity( 0 ), m_movingUp( false ),
 		m_movingDown( false ), m_leftSide( leftSide )
 {
 }
@@ -38,12 +38,27 @@ void Player::processInput( const uint8_t state )
 	}
 	}
 }
+
 void Player::update( )
 {
 	static int updateDelayCounter = 0;
 	if( updateDelayCounter > 50 )
 	{
 		updateDelayCounter = 0;
+
+		if( m_AIAimRect )
+		{
+			if( m_rect.top + m_rect.hight / 2
+			        > m_AIAimRect->top + m_AIAimRect->hight / 2 )
+			{
+				processInput( m_leftSide ? LBUTTON : RBUTTON );
+			}
+			else if( m_rect.top + m_rect.hight / 2
+			        < m_AIAimRect->top + m_AIAimRect->hight / 2 )
+			{
+				processInput( m_leftSide ? RBUTTON : LBUTTON );
+			}
+		}
 
 		if( m_movingUp )
 		{
@@ -67,7 +82,8 @@ void Player::update( )
 				m_velocity = 0;
 			}
 		}
-		// Border collision and applying  velocity to position
+
+		// Border collision and applying velocity to position
 		if( ((m_rect.top + m_rect.hight < m_windowHight || m_velocity < 0)
 		        && (m_rect.top > 0 || m_velocity > 0)) )
 		{
@@ -79,16 +95,18 @@ void Player::update( )
 		}
 	}
 	++updateDelayCounter;
-
 }
+
 void Player::render( GameEngine* gameEngine )
 {
 	m_rect.render( gameEngine );
 }
+
 const Rectangle* Player::getRect( ) const
 {
 	return &m_rect;
 }
+
 void Player::handleCollision( const Vector2i rect )
 {
 	if( m_velocity > 0 )

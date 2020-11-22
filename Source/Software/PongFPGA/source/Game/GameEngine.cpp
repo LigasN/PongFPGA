@@ -20,8 +20,8 @@ GameEngine::GameEngine( ) :
 		m_rightBorder( WINDOW_WIDTH, -2, 2, WINDOW_HIGHT + 4 ),
 		m_topBorder( -2, -2, WINDOW_WIDTH + 4, 2 ),
 		m_bottomBorder( -2, WINDOW_HIGHT, WINDOW_WIDTH + 4, 2 ),
-		m_player( WINDOW_HIGHT, Vector2i { 1, 4 }, false, false ),
-		m_AIPlayer( WINDOW_HIGHT, Vector2i { 1, 4 }, true, true )
+		m_player( WINDOW_HIGHT, Vector2i { 1, 4 }, false, NULL ),
+		m_AIPlayer( WINDOW_HIGHT, Vector2i { 1, 4 }, true, m_ball.getRect( ) )
 {
 }
 
@@ -47,9 +47,9 @@ void GameEngine::update( )
 {
 	if( m_gameStarted )
 	{
+		m_ball.update( );
 		m_player.update( );
 		m_AIPlayer.update( );
-		m_ball.update( );
 
 		// Checking collisions
 		if( m_ball.getRect( )->checkCollisions( m_player.getRect( ) ) )

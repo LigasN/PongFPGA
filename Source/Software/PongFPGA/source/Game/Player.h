@@ -18,7 +18,7 @@ class Player
 {
 public:
 	Player( const int windowHight, const Vector2i batSize, const bool leftSide,
-	        const bool isAI );
+	        const Rectangle* AIAimRect );
 
 	// Main interface
 	void processInput( const uint8_t state );
@@ -30,7 +30,7 @@ public:
 private:
 	const int m_windowHight;
 	Rectangle m_rect;
-	bool m_isAI;
+	const Rectangle* m_AIAimRect;
 
 	int m_velocity;
 
