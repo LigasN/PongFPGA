@@ -58,3 +58,12 @@ Najbliższe plany:
 * renderowanie tekstu 
 
 <img src="Assets/PongObjects.jpg" width="500" hight="300">
+
+# 22.11.2020
+Zaiplementowany ruch piłki, paletki gracza, paletki "AI" (na podstawie wysokości piłki wysyłane są polecenia processInput tj. funkcji, która przy normalnym graczu jest używana do reakcji paletki na przerwania), kolizje piłki ze ścianami i paletkami (AABB), paletki ze ścianami(zwykłe blokowanie ruchu jeżeli paletka jest przy granicy).
+Najbliższe plany:
+* gameplay, czyli przyspieszająca piłka i inne łakocie
+* zliczanie punktów i renderowanie jako tekst  
+* start gry "Press RES to start"
+
+![MovementsCollisionsAI](https://j.gifs.com/OM3XNQ.gif)
