@@ -27,8 +27,15 @@ public:
 	// Main interface
 	void update( )
 	{
-		m_rect.left += m_velocity.x;
-		m_rect.top += m_velocity.y;
+		static int updateDelayCounter = 0;
+		if( updateDelayCounter > 50 )
+		{
+			updateDelayCounter = 0;
+
+			m_rect.left += m_velocity.x;
+			m_rect.top += m_velocity.y;
+		}
+		++updateDelayCounter;
 	}
 
 	void render( GameEngine* gameEngine )

@@ -34,7 +34,7 @@ void GameEngine::processInput( const uint8_t state )
 {
 	if( state == ENTER )
 	{
-		m_gameStarted = true;
+		m_gameStarted = !m_gameStarted;
 	}
 
 	if( m_gameStarted )
@@ -49,8 +49,8 @@ void GameEngine::update( )
 	{
 		m_player.update( );
 		m_AIPlayer.update( );
-		//m_ball.update( );
-		/*
+		/*m_ball.update( );
+
 		 // Checking collisions
 		 if( m_ball.getRect( )->checkCollisions( m_player.getRect( ) ) )
 		 {

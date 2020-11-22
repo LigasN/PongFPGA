@@ -33,7 +33,6 @@ private:
 	bool m_isAI;
 
 	int m_velocity;
-	const int m_updateDelay;
 
 	// Moving flags
 	bool m_movingUp;
