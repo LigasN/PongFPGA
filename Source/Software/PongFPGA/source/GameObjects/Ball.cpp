@@ -9,7 +9,7 @@
 #include "../Utils/MathUtils.h"
 
 Ball::Ball( int diameter, Vector2i gameSize ) :
-		m_rect( gameSize.x / 2 - 6, gameSize.y / 2 - 4, diameter, diameter ),
+		m_rect( gameSize.x / 2 - 3, gameSize.y / 2, diameter, diameter ),
 		m_gameSize( gameSize ), m_velocity { 1, -1 }
 {
 }

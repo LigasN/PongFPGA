@@ -12,6 +12,7 @@
 #include "GameObjects/Ball.h"
 #include "GameObjects/Net.h"
 #include "GameObjects/Player.h"
+#include "Text/Character.h"
 #include <stdint.h>
 
 #define WINDOW_WIDTH 32u
@@ -47,6 +48,12 @@ private:
 	// Players
 	Player m_player;
 	Player m_AIPlayer;
+
+	// Scores
+	uint8_t m_leftScore;
+	uint8_t m_rightScore;
+	Character m_leftScoreDisplay;
+	Character m_rightScoreDisplay;
 
 	// Data to render
 	int8_t m_renderData[RAM_ADDRESS_AMOUNT];

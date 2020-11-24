@@ -21,7 +21,9 @@ GameEngine::GameEngine( ) :
 		m_topBorder( -2, -2, WINDOW_WIDTH + 4, 2 ),
 		m_bottomBorder( -2, WINDOW_HIGHT, WINDOW_WIDTH + 4, 2 ),
 		m_player( WINDOW_HIGHT, Vector2i { 1, 4 }, false, NULL ),
-		m_AIPlayer( WINDOW_HIGHT, Vector2i { 1, 4 }, true, m_ball.getRect( ) )
+		m_AIPlayer( WINDOW_HIGHT, Vector2i { 1, 4 }, true, m_ball.getRect( ) ),
+		m_leftScore( 8 ), m_rightScore( 5 ), m_leftScoreDisplay( 10, 2 ),
+		m_rightScoreDisplay( 19, 2 )
 {
 }
 
@@ -68,12 +70,15 @@ void GameEngine::update( )
 			m_ball.handleCollision( &m_leftBorder, VERTICAL_BORDER );
 			m_gameStarted = false;
 
+			++m_rightScore;
+
 		}
 		else if( m_ball.checkCollision( &m_rightBorder ) )
 		{
 			m_ball.handleCollision( &m_rightBorder, VERTICAL_BORDER );
 			m_gameStarted = false;
 
+			++m_leftScore;
 		}
 		if( m_ball.checkCollision( &m_topBorder ) )
 		{
@@ -85,18 +90,33 @@ void GameEngine::update( )
 			m_ball.handleCollision( &m_bottomBorder, HORIZONTAL_BORDER );
 
 		}
+
+		// Wins handling
+		if( m_rightScore > 9 || m_leftScore > 9 )
+		{
+			m_rightScore = 0;
+			m_leftScore = 0;
+		}
+
+		// Scores displays
+		m_leftScoreDisplay.setCharacter( m_leftScore );
+		m_rightScoreDisplay.setCharacter( m_rightScore );
 	}
 }
 
 void GameEngine::render( )
 {
-// 8- as far as data is sent byte by byte used in random places in this function
+	// 8- as far as data is sent byte by byte used in random places in this function
 
-// Render objects
+	// Render objects
 	m_net.render( this );
 	m_player.render( this );
 	m_AIPlayer.render( this );
 	m_ball.render( this );
+
+	// Render texts
+	m_leftScoreDisplay.render( this );
+	m_rightScoreDisplay.render( this );
 
 	for( unsigned int address = 0; address < RAM_ADDRESS_AMOUNT; ++address )
 	{
