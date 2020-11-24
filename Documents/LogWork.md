@@ -65,8 +65,8 @@ Najbliższe plany:
 * gameplay, czyli przyspieszająca piłka i inne łakocie
 * zliczanie punktów i renderowanie jako tekst  
 * start gry "Press RES to start"
-
-![MovementsCollisionsAI](https://j.gifs.com/OM3XNQ.gif)
+https://j.gifs.com/OM3XNQ.gif
+![MovementsCollisionsAI](https://j.gifs.com/nxwjjY.gif)
 
 # 24.11.2020
 Szybka poprawa jakości kodu, niestety z naciskiem nie na wygląd i uniwersalność, ale na ilość zajmowanej pamięci. Na razie uzysk to około 312 bajtów. Nie jest to wiele ale przy obecnych planach i wyniku 3016 bajtów pozostałych na stack i heap to całkiem nieźle. 
@@ -78,5 +78,5 @@ Najbliższe plany:
 # 24.11.2020
 Implementacja wyświetlania znaków, która w grze została użyta do wyświetlenia wyników. Zaimplementowane również przyspieszanie piłki po 
 kolizji z dowolnym obiektem.
-
-![Scores](https://j.gifs.com/Qn9BRM.gif)
+https://j.gifs.com/Qn9BRM.gif
+![Scores]()
