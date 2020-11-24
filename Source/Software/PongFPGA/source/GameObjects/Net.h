@@ -8,8 +8,8 @@
 #ifndef NET_H
 #define NET_H
 
-#include "Vector2i.h"
-#include "Rectangle.h"
+#include "../Utils/Vector2i.h"
+#include "../Utils/Rectangle.h"
 #include <stdint.h>
 
 class GameEngine;

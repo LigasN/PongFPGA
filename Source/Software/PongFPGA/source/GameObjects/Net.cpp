@@ -5,8 +5,8 @@
  *      Author: Norbert
  */
 
-#include "GameEngine.h"
-#include "MathUtils.h"
+#include "../GameEngine.h"
+#include "../Utils/MathUtils.h"
 
 Net::Net( const int windowWidth, const int windowHight ) :
 		m_windowSize { windowWidth, windowHight },

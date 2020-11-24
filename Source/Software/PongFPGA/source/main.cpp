@@ -8,7 +8,7 @@
 #include "altera_avalon_pio_regs.h"
 #include "altera_avalon_timer_regs.h"
 #include "altera_avalon_timer.h"
-#include "Game/GameEngine.h"
+#include "GameEngine.h"
 
 /// Unfortunately global pointer to Game since I have no
 /// idea how to solve interrupts without it
@@ -54,6 +54,7 @@ void initInterrupts( )
 	// Switch initialization
 	alt_ic_isr_register( SW_IRQ_INTERRUPT_CONTROLLER_ID, SW_IRQ, NULL, NULL,
 	        NULL );
+
 	IOWR_ALTERA_AVALON_PIO_IRQ_MASK( SW_BASE, 0b111 );
 }
 

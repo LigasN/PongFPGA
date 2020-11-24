@@ -8,10 +8,10 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "Rectangle.h"
-#include "Ball.h"
-#include "Net.h"
-#include "Player.h"
+#include "Utils/Rectangle.h"
+#include "GameObjects/Ball.h"
+#include "GameObjects/Net.h"
+#include "GameObjects/Player.h"
 #include <stdint.h>
 
 #define WINDOW_WIDTH 32u

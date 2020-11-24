@@ -5,8 +5,8 @@
  *      Author: Norbert
  */
 
-#include "Utils.h"
-#include "GameEngine.h"
+#include "../Utils/Utils.h"
+#include "../GameEngine.h"
 #include "Player.h"
 
 Player::Player( const int windowHight, const Vector2i batSize,

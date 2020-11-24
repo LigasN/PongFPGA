@@ -5,11 +5,11 @@
  *      Author: Norbert
  */
 
-#include "Vector2i.h"
-#include "Player.h"
-#include "Utils.h"
-#include "system.h"
+#include "Utils/Vector2i.h"
+#include "GameObjects/Player.h"
+#include "Utils/Utils.h"
 #include "GameEngine.h"
+#include "system.h"
 #include <io.h>
 #include <stdio.h>
 
@@ -47,51 +47,42 @@ void GameEngine::update( )
 {
 	if( m_gameStarted )
 	{
-		m_ball.update( );
+		m_ball.update( ); // after all because of collisions checking
 		m_player.update( );
 		m_AIPlayer.update( );
 
 		// Checking collisions
-		if( m_ball.getRect( )->checkCollisions( m_player.getRect( ) ) )
+		// Players
+		if( m_ball.checkCollision( m_player.getRect( ) ) )
 		{
-			m_ball.handleCollision(
-			        m_ball.getRect( )->getIntersection( m_player.getRect( ) ),
-			        BAT );
+			m_ball.handleCollision( m_player.getRect( ), BAT );
 		}
-		if( m_ball.getRect( )->checkCollisions( m_AIPlayer.getRect( ) ) )
+		if( m_ball.checkCollision( m_AIPlayer.getRect( ) ) )
 		{
-			m_ball.handleCollision(
-			        m_ball.getRect( )->getIntersection( m_AIPlayer.getRect( ) ),
-			        BAT );
+			m_ball.handleCollision( m_AIPlayer.getRect( ), BAT );
 		}
-		if( m_ball.getRect( )->checkCollisions( &m_leftBorder ) )
+
+		// Walls
+		if( m_ball.checkCollision( &m_leftBorder ) )
 		{
-			m_ball.handleCollision(
-			        m_ball.getRect( )->getIntersection( &m_leftBorder ),
-			        VERTICAL_BORDER );
+			m_ball.handleCollision( &m_leftBorder, VERTICAL_BORDER );
 			m_gameStarted = false;
 
 		}
-		else if( m_ball.getRect( )->checkCollisions( &m_rightBorder ) )
+		else if( m_ball.checkCollision( &m_rightBorder ) )
 		{
-			m_ball.handleCollision(
-			        m_ball.getRect( )->getIntersection( &m_rightBorder ),
-			        VERTICAL_BORDER );
+			m_ball.handleCollision( &m_rightBorder, VERTICAL_BORDER );
 			m_gameStarted = false;
 
 		}
-		if( m_ball.getRect( )->checkCollisions( &m_topBorder ) )
+		if( m_ball.checkCollision( &m_topBorder ) )
 		{
-			m_ball.handleCollision(
-			        m_ball.getRect( )->getIntersection( &m_topBorder ),
-			        HORIZONTAL_BORDER );
+			m_ball.handleCollision( &m_topBorder, HORIZONTAL_BORDER );
 
 		}
-		else if( m_ball.getRect( )->checkCollisions( &m_bottomBorder ) )
+		else if( m_ball.checkCollision( &m_bottomBorder ) )
 		{
-			m_ball.handleCollision(
-			        m_ball.getRect( )->getIntersection( &m_bottomBorder ),
-			        HORIZONTAL_BORDER );
+			m_ball.handleCollision( &m_bottomBorder, HORIZONTAL_BORDER );
 
 		}
 	}

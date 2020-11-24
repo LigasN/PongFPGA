@@ -19,9 +19,6 @@ public:
 
 	void render( GameEngine* gameEngine );
 
-	bool checkCollisions( const Rectangle* otherRect ) const;
-	const Vector2i getIntersection( const Rectangle* otherRect ) const;
-
 	// Public members because only by includes
 	// problems it is not a struct
 	int left;
