@@ -74,3 +74,9 @@ Najbliższe plany:
 * gameplay, czyli przyspieszająca piłka i inne łakocie
 * zliczanie punktów i renderowanie jako tekst  
 * start gry "Press RES to start"
+
+# 24.11.2020
+Implementacja wyświetlania znaków, która w grze została użyta do wyświetlenia wyników. Zaimplementowane również przyspieszanie piłki po 
+kolizji z dowolnym obiektem.
+
+![Scores](https://j.gifs.com/Qn9BRM.gif)

@@ -8,9 +8,10 @@
 #include "Ball.h"
 #include "../Utils/MathUtils.h"
 
-Ball::Ball( int diameter, Vector2i gameSize ) :
+Ball::Ball( int diameter, Vector2i gameSize, int updateDelay ) :
 		m_rect( gameSize.x / 2 - 3, gameSize.y / 2, diameter, diameter ),
-		m_gameSize( gameSize ), m_velocity { 1, -1 }
+		m_gameSize( gameSize ), m_velocity { 1, -1 },
+		m_updateDelay( updateDelay ), m_initUpdateDelayValue( updateDelay )
 {
 }
 
@@ -18,7 +19,7 @@ Ball::Ball( int diameter, Vector2i gameSize ) :
 void Ball::update( )
 {
 	static int updateDelayCounter = 0;
-	if( updateDelayCounter > 50 )
+	if( updateDelayCounter > m_updateDelay )
 	{
 		updateDelayCounter = 0;
 
@@ -43,11 +44,18 @@ void Ball::handleCollision( const Rectangle* objectRect,
 {
 	Vector2i intersection = getIntersection( objectRect );
 
+	// During collision with anything ball decrease its updateDelay
+	if( m_updateDelay > 1 )
+	{
+		--m_updateDelay;
+	}
+
 	if( (collisionObjectId & VERTICAL_BORDER) > 0 )
 	{
 		m_rect.left = m_gameSize.x / 2;
 		m_velocity.x = -m_velocity.x;
 		m_velocity.y = -m_velocity.y;
+		m_updateDelay = m_initUpdateDelayValue;
 	}
 	else
 	{

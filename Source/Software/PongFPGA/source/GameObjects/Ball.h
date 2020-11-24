@@ -18,7 +18,7 @@ class GameEngine;
 class Ball
 {
 public:
-	Ball( int diameter, Vector2i gameSize );
+	Ball( int diameter, Vector2i gameSize, int updateDelay );
 
 	// Main interface
 	void update( );
@@ -34,6 +34,10 @@ private:
 	Rectangle m_rect;
 	Vector2i m_gameSize;
 	Vector2i m_velocity;
+
+	/// used for handling ball speed without more pixel jump effect
+	int m_updateDelay;
+	const int m_initUpdateDelayValue;
 
 	const Vector2i getIntersection( const Rectangle* otherRect ) const;
 };
