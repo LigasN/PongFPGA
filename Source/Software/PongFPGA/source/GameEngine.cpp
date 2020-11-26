@@ -15,7 +15,7 @@
 
 GameEngine::GameEngine( ) :
 		m_gameStarted( false ), m_net( WINDOW_WIDTH, WINDOW_HIGHT ),
-		m_ball( 1, Vector2i { WINDOW_WIDTH, WINDOW_HIGHT }, 50 ),
+		m_ball( 1, Vector2i { WINDOW_WIDTH, WINDOW_HIGHT }, 30 ),
 		m_leftBorder( -2, -2, 2, WINDOW_HIGHT + 4 ),
 		m_rightBorder( WINDOW_WIDTH, -2, 2, WINDOW_HIGHT + 4 ),
 		m_topBorder( -2, -2, WINDOW_WIDTH + 4, 2 ),

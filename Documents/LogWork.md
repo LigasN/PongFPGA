@@ -79,3 +79,8 @@ Najbliższe plany:
 Implementacja wyświetlania znaków, która w grze została użyta do wyświetlenia wyników. Zaimplementowane również przyspieszanie piłki po kolizji z dowolnym obiektem. Resetowanie wyników po przekroczeniu 9 punktu oznacza wygraną zawodnika, którego punkty przekroczyły limit.
 
 ![Scores](https://j.gifs.com/oVxkkk.gif)
+
+# 26.11.2020
+Poprawiony gameplay przez zwiększenie prędkości startowej piłki i odpowiednie ograniczone zmniejszanie opóźnienia update-u. Podobnie paletka ma mniej ograniczoną częstotliwość updatu, dzięki czemu prędkość wzrosła ponad dwa razy. To jest prawdopodobnie koniec tej wersji projektu.
+
+![Gameplay](https://j.gifs.com/P73kln.gif)

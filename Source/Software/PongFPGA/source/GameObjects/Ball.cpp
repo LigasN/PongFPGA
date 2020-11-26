@@ -45,7 +45,7 @@ void Ball::handleCollision( const Rectangle* objectRect,
 	Vector2i intersection = getIntersection( objectRect );
 
 	// During collision with anything ball decrease its updateDelay
-	if( m_updateDelay > 1 )
+	if( m_updateDelay > 12 )
 	{
 		--m_updateDelay;
 	}
@@ -53,8 +53,6 @@ void Ball::handleCollision( const Rectangle* objectRect,
 	if( (collisionObjectId & VERTICAL_BORDER) > 0 )
 	{
 		m_rect.left = m_gameSize.x / 2;
-		m_velocity.x = -m_velocity.x;
-		m_velocity.y = -m_velocity.y;
 		m_updateDelay = m_initUpdateDelayValue;
 	}
 	else

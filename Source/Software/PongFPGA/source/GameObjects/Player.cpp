@@ -42,7 +42,7 @@ void Player::processInput( const uint8_t state )
 void Player::update( )
 {
 	static int updateDelayCounter = 0;
-	if( updateDelayCounter > 50 )
+	if( updateDelayCounter > 16 )
 	{
 		updateDelayCounter = 0;
 
