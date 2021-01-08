@@ -38,14 +38,14 @@ void Character::render( GameEngine* gameEngine )
 	int8_t renderData[RAM_ADDRESS_AMOUNT] {};
 	uint8_t startPos = 0;
 
-	for( int j = 0; j < CHARACTER_HIGHT; ++j )
+	for( int j = 0; j < CHARACTER_HEIGHT; ++j )
 	{
 		for( int i = 0; i < CHARACTER_WIDTH; ++i )
 		{
 			startPos = (m_left + i + WINDOW_WIDTH * (m_top + j)); // like in Ball.h
 
 			if( GET_BIT(
-			        m_characters[j + ((m_character / 2) * CHARACTER_HIGHT)],
+			        m_characters[j + ((m_character / 2) * CHARACTER_HEIGHT)],
 			        (((m_character % 2) * CHARACTER_WIDTH) + i) ) )
 			{
 				SET_BIT( renderData[startPos / 8], startPos % 8 );

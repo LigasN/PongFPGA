@@ -16,8 +16,8 @@
 #include <stdint.h>
 
 #define WINDOW_WIDTH 32u
-#define WINDOW_HIGHT 24u
-#define RAM_ADDRESS_AMOUNT (WINDOW_WIDTH * WINDOW_HIGHT)/8
+#define WINDOW_HEIGHT 24u
+#define RAM_ADDRESS_AMOUNT (WINDOW_WIDTH * WINDOW_HEIGHT)/8
 
 class GameEngine
 {

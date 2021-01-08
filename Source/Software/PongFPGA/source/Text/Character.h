@@ -21,7 +21,7 @@
 // for checking that values are proper.
 
 #define CHARACTER_WIDTH 4 // No more possible in uint8_t
-#define CHARACTER_HIGHT 5
+#define CHARACTER_HEIGHT 5
 
 class GameEngine;
 
@@ -45,7 +45,7 @@ private:
 	// 10 <- characters amount
 	// 2  <- characters per row
 	// definition in constructor body
-	const uint8_t m_characters[10 / 2 * CHARACTER_HIGHT];
+	const uint8_t m_characters[10 / 2 * CHARACTER_HEIGHT];
 };
 
 #endif // !CHARACTER_H

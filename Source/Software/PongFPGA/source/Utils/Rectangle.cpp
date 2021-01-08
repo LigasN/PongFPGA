@@ -11,7 +11,7 @@
 #include "../GameEngine.h"
 
 Rectangle::Rectangle( int left, int top, int width, int hight ) :
-		left( left ), top( top ), width( width ), hight( hight )
+		left( left ), top( top ), width( width ), height( hight )
 {
 }
 
@@ -19,7 +19,7 @@ void Rectangle::render( GameEngine* gameEngine )
 {
 	int8_t renderData[RAM_ADDRESS_AMOUNT] {};
 	int pos = 0;
-	for( int j = 0; j < hight; ++j )
+	for( int j = 0; j < height; ++j )
 	{
 		for( int i = 0; i < width; ++i )
 		{

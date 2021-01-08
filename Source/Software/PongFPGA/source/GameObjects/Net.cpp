@@ -22,7 +22,7 @@ void Net::render( GameEngine* gameEngine )
 	int8_t renderData[m_windowSize.x * m_windowSize.y] {};
 	int pos = 0;
 
-	for( int j = 0, i = 0; j < m_rect.hight; ++j )
+	for( int j = 0, i = 0; j < m_rect.height; ++j )
 	{
 		pos = (m_rect.left + i % 2 + m_windowSize.x * (m_rect.top + j));
 		SET_BIT( renderData[pos / 8], pos % 8 );

@@ -14,14 +14,14 @@
 #include <stdio.h>
 
 GameEngine::GameEngine( ) :
-		m_gameStarted( false ), m_net( WINDOW_WIDTH, WINDOW_HIGHT ),
-		m_ball( 1, Vector2i { WINDOW_WIDTH, WINDOW_HIGHT }, 30 ),
-		m_leftBorder( -2, -2, 2, WINDOW_HIGHT + 4 ),
-		m_rightBorder( WINDOW_WIDTH, -2, 2, WINDOW_HIGHT + 4 ),
+		m_gameStarted( false ), m_net( WINDOW_WIDTH, WINDOW_HEIGHT ),
+		m_ball( 1, Vector2i { WINDOW_WIDTH, WINDOW_HEIGHT }, 30 ),
+		m_leftBorder( -2, -2, 2, WINDOW_HEIGHT + 4 ),
+		m_rightBorder( WINDOW_WIDTH, -2, 2, WINDOW_HEIGHT + 4 ),
 		m_topBorder( -2, -2, WINDOW_WIDTH + 4, 2 ),
-		m_bottomBorder( -2, WINDOW_HIGHT, WINDOW_WIDTH + 4, 2 ),
-		m_player( WINDOW_HIGHT, Vector2i { 1, 4 }, false, NULL ),
-		m_AIPlayer( WINDOW_HIGHT, Vector2i { 1, 4 }, true, m_ball.getRect( ) ),
+		m_bottomBorder( -2, WINDOW_HEIGHT, WINDOW_WIDTH + 4, 2 ),
+		m_player( WINDOW_HEIGHT, Vector2i { 1, 4 }, false, NULL ),
+		m_AIPlayer( WINDOW_HEIGHT, Vector2i { 1, 4 }, true, m_ball.getRect( ) ),
 		m_leftScore( 0 ), m_rightScore( 0 ), m_leftScoreDisplay( 10, 2 ),
 		m_rightScoreDisplay( 19, 2 )
 {

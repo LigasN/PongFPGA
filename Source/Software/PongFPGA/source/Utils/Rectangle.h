@@ -24,7 +24,7 @@ public:
 	int left;
 	int top;
 	int width;
-	int hight;
+	int height;
 
 };
 

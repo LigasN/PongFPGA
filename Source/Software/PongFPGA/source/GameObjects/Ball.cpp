@@ -83,8 +83,8 @@ bool Ball::checkCollision( const Rectangle* otherRect ) const
 {
 	return (m_rect.left < otherRect->left + otherRect->width
 	        && m_rect.left + m_rect.width > otherRect->left)
-	        && (m_rect.top < otherRect->top + otherRect->hight
-	                && m_rect.top + m_rect.hight > otherRect->top);
+	        && (m_rect.top < otherRect->top + otherRect->height
+	                && m_rect.top + m_rect.height > otherRect->top);
 }
 
 const Vector2i Ball::getIntersection( const Rectangle* otherRect ) const
@@ -92,8 +92,8 @@ const Vector2i Ball::getIntersection( const Rectangle* otherRect ) const
 	return Vector2i { MIN( m_rect.left + m_rect.width,
 	        otherRect->left + otherRect->width )
 	                          - MAX( m_rect.left, otherRect->left ),
-	                  MIN( m_rect.top + m_rect.hight,
-	                          otherRect->top + otherRect->hight )
+	                  MIN( m_rect.top + m_rect.height,
+	                          otherRect->top + otherRect->height )
 	                          - MAX( m_rect.top, otherRect->top ) };
 }
 

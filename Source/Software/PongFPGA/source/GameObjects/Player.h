@@ -25,7 +25,6 @@ public:
 	void update( );
 	void render( GameEngine* gameEngine );
 	const Rectangle* getRect( ) const;
-	void handleCollision( const Vector2i rect );
 
 private:
 	const int m_windowHight;
