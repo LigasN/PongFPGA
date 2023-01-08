@@ -21,6 +21,9 @@ Opracowanie sprzętowo-programowego systemu realizującego grę typu "Pong". Kon
 * szybka instrukcja rozgrywki, plik formatu markdown- [HowToPlay](Documents/HowToPlay.md "HowToPlay")
 * wykonanej pracy, lista dat z komentarzami- [LogWork](Documents/LogWork.md "LogWork")
 
+## Rezultat
+![Rezultat](https://user-images.githubusercontent.com/48071430/211208714-7b4eed6b-6be7-47b7-bf15-d804d68d0305.gif "PongFPGA.gif")
+
 ## Linki
 * [hardware sources](Source/Hardware/ "hardware sources")
 * [software sources](Source/Software/PongFPGA/source "software sources")
